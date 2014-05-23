@@ -1,0 +1,91 @@
+%*********************************************************************************
+% 
+% Paper Title Here 
+%
+%
+
+\documentclass[pageno]{jpaper}
+
+%replace XXX with the submission number you are given from the HPCA submission site.
+\newcommand{\iscasubmissionnumber}{116}
+
+%***********************************************************************************
+%
+% Packages
+%
+
+\usepackage[normalem]{ulem}
+
+\usepackage{graphicx}
+%\usepackage{subfigure}
+%\usepackage{psfrag}
+%\usepackage{fullpage}
+
+%***********************************************************************************
+%
+% MACROS start
+%
+
+%myfigure label content caption
+\newcommand{\myfigurewide}[3]
+{\begin{figure*}[hbtp]\begin{center}#2\caption{#3}\label{#1}\end{center}\end{figure*}}
+
+%mygraphfigure label size content caption
+\newcommand{\mygraphfigurewide}[4]{\myfigurewide{#1}{\includegraphics[#2]{#3}}{#4}}
+
+%myfigure label content caption
+\newcommand{\myfigure}[3]
+{\begin{figure}[hbt]\begin{center}#2\caption{#3}\label{#1}\end{center}\end{figure}}
+
+%mygraphfigure label size content caption
+\newcommand{\mygraphfigure}[4]{\myfigure{#1}{\includegraphics[#2]{#3}}{#4}}
+
+%mygraphsubfigure label size content caption
+\newcommand{\mygraphsubfigure}[4]
+{\subfigure[#4]{\hspace{0.5cm}\includegraphics[#2]{#3}\label{#1}\hspace{0.5cm}}}
+
+\newtheorem{theorem}{Theorem} % SMALL
+\newtheorem{definition}{Definition} % SMALL
+\newtheorem{problem}{Problem} % SMALL
+\newtheorem{lemma}{Lemma} % SMALL
+
+%***********************************************************************************
+%
+% Anonymization Macros
+%
+
+% Usage : \ifanonymized{anonymized}{notanonymized}
+
+% Uncomment one of the following
+
+\newcommand{\ifanonymized}[2]{#1} % Anonymized
+%\newcommand{\ifanonymized}[2]{#2} % Not Anonymized
+                                   
+%***********************************************************************************
+%
+% MACROS end
+%
+
+\begin{document}  
+
+% Note : You should only include files here. The actual content is in
+% the included files.
+
+\input{title.tex}
+\input{introduction.tex}
+\input{monitoring.tex}
+\input{filter.tex}
+\input{drop.tex}
+\input{extensions.tex}
+\input{evaluation.tex}
+\input{related.tex}
+\input{conclusion.tex}
+
+\clearpage
+
+\bstctlcite{bstctl:etal, bstctl:nodash, bstctl:simpurl}
+\bibliographystyle{IEEEtranS}
+\bibliography{paper}
+
+\end{document}
+

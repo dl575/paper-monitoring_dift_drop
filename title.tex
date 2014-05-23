@@ -1,0 +1,45 @@
+\title{
+Using Dynamic Dataflow Tracking to Reduce Overheads for \\ Parallel
+Run-Time Monitoring
+}
+
+\ifanonymized{\author{Anonymized}}
+{\author{Daniel Lo, Tao Chen, Mohamed Ismail, and G. Edward Suh}}
+
+\date{}
+\maketitle
+
+\thispagestyle{empty}
+
+\begin{abstract}
+
+Recent studies have proposed various parallel run-time monitoring techniques to
+improve the reliability, security, and debugging capabilities of
+computer systems. These run-time monitors introduce overheads in performance
+and energy to the system. Traditionally, these overheads have been an
+all-or-nothing cost; monitoring cannot be used if the overheads are considered too large.
+% where if monitoring is enabled, then the program will incur, in full, the
+% associated overheads. 
+%That is, if the overheads are considered too large, then monitoring cannot be
+%enabled. 
+In this paper, we present a run-time monitoring architecture that
+enables a trade-off between the coverage and the overheads.
+The system allows an overhead or coverage target to be specified,
+and limits the amount of monitoring performed at run-time to meet the target. 
+However, simply skipping monitoring operations can lead to false
+positives, signaling errors when none have occurred. Our proposed architecture
+prevents false positives using a method that invalidates certain metadata
+when monitoring is not performed. Dedicated hardware that performs dynamic
+information flow tracking (DIFT) is used to propagate this invalidation
+information in order to prevent false positives. In addition, we can use this
+DIFT hardware to also track the presence of valid metadata. This allows us to
+filter out events in order to reduce monitoring overheads.
+% Our experiments show that the system is able to
+% closely meet the target overhead and achieve significant monitoring coverage
+% for reasonable overhead targets.
+In our experiments, we see that the system is able to come
+within 2\% of the specified execution time overhead in almost all cases.  In addition, with a
+performance overhead target of 10\%, 49-90\% of monitoring coverage is achieved
+on average depending on the monitoring technique.
+
+\end{abstract}

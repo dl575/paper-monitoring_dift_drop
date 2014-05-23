@@ -1,0 +1,139 @@
+\section{Introduction}
+\label{sec:intro}
+
+% Parallel run-time useful
+Run-time monitoring techniques have been shown to be useful for improving the
+reliability, security, and debugging capabilities of computer systems. For
+example, Hardbound is a hardware-assisted technique to detect out-of-bound
+memory accesses, which can cause undesired behavior or create a security
+vulnerability if uncaught \cite{hardbound-asplos08}.  Intel has
+recently announced plans to support buffer overflow protection similar to
+Hardbound in future architectures \cite{intel-mpx}. Similarly, run-time
+monitoring can enable many other new security, reliability, and debugging
+capabilities such as fine-grained memory protection \cite{mondrian-asplos02},
+information flow tracking \cite{dift-asplos04, testudo-micro08}, hardware error
+detection \cite{argus-micro07}, data-race detection \cite{radish-isca12,
+cord-hpca06}, etc. 
+
+% Programmable hardware monitors
+These run-time monitors introduce performance, power, and energy overheads.
+Implementing run-time monitoring in software using binary instrumentation or
+other similar methods introduces high overheads. For example,
+dynamic information flow tracking (DIFT) implemented in software suffers a 3.6x
+slowdown \cite{lift-micro06}. Implementing monitors in hardware greatly decreases
+the performance impact by performing monitoring in parallel to a program's
+execution. A dedicated hardware implementation of DIFT reduces performance
+overheads to just 1.1\% \cite{dift-asplos04}. However, fixed hardware loses
+the programmability of software, and cannot be updated or changed.
+
+% Recent studies proposed programmable parallel hardware as a way to achieve both
+% the performance advantages of hardware and the flexibility of software
+% \cite{lba-isca08, flexcore-micro10, harmoni-dsn12}.  While more
+% efficient than software, these programmable hardware monitors can still show
+% significant performance overheads.  For example,
+% Figure~\ref{fig:intro.full_mon} shows the execution time for three monitoring
+% techniques normalized to the execution time with no monitoring for an
+% FPGA-based parallel monitor. The program being monitored is run on an in-order
+% embedded core running at 500 MHz while the FPGA-based monitor runs at 250 MHz.
+% We can see that, depending on the monitoring scheme, overheads can easily be
+% several tens of percent.  A faster or more complex (e.g., superscalar or
+% out-of-order) core is expected to show even more significant overheads.
+
+% % Run-time monitoring overview
+% \begin{figure}
+%   \begin{center}
+%     \vspace{-0.2in}
+%     \includegraphics[width=\columnwidth]{figs/full_mon.pdf}
+%     \vspace{-0.5in}
+%     \caption{Performance overheads of FPGA-based monitors.}
+%     \vspace{-0.2in}
+%     \label{fig:intro.full_mon} 
+%   \end{center}
+% \end{figure}
+
+In this paper, we present an architecture that combines hardware-based dynamic
+information flow tracking with a software-based monitor in order to reduce the
+overheads of monitoring. By using the DIFT engine to filter out events that do
+not correspond to valid metadata, we can greatly reduce the amount of
+monitoring that must be handled by the monitor. For example, for an array
+bounds check, we are able to filter out instruction that do not correspond to
+pointer data. Since the monitor is implemented in software, the system allows a
+large range of monitors to be implemented and even updated or changed at
+run-time. 
+
+With this filtering, we see overheads of XX\% - XX\% on average for
+uninitialized memory check, array bounds check, and multi-bit dynamic
+information flow tracking. Although full monitoring coverage is always desired,
+if these overheads are considered too high by the designer or user then
+monitoring must be disabled.
+% % Current schemes are all-or-nothing: suffer full performance impact for full
+% % coverage.
+% Traditionally, these overheads have been an all-or-nothing cost. If the
+% designer finds that the overheads exceed their desired budget, then monitoring
+% cannot be enabled.  In this paper, we present an architecture that enables a
+% trade-off between the overheads and the coverage of a monitoring technique by
+% dynamically adjusting the number of monitoring operations.  This system allows
+% monitoring to still be performed even when the overhead budget is not
+% sufficient for full monitoring.
+% Use cases
+Trading off coverage for
+reduced overheads can still be very useful. For example, this adjustable
+monitoring enables a level of protection even for systems where the full
+monitoring overheads are too high.  This is especially true for energy- or
+power-constrained systems or soft real-time systems where the monitoring
+overhead should not exceed energy/power limits or real-time deadlines. 
+Additionally, adjustable monitoring can be used for debugging purposes
+especially in the context of sampling-based or cooperative debugging techniques
+which expect low coverage per run but use a large number of runs and users to
+collect debugging information~\cite{liblit-pldi05,
+chilimbi-asplos04, greathouse-cgo11}. 
+
+Thus, we develop an architecture that enables a
+trade-off between the overheads and the coverage of a monitoring technique by
+dynamically adjusting the number of monitoring operations. By extending the
+hardware DIFT engine to track 2-bits of information, we are able to use it for
+filtering empty metadata as well as tracking dropped monitoring flows in order
+to prevent false positives. We introduce three policies of where dropping
+decisions are made and show the trade-off space achieved between accuracy of
+overhead matching and coverage achieved.
+
+% %Invalidation in order to prevent false positives.
+% In order to adjust monitoring overheads, a system must be able to drop a
+% portion of the monitoring operations. Unfortunately, however, simply skipping
+% monitoring operations can lead to false positives (false alarms) due to stale
+% metadata.  One possible solution is to rewrite individual monitors to create
+% ``drop-enabled'' versions.  However, such monitor-specific customizations are
+% difficult and time consuming.  Instead, after analyzing a range of monitoring
+% techniques, we found that by adding a 1-bit ``invalid'' flag to the bookkeeping
+% metadata managed by the monitor, we were able to create a general mechanism to
+% handle false positives across a broad range of monitoring techniques.  The
+% result is that we have designed a hardware module that sits between a
+% processing core and a programmable monitor, and allows adjustable overheads.
+% This hardware module can be applied to a range of monitoring techniques and
+% requires no modifications to the monitor.
+
+% Evaluation
+In order to evaluate our approach, we applied it to 3 different monitoring
+techniques. These monitoring techniques vary in what events they monitor, the
+size and semantics of their metadata, and the operations performed on metadata.
+Our experiments show that with 10\% overheads, we can still provide 49-90\% of
+coverage on average depending on the monitoring technique. By increasing the
+overhead budget, the coverage rate can be increased. Our architecture is able
+to closely meet the specified budgets. For all but one benchmark, the overheads
+seen were within 2\% of the target overhead. Our results show that X policy is
+able to achieve very close overhead matching (within X\% on average) with an
+average coverage of X\%. On the other hand, by using Y policy, the overhead
+matching is not as high (within Y\% on average) but average coverage increases
+to (Y\%).
+
+% Section summary
+This paper is organized as follows. Section~\ref{sec:monitoring} presents the
+parallel run-time monitoring model that this paper assumes.
+Section~\ref{sec:filter} presents our architecture that use hardware-based DIFT
+in order to reduce monitoring overheads. In Section~\ref{sec:drop} we present
+how the DIFT engine can be extended to enable adjustable overheads.
+Section~\ref{sec:extensions} covers example implementations of three monitoring
+schemes. Section~\ref{sec:evaluation} presents our evaluation methodology and
+results. Finally, we discuss related work in Section~\ref{sec:related} and
+conclude in Section~\ref{sec:conclusion}.
+

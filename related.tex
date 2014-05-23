@@ -1,0 +1,21 @@
+\section{Related Work}
+\label{sec:related}
+
+% Monitoring
+Monitoring
+
+% Filtering
+Hardbound filters out non-pointer data \cite{hardbound-asplos08}. FlexiTaint filters out some monitoring
+and performs it in hardware. FADE provides a more general filtering engine. It
+filters out redundant updates and clean checks by reading metadata values. Our
+dataflow engine does not require reading the actual metadata values which may
+be large. We do not handle filtering redundant updates, but we do filter out
+clean checks as well as clean (i.e., uninitialized) propagations. We are able
+to do this because the dataflow engine can also propagate the uninitialized
+information. In addition, our dataflow engine can be used to provide adjustable
+overheads without false positives which is not a capability described by FADE.
+
+% Adjustable overheads
+Adjustable overhead/cooperative debugging: Testudo \cite{testudo-micro08}, QVM
+\cite{qvm-oopsla08}, Greathouse et al. \cite{greathouse-cgo11}, Huang et al.
+\cite{huang-sttt12}, Lo et al. \cite{lo-rtas14}
