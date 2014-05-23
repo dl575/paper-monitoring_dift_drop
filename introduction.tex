@@ -18,7 +18,7 @@ cord-hpca06}, etc.
 % Programmable hardware monitors
 These run-time monitors introduce performance, power, and energy overheads.
 Implementing run-time monitoring in software using binary instrumentation or
-other similar methods introduces high overheads. For example,
+other similar methods has been shown to introduce high overheads. For example,
 dynamic information flow tracking (DIFT) implemented in software suffers a 3.6x
 slowdown \cite{lift-micro06}. Implementing monitors in hardware greatly decreases
 the performance impact by performing monitoring in parallel to a program's
@@ -51,15 +51,15 @@ the programmability of software, and cannot be updated or changed.
 %   \end{center}
 % \end{figure}
 
-In this paper, we present an architecture that combines hardware-based dynamic
-information flow tracking with a software-based monitor in order to reduce the
-overheads of monitoring. By using the DIFT engine to filter out events that do
-not correspond to valid metadata, we can greatly reduce the amount of
-monitoring that must be handled by the monitor. For example, for an array
-bounds check, we are able to filter out instruction that do not correspond to
-pointer data. Since the monitor is implemented in software, the system allows a
-large range of monitors to be implemented and even updated or changed at
-run-time. 
+In this paper, we present an architecture that combines a hardware-based
+dataflow tracking engine with a software-based monitor in order to reduce the
+overheads of monitoring. By using the dataflow engine to track flows of
+initialized metadata, the system is able to filter out events that do not
+correspond to valid metadata, greatly reducing the amount of monitoring that
+must be handled in software. For example, for an array
+bounds check, the dataflow engine is able to filter out instruction that do not
+correspond to pointer data. Thus, we are able to have the flexibility of
+software-based monitors with greatly reduced overheads.
 
 With this filtering, we see overheads of XX\% - XX\% on average for
 uninitialized memory check, array bounds check, and multi-bit dynamic
@@ -76,26 +76,32 @@ monitoring must be disabled.
 % monitoring to still be performed even when the overhead budget is not
 % sufficient for full monitoring.
 % Use cases
-Trading off coverage for
+Thus, we present an architecture that enables a trade-off between overheads and
+the monitoring coverage achieved. This is achieved by dynamically dropping
+monitoring operations when overheads are too high. We are able to prevent false
+positives by extending the dataflow engine to also track these dropped
+monitoring flows. We also present three policies on when dropping decisions are
+made that cover a trade-off space between ability to match a target overhead
+and the monitoring coverage achieved.
+
+Although full monitoring coverage is always desired, trading off coverage for
 reduced overheads can still be very useful. For example, this adjustable
 monitoring enables a level of protection even for systems where the full
-monitoring overheads are too high.  This is especially true for energy- or
+monitoring overheads are too high. This is especially true for energy- or
 power-constrained systems or soft real-time systems where the monitoring
-overhead should not exceed energy/power limits or real-time deadlines. 
+overhead should not exceed energy/power limits or real-time deadlines.
 Additionally, adjustable monitoring can be used for debugging purposes
 especially in the context of sampling-based or cooperative debugging techniques
 which expect low coverage per run but use a large number of runs and users to
-collect debugging information~\cite{liblit-pldi05,
-chilimbi-asplos04, greathouse-cgo11}. 
+collect debugging information~\cite{liblit-pldi05, chilimbi-asplos04,
+greathouse-cgo11}. 
 
-Thus, we develop an architecture that enables a
-trade-off between the overheads and the coverage of a monitoring technique by
-dynamically adjusting the number of monitoring operations. By extending the
-hardware DIFT engine to track 2-bits of information, we are able to use it for
-filtering empty metadata as well as tracking dropped monitoring flows in order
-to prevent false positives. We introduce three policies of where dropping
-decisions are made and show the trade-off space achieved between accuracy of
-overhead matching and coverage achieved.
+The main contributions of this paper are as follows.
+\begin{itemize}
+  \item Using a dataflow tracking engine to filter out monitoring events in order to reduce overheads.
+  \item Extending the dataflow tracking engine to enable monitoring with adjustable overheads
+  \item Exploration of the design space and trade-offs in dropping policies for performing partial monitoring
+\end{itemize}
 
 % %Invalidation in order to prevent false positives.
 % In order to adjust monitoring overheads, a system must be able to drop a

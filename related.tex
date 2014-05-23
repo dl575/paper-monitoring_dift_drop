@@ -6,7 +6,7 @@ Monitoring
 
 % Filtering
 Hardbound filters out non-pointer data \cite{hardbound-asplos08}. FlexiTaint filters out some monitoring
-and performs it in hardware. FADE provides a more general filtering engine. It
+and performs it in hardware. FADE \cite{fade-hpca14} provides a more general filtering engine. It
 filters out redundant updates and clean checks by reading metadata values. Our
 dataflow engine does not require reading the actual metadata values which may
 be large. We do not handle filtering redundant updates, but we do filter out

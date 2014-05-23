@@ -16,17 +16,17 @@ Figure~\ref{fig:arch.overview} shows an overview of the run-time monitoring
 model that is assumed in this paper.  The \emph{main program} is a computation
 task that performs the original function of the system and is run on the
 \emph{main core}.  On certain events during the main program, such as the
-execution of certain types of instructions, the \emph{monitor} performs a
-series of \emph{monitoring operations}. The monitor operates in parallel to the
+execution of certain types of instructions, the \emph{monitoring core} performs a
+series of \emph{monitoring operations}. The monitoring core operates in parallel to the
 main core. These events are referred to as \emph{monitoring events}. Depending
 on the type of a monitoring event, different monitoring operations are
 executed. Monitoring events are buffered in a FIFO structure to decouple the
-running of the main core and the monitor. If the FIFO is full, then the main
+running of the main core and the monitoring core. If the FIFO is full, then the main
 core is forced to stall on a monitoring event until a FIFO entry becomes
-available. For programmable monitors, these stalls are a major source of
-overhead because the monitor may take several cycles to process a single event
+available. These stalls are a major source of
+overhead because the monitoring core may take several cycles to process a single event
 from the main core. We refer to these stalls and other overheads, such as
-contention for shared resources, as \emph{monitoring overheads}. If the monitor
+contention for shared resources, as \emph{monitoring overheads}. If the monitoring core
 detects an inconsistent or undesired behavior in the monitoring events, then
 an error is detected. 
 
@@ -39,7 +39,7 @@ detection \cite{cord-hpca06}, etc.  For example, an array bounds check (BC)
 when software attempts to read or write to a memory location outside of an
 array's bounds. This can be done by associating base and bound address metadata
 to an array pointer when it is allocated. On loads or stores with the array
-pointer, the monitor checks that the memory address is within the base and
+pointer, the monitoring core checks that the memory address is within the base and
 bound. In addition, on certain ALU instructions, this base and bound metadata
 is propagated to track the creation of new array pointers.
 % One example is an uninitialized memory check (UMC) where monitoring is used to
@@ -51,12 +51,12 @@ is propagated to track the creation of new array pointers.
 % been initialized. On a load, the monitor checks that the corresponding metadata
 % bit has been previously marked as initialized.
 
-There are multiple options for implementing programmable parallel monitors. For
-example, the Log-Based Architecture \cite{lba-isca08} uses processor cores in a
-multi-core system as monitors. The FlexCore architecture
-\cite{flexcore-micro10} instead uses an FPGA-fabric to implement the
-monitor. The approach we describe in this paper applies to any of these
-parallel monitors. However, for experiments, we model an FPGA-based monitor
-similar to FlexCore.  The on-chip FPGA fabric is used to implement the
-``Monitor'' block in Figure~\ref{fig:arch.overview} while the FIFO from the
-main core and metadata cache are implemented as ASICs.
+% There are multiple options for implementing programmable parallel monitors. For
+% example, the Log-Based Architecture \cite{lba-isca08} uses processor cores in a
+% multi-core system as monitors. The FlexCore architecture
+% \cite{flexcore-micro10} instead uses an FPGA-fabric to implement the
+% monitor. The approach we describe in this paper applies to any of these
+% parallel monitors. However, for experiments, we model an FPGA-based monitor
+% similar to FlexCore.  The on-chip FPGA fabric is used to implement the
+% ``Monitor'' block in Figure~\ref{fig:arch.overview} while the FIFO from the
+% main core and metadata cache are implemented as ASICs.
