@@ -44,7 +44,9 @@ out monitoring operations for clean metadata.
 
 Figure~\ref{fig:filter.architecture} shows a block diagram of the dataflow
 tracking engine for
-keeping track of clean metadata. Initially, all metadata is marked as clean.
+keeping track of clean metadata. The engine keeps a \emph{clean flag}
+corresponding to each piece of register and memory metadata. Initially, all
+metadata is marked as clean.
 When the monitoring core writes a non-null metadata value, it also sends a
 signal to the dataflow engine to mark the metadata as dirty. 
 

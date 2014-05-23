@@ -4,11 +4,11 @@
 \begin{tabular}{|c||c|c|c|c||c|c|c|c|}
 \hline
 
-{\bf Instruction} & \multicolumn{4}{c|}{\bf Initialized (src0, src1)} & \multicolumn{4}{c|}{\bf Invalid (src0, src1)} \\ \cline{2-9}
-{\bf Type} & {\bf 00} & {\bf 01} & {\bf 10} & {\bf 11} & {\bf 00} & {\bf 01} & {\bf 10} & {\bf 11} \\ \hline
+{\bf Instruction} & \multicolumn{4}{c||}{\bf Clean (src0, src1)} & \multicolumn{4}{c|}{\bf Invalid (src0, src1)} \\ \cline{2-9}
+{\bf Type} & {\bf 00} & {\bf 01} & {\bf 10} & {\bf 11} & {\bf 00} & {\bf 01} & {\bf 10} & {\bf 11} \\ \hline\hline
 
-{\tt load} & 0 & 0 & X & X & X & X & 1 & 1 \\ \hline
-{\tt store} & 0 & 0 & X & X & X & X & 1 & 1 \\ \hline
-{\tt ALU} & 0 & X & X & X & X & 1 & 1 & 1 \\ \hline
+{\tt load} & X & X & 1 & 1 & X & X & 1 & 1 \\ \hline
+{\tt store} & X & X & 1 & 1 & X & X & 1 & 1 \\ \hline
+{\tt ALU} & X & X & X & 1 & X & 1 & 1 & 1 \\ \hline
 
 \end{tabular}
