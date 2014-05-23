@@ -2,8 +2,24 @@
 \label{sec:related}
 
 % Monitoring
-Monitoring
-
+Many monitoring schemes have been developed for various security, reliability,
+debugging, and other capabilities.  As we described in
+Section~\ref{sec:extensions}, there exist monitoring schemes for uninitialized
+memory check \cite{mondrian-asplos02}, array bounds check
+\cite{hardbound-asplos08, clause-ase07}, and dynamic information flow
+tracking \cite{dift-asplos04, raksha-isca07, loki-osdi08}.
+Memtracker \cite{memtracker-hpca07} uses monitoring to check for various
+memory-related bugs and errors.  Control flow verification techniques perform
+monitoring to check that program execution follows expected control flows
+\cite{schuette-comp87, impres-dac06,
+kayaalp-isca12}.  Our monitoring architecture is designed to
+be generally applicable to any of these instruction-grained monitoring schemes.
+In particular, our proposed architecture may be especially useful for some of
+these more complex schemes which also have higher overheads.  Similarly,
+although many of these schemes showed low overheads in custom hardware, our
+architecture can be used to reduce the overheads when applying these schemes on
+a multi-core platform.
+ 
 % Filtering
 Hardbound filters out non-pointer data \cite{hardbound-asplos08}. FlexiTaint filters out some monitoring
 and performs it in hardware. FADE \cite{fade-hpca14} provides a more general filtering engine. It
@@ -15,7 +31,37 @@ to do this because the dataflow engine can also propagate the uninitialized
 information. In addition, our dataflow engine can be used to provide adjustable
 overheads without false positives which is not a capability described by FADE.
 
-% Adjustable overheads
-Adjustable overhead/cooperative debugging: Testudo \cite{testudo-micro08}, QVM
-\cite{qvm-oopsla08}, Greathouse et al. \cite{greathouse-cgo11}, Huang et al.
-\cite{huang-sttt12}, Lo et al. \cite{lo-rtas14}
+% Sampling
+Statistical sampling is a method that has been applied to various debugging
+techniques in order to reduce their performance overheads. For example, Liblit
+et al. sampled program runs of thousands of users in order to find bugs
+\cite{liblit-pldi05}. This idea has also been applied to detecting memory
+leaks~\cite{chilimbi-asplos04}, dataflow analysis~\cite{greathouse-cgo11}, and
+other run-time monitoring techniques. The Testudo project
+\cite{testudo-micro08} specifically targets hardware-based run-time monitors.
+These sampling-based techniques all limit the debugging capabilities in order
+to provide lower performance overheads, similar to our architecture's goals.
+However, these approaches are not able to explicitly set an overhead budget, as
+our system is able to do. In addition, with the exception of Testudo, these
+methods have not considered parallel monitoring. Finally, we note that the
+concept of distributing the monitoring over many users and runs to increase
+coverage can also be enabled using our architecture.
+
+% Limited Monitoring
+In terms of controlling overheads, the Quality Virtual Machine (QVM) is a
+modification of the Java Virtual Machine (JVM) that supports run-time
+monitoring with controllable overheads \cite{qvm-oopsla08}. Similarly, Huang et
+al. created a framework for controlling the overheads of software-based
+monitoring \cite{huang-sttt12}. These projects are targeting a similar problem
+to the one we address in this paper. However, both projects are focused on
+software-based monitoring and thus their mechanisms modify the software
+monitoring framework in order to enable or disable monitoring. Instead, our
+architecture provides a general hardware mechanism to control overheads of
+parallel monitoring architectures. In addition, these works prevented
+false positives by enabling and disabling monitoring using a source-dropping
+policy. Lo et al. \cite{lo-rtas14} developed a hardware architecture to limit
+monitoring in hard real-time systems. Their architecture performs last-minute
+dropping in order to guarantee strict deadlines. Our system allows for a
+trade-off between choosing source-dropping, last-minute dropping, or min-point
+dropping depending on the needs of the designer or user which has not been
+explored by these previous works. 

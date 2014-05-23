@@ -51,15 +51,23 @@ the programmability of software, and cannot be updated or changed.
 %   \end{center}
 % \end{figure}
 
-In this paper, we present an architecture that combines a hardware-based
-dataflow tracking engine with a software-based monitor in order to reduce the
-overheads of monitoring. By using the dataflow engine to track flows of
-initialized metadata, the system is able to filter out events that do not
-correspond to valid metadata, greatly reducing the amount of monitoring that
-must be handled in software. For example, for an array
-bounds check, the dataflow engine is able to filter out instruction that do not
-correspond to pointer data. Thus, we are able to have the flexibility of
-software-based monitors with greatly reduced overheads.
+Recent studies have shown that filtering out monitoring checks on clean
+metadata can be used to reduce the overheads of monitoring \cite{fade-hpca14}. For example, for
+an array bounds check, checking non-pointer accesses is unnecessary. In this
+paper, we present an architecture that combines a hardware-based dataflow
+tracking engine with a software-based monitor in order to filter out both
+propagation and checking of clean metadata. By keeping a separate set of flags
+to track clean metadata, we are able to handle the common case of clean
+metadata without the need to read full metadata. By propagating these flags, we
+are also able to handle propagation of clean metadata efficiently in hardware.
+% By using reduce the
+% overheads of monitoringthe dataflow engine
+% to track flows of
+% initialized metadata, the system is able to filter out events that do not
+% correspond to valid metadata, greatly reducing the amount of monitoring that
+% must be handled in software. 
+Thus, we are able to have the flexibility of software-based monitors with
+greatly reduced overheads.
 
 With this filtering, we see overheads of XX\% - XX\% on average for
 uninitialized memory check, array bounds check, and multi-bit dynamic
