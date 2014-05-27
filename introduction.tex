@@ -26,31 +26,7 @@ execution. A dedicated hardware implementation of DIFT reduces performance
 overheads to just 1.1\% \cite{dift-asplos04}. However, fixed hardware loses
 the programmability of software, and cannot be updated or changed.
 
-% Recent studies proposed programmable parallel hardware as a way to achieve both
-% the performance advantages of hardware and the flexibility of software
-% \cite{lba-isca08, flexcore-micro10, harmoni-dsn12}.  While more
-% efficient than software, these programmable hardware monitors can still show
-% significant performance overheads.  For example,
-% Figure~\ref{fig:intro.full_mon} shows the execution time for three monitoring
-% techniques normalized to the execution time with no monitoring for an
-% FPGA-based parallel monitor. The program being monitored is run on an in-order
-% embedded core running at 500 MHz while the FPGA-based monitor runs at 250 MHz.
-% We can see that, depending on the monitoring scheme, overheads can easily be
-% several tens of percent.  A faster or more complex (e.g., superscalar or
-% out-of-order) core is expected to show even more significant overheads.
-
-% % Run-time monitoring overview
-% \begin{figure}
-%   \begin{center}
-%     \vspace{-0.2in}
-%     \includegraphics[width=\columnwidth]{figs/full_mon.pdf}
-%     \vspace{-0.5in}
-%     \caption{Performance overheads of FPGA-based monitors.}
-%     \vspace{-0.2in}
-%     \label{fig:intro.full_mon} 
-%   \end{center}
-% \end{figure}
-
+% Filtering
 Recent studies have shown that filtering out monitoring checks on clean
 metadata can be used to reduce the overheads of monitoring \cite{fade-hpca14}. For example, for
 an array bounds check, checking non-pointer accesses is unnecessary. In this
@@ -60,40 +36,26 @@ propagation and checking of clean metadata. By keeping a separate set of flags
 to track clean metadata, we are able to handle the common case of clean
 metadata without the need to read full metadata. By propagating these flags, we
 are also able to handle propagation of clean metadata efficiently in hardware.
-% By using reduce the
-% overheads of monitoringthe dataflow engine
-% to track flows of
-% initialized metadata, the system is able to filter out events that do not
-% correspond to valid metadata, greatly reducing the amount of monitoring that
-% must be handled in software. 
 Thus, we are able to have the flexibility of software-based monitors with
 greatly reduced overheads.
 
+% Adjustable overhead
 With this filtering, we see overheads of XX\% - XX\% on average for
 uninitialized memory check, array bounds check, and multi-bit dynamic
-information flow tracking. Although full monitoring coverage is always desired,
-if these overheads are considered too high by the designer or user then
-monitoring must be disabled.
-% % Current schemes are all-or-nothing: suffer full performance impact for full
-% % coverage.
-% Traditionally, these overheads have been an all-or-nothing cost. If the
-% designer finds that the overheads exceed their desired budget, then monitoring
-% cannot be enabled.  In this paper, we present an architecture that enables a
-% trade-off between the overheads and the coverage of a monitoring technique by
-% dynamically adjusting the number of monitoring operations.  This system allows
-% monitoring to still be performed even when the overhead budget is not
-% sufficient for full monitoring.
-% Use cases
+information flow tracking. 
+Traditionally, these overheads have been an all-or-nothing cost. If the
+designer finds that the overheads exceed their desired budget, then monitoring
+cannot be enabled.  
 Thus, we present an architecture that enables a trade-off between overheads and
 the monitoring coverage achieved. This is achieved by dynamically dropping
-monitoring operations when overheads are too high. We are able to prevent false
+monitoring operations when overheads are too high. We prevent false
 positives by extending the dataflow engine to also track these dropped
-monitoring flows. We also present three policies on when dropping decisions are
-made that cover a trade-off space between ability to match a target overhead
+monitoring flows. We investigate three different policies on when dropping decisions are
+made that cover a trade-off space between the ability to match a target overhead
 and the monitoring coverage achieved.
 
 Although full monitoring coverage is always desired, trading off coverage for
-reduced overheads can still be very useful. For example, this adjustable
+reduced overheads can be very useful. For example, this adjustable
 monitoring enables a level of protection even for systems where the full
 monitoring overheads are too high. This is especially true for energy- or
 power-constrained systems or soft real-time systems where the monitoring
@@ -104,11 +66,11 @@ which expect low coverage per run but use a large number of runs and users to
 collect debugging information~\cite{liblit-pldi05, chilimbi-asplos04,
 greathouse-cgo11}. 
 
-The main contributions of this paper are as follows.
+Thus, the main contributions of this paper are summarized as follows.
 \begin{itemize}
-  \item Using a dataflow tracking engine to filter out monitoring events in order to reduce overheads.
-  \item Extending the dataflow tracking engine to enable monitoring with adjustable overheads
-  \item Exploration of the design space and trade-offs in dropping policies for performing partial monitoring
+  \item We use a dataflow tracking engine to efficiently filter out monitoring events in order to reduce overheads.
+  \item We enable a trade-off between monitoring coverage and overheads by extending the dataflow tracking engine to keep track of dropped monitoring flows.
+  \item We explore the design space and trade-offs in dropping policies for performing partial monitoring.
 \end{itemize}
 
 % %Invalidation in order to prevent false positives.
@@ -143,9 +105,9 @@ to (Y\%).
 % Section summary
 This paper is organized as follows. Section~\ref{sec:monitoring} presents the
 parallel run-time monitoring model that this paper assumes.
-Section~\ref{sec:filter} presents our architecture that use hardware-based DIFT
+Section~\ref{sec:filter} presents our architecture that uses dataflow-guided filtering
 in order to reduce monitoring overheads. In Section~\ref{sec:drop} we present
-how the DIFT engine can be extended to enable adjustable overheads.
+how the dataflow tracking engine can be extended to enable adjustable overheads.
 Section~\ref{sec:extensions} covers example implementations of three monitoring
 schemes. Section~\ref{sec:evaluation} presents our evaluation methodology and
 results. Finally, we discuss related work in Section~\ref{sec:related} and
