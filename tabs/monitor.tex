@@ -1,0 +1,44 @@
+
+% Summary of monitoring operations
+
+\begin{tabular}{|l|l|l|}
+\hline
+
+{\bf Monitor} & {\bf Event} & {\bf Monitoring Operation} \\ \hline \hline
+
+\multirow{4}{*}{BC}  
+ & Array allocation & Set base and bound metadata \\ \cline{2-3}
+ & ALU & Copy metadata from register to register \\  \cline{2-3}
+ & Load & Copy metadata from memory to register. Check memory access address. \\ \cline{2-3}
+ & Store & Copy metadata from register to memory. Check memory access address. \\ 
+\hline\hline
+
+\multirow{2}{*}{UMC}  
+ & Store & Set metadata tag (data initialized) \\ \cline{2-3}
+ & Load & Check if metadata tag is set \\ 
+\hline\hline
+% & Software clear tag & Clear metadata tag & Non-critical \\ \hline\hline
+
+\multirow{5}{*}{DIFT}  
+ & Software set tag & Set tag to a specified value based on software command \\ \cline{2-3}
+ & ALU & Output tag is the OR of the input tags \\ \cline{2-3}
+ & Load & Set register tag as tag of loaded data \\ \cline{2-3}
+ & Store & Set memory tag as register tag \\ \cline{2-3}
+% & Software clear tag & Clear tag & Update \\ \cline{2-4}
+ & Indirect jump & Check tag \\ 
+ \hline
+
+% \multirow{5}{*}{BC}  
+%  & MOV/LD/ST          & Propagate colors (Tag[dest] = Tag[src]) & Critical \\ \cline{2-4}
+%  & ADD/SUB/NOT        & Update colors (Tag[dest] = f(Tag[src])) & Critical \\ \cline{2-4}
+%  & OR/XOR             & Clear colors & Critical \\ \cline{2-4}
+%  & LD/ST              & Compare pointer and memory colors & Check \\ \cline{2-4}
+%  & Software set color & Set pointer colors & Critical \\ \hline\hline
+
+% Soft Error Check & Instruction & Check instruction computation & Check \\ \hline\hline
+% 
+% \multirow{2}{*}{Bank of Observers}  
+%  & System output & Update state estimation & Critical \\ \cline{2-4}
+%  & New state estimate & Check that states of all observers matches & Check \\ \hline
+
+\end{tabular}

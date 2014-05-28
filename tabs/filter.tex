@@ -1,0 +1,30 @@
+
+% Operations for handling clean flags
+
+\begin{tabular}{|l|l|l|l|}
+\hline
+
+{\bf Monitor} & {\bf Event} & {\bf Filter Condition} & {\bf Filter Operation} \\ \hline \hline
+
+\multirow{4}{*}{BC}  
+& Array allocation & Never & - \\ \cline{2-4}
+& ALU   & Both source registers are clean & Mark destination register as clean \\ \cline{2-4}
+& Load  & Source memory location is clean & Mark destination register as clean \\ \cline{2-4}
+& Store & Source register is clean & Mark destination memory location as clean \\
+\hline\hline
+
+\multirow{2}{*}{UMC}  
+& Store & Never & - \\ \cline{2-4}
+& Load & Source memory location is dirty & Do nothing \\ 
+\hline\hline
+
+\multirow{5}{*}{DIFT}  
+& Software set tag & Never & - \\ \cline{2-4}
+& ALU   & Both source registers are clean & Mark destination register as clean \\ \cline{2-4}
+& Load  & Source memory location is clean & Mark destination register as clean \\ \cline{2-4}
+& Store & Source register is clean & Mark destination memory location as clean \\ \cline{2-4}
+& Indirect jump & Source register is clean & Do nothing \\ 
+\hline
+
+
+\end{tabular}
