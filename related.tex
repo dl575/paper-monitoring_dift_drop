@@ -21,14 +21,15 @@ architecture can be used to reduce the overheads when applying these schemes on
 a multi-core platform.
  
 % Filtering
-FADE \cite{fade-hpca14} provides a more general filtering engine. It
-filters out redundant updates and clean checks by reading metadata values. Our
-dataflow engine does not require reading the actual metadata values which may
-be large. We do not handle filtering redundant updates, but we do filter out
-clean checks as well as clean (i.e., uninitialized) propagations. We are able
-to do this because the dataflow engine can also propagate the uninitialized
-information. In addition, our dataflow engine can be used to provide adjustable
-overheads without false positives which is not a capability described by FADE.
+FADE \cite{fade-hpca14} presents a general filtering engine in order to reduce
+the overheads of monitoring. It filters out redundant updates and clean checks
+by reading metadata values. We do not handle filtering redundant updates, but
+we do filter out clean checks as well as clean (i.e., uninitialized)
+propagations.  We are able to do this because the dataflow engine can also
+propagate the clean information.  In addition, our dataflow engine only
+requires reading and writing 2-bit flags rather than the entire metadata.  As
+we have shown, our dataflow engine also enables adjustable overheads without
+false positives which is not a capability described by FADE.
 
 % Sampling
 Statistical sampling is a method that has been applied to various debugging

@@ -113,8 +113,8 @@ never filtered out.
 On a dropped store instruction, the destination memory location is marked as
 invalid. On load instructions, we can filter them out if the source memory
 location has been invalidated. In this case, we do not have to perform any
-further operation since on load instructions, UMC only performs a check
-operation.
+further operation since on load instructions since UMC only performs a check
+operation for loads.
 
 \subsection{Dynamic Information Flow Tracking}
 
@@ -126,7 +126,7 @@ untainted. When data is read from an untrusted source, it is marked as tainted.
 As this data is used for other operations, the results of these operations are
 also marked as tainted. On an indirect jump, the taint bit of the register used
 is checked. If the register is found to be tainted, then an error is detected.
-We focus on a more heavy-weight approach that also allows some information of
+We focus on a more heavy-weight approach that also tracks some information of
 where flows originate from by using a multi-bit (32-bits in our implementation)
 metadata tag. This can be used to assist debugging in the case of an error. In
 this case, when data is marked from an untrusted source, the software specifies
@@ -144,7 +144,7 @@ instructions, if the source register is clean, then the event can be filtered
 out as no error has occurred.
 
 Again, the invalid flags for DIFT operate similar to their operation for BC
-(Table~\ref{tab:extensions.drop}. In addition to operations for invalidating
+(Table~\ref{tab:extensions.drop}). In addition to operations for invalidating
 destination operands for ALU, load, and store instructions, the destination
 memory location is also invalidated when set tag operations dropped. Indirect
 jump events are filtered out if the source register is marked as invalid.
@@ -166,7 +166,7 @@ overheads has also filtered out redundant updates where the source metadata
 matches the destination metadata. Since we do not read the actual metadata, our
 architecture is not able to identify these redundant updates. However, by using
 only 2-bit flags, the bandwidth need of our dataflow engine is reduced.  
-In addition, we note that filtering use clean flags works well when a large
+In addition, we note that filtering using clean flags works well when a large
 portion of instructions are not relevant to the monitoring scheme (e.g., array
 bounds check only cares about array pointers). However, if most instruction
 have dirty metadata, then very little filtering will be possible. 
@@ -185,10 +185,10 @@ filtered or not. This was done because we found that for many monitoring
 schemes, the monitoring operations corresponded to program instructions, which
 read up to two operands and write to one destination.  For monitoring schemes
 which update multiple pieces of metadata on a monitoring event, it may be
-adequate to associate a clean and invalid flag with a single piece.  For
+adequate to associate a clean and invalid flag with a single piece of metadata.  For
 example, a scheme may use a data structure that includes several pieces of
 related metadata. On a drop, one of these pieces could be marked as invalid in
 order to indicate that the entire structure is invalid.  Similarly, marking one
 specified piece as clean may indicate that the entire data structure's metadata
 is clean.  Alternatively, the read and write capabilities of the dataflow
-engine could be expanded to support these more complex monitoring schemes.
+engine could be expanded to support more complex monitoring schemes.

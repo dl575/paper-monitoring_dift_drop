@@ -54,8 +54,8 @@ signal to the dataflow engine to mark the metadata as dirty (i.e., initialized).
 When a monitoring event arrives at the dataflow engine,
 it reads in up to two clean flags. These typically correspond to the source
 operands of the monitored instruction but can be configured to other targets. 
-This is done by configuring a pair of address generation units during the
-initialization of the monitoring core.
+This is done by configuring the inputs and operation of a pair of address
+generation depending on instruction type.
 For example, this can be used to keep clean flags at the word-level rather than
 the byte-level by shifting memory addresses.
 

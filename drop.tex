@@ -26,7 +26,7 @@ The goal is to be able to perform as much monitoring as possible within a specif
 The high-level approach is to keep track of monitoring overheads at run-time
 and drop monitoring operations when the overhead exceed the specified budget.
 A block diagram of the architecture we will present in this section is shown in
-Figure~\ref{fig:drop.overview}.  In order to do limit the overheads of
+Figure~\ref{fig:drop.overview}.  In order to limit the overheads of
 monitoring, we need to first be able to track the gap between the specified
 overhead budget and the monitoring overhead seen at run-time. We refer to this
 as slack and discuss how we measure it in Section~\ref{sec:drop.slack}. 
@@ -148,33 +148,35 @@ operation is skipped, we can no longer trust the corresponding metadata.  Thus,
 by associating an invalid flag with each metadata we can mark metadata that is
 not correctly updated and use this information to prevent false positives.
 
-% Flag propagation rules for BC
-\begin{table}[tb]
-  \begin{center}
-    \begin{small}
-    \input{tabs/propagation_rules}
-    \end{small}
-    \caption{Flag propagation rules for array bounds check. A dash indicates that no
-    propagation is done while a 1 indicates that the destination flag is set.}
-    \label{tab:drop.propagation_rules}
-    \vspace{-0.2in}
-  \end{center}
-\end{table}
+% % Flag propagation rules for BC
+% \begin{table}[tb]
+%   \begin{center}
+%     \begin{small}
+%     \input{tabs/propagation_rules}
+%     \end{small}
+%     \caption{Flag propagation rules for array bounds check. A dash indicates that no
+%     propagation is done while a 1 indicates that the destination flag is set.}
+%     \label{tab:drop.propagation_rules}
+%     \vspace{-0.2in}
+%   \end{center}
+% \end{table}
 
 We can track these invalid flags by extending the dataflow engine presented in
 Section~\ref{sec:filter} to keep track of an additional bit for each flag. That
 is, we use the dataflow engine to track 2-bit flags in order to keep track of
 both clean/dirty information as well as valid/invalid information.
 Similar to filtering for clean flags, we can also filter out
-monitoring corresponding to invalid metadata which would be useless to perform.
+monitoring operations corresponding to invalid metadata which would be useless to perform.
 However, it is important that we propagate the
 invalidation flag in these circumstances so that the entire flow is marked as invalid. 
-In the typical case, the propagation rule for this is
+In the typical case, the propagation rule used is
 that if any of the source operands is marked as invalid, then the destination
 operand is marked as invalid. This is slightly different than the
 policy for clean flags which propagates a clean flag only if both
-sources are marked as clean. Table~\ref{tab:drop.propagation_rules} shows the
-propagation rules that are used for array bounds check. However, we note that
+sources are marked as clean. 
+% Table~\ref{tab:drop.propagation_rules} shows the
+% propagation rules that are used for array bounds check. 
+We note that
 the propagation rules can be customized depending on the monitor by
 reconfiguring the filter decision table.
 
@@ -193,17 +195,17 @@ reconfiguring the filter decision table.
   \end{center}
 \end{figure}
 
-The simplest policy of when to drop monitoring events is to drop all monitoring events as
+The simplest policy for when to drop monitoring events is to drop all monitoring events as
 long as slack is less than or equal to zero.  However, this can result in
 wasted work. For example, consider the metadata dependence graph shown in
 Figure~\ref{fig:drop.dataflow_graph}. Here, an edge from node {\tt A} to node
 {\tt B} represents that if event {\tt A} is dropped, then due to its
 invalidated metadata, it will cause event {\tt B} to be also dropped. Square
 nodes indicate events where monitoring checks are performed. In the
-example, event {\tt E} is meant to perform a check operation but is dropped.
+example, suppose that event {\tt E} is meant to perform a check operation but is dropped.
 In this situation, the
 monitoring operations that were done for events {\tt C} and {\tt D} were wasted
-since their results not used for any monitoring checks.
+since their results were not used for any monitoring checks.
 
 \begin{figure}
   \begin{center}
@@ -233,8 +235,8 @@ since their results not used for any monitoring checks.
 One method to eliminate this wasted work is to only make dropping decisions at
 the root of these metadata flows. That is, we will decide to either monitor or
 not monitor an entire metadata flow. We refer to this dropping decision policy
-as \emph{source-event dropping} and we refer to the previous policy of waiting until
-the overhead budget is reached as \emph{all-event dropping}.
+as \emph{source-event dropping} and we refer to the previous policy of 
+dropping any event as \emph{all-event dropping}.
 Figures~\ref{fig:drop.all_drop} and \ref{fig:drop.source_drop} shows a
 comparison of where dropping decisions are made for these two policies. Source
 dropping will
@@ -266,10 +268,6 @@ certain overhead to fall between source and all-event dropping. These three
 dropping policies create a trade-off space between coverage achieved and
 ability to match an overhead target which we evaluate in detail in
 Section~\ref{sec:evaluation}.
-
-\textbf{[We probably need more details of how min-event dropping is
-implemented. How is analysis done? How is the information conveyed to
-run-time?]}
 
 % \subsection{Multiple-Run Coverage}
 % Coverage can be considered for a single or average run instance. It can also be
