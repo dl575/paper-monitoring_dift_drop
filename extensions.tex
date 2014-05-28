@@ -1,13 +1,194 @@
 \section{Application to Monitoring Schemes}
 \label{sec:extensions}
 
-This section describes how three example monitoring schemes map to the proposed
-architecture.
+% Monitoring operations
+\begin{table*}[tb]
+  \begin{center}
+    \begin{small}
+    \input{tabs/monitor}
+    \end{small}
+    \caption{Monitoring operations for BC, UMC, and DIFT.}
+    \label{tab:extensions.monitor}
+    \vspace{-0.2in}
+  \end{center}
+\end{table*}
+
+% Filtering operations for clean flags
+\begin{table*}[tb]
+  \begin{center}
+    \begin{small}
+    \input{tabs/filter}
+    \end{small}
+    \caption{Filtering conditions and operations for clean flags.}
+    \label{tab:extensions.filter}
+    \vspace{-0.2in}
+  \end{center}
+\end{table*}
+
+% Filtering operations for invalid flags
+\begin{table*}[tb]
+  \begin{center}
+    \begin{small}
+    \input{tabs/drop}
+    \end{small}
+    \caption{Filtering conditions and operations performed for a dropped or filtered event for invalid flags.}
+    \label{tab:extensions.drop}
+    \vspace{-0.2in}
+  \end{center}
+\end{table*}
+
+In this section, we show examples of how our architecture can be applied to
+three specific monitoring schemes: array bounds check (BC), uninitialized
+memory check (UMC), and dynamic information flow tracking (DIFT).
+Table~\ref{tab:extensions.monitor} shows a summary of the monitoring operations for these
+monitoring schemes. Table~\ref{tab:extensions.filter} summarizes when when
+monitoring events can be filtered out due to clean metadata and what metadata
+needs to be marked as clean on a filtered event.
+Table~\ref{tab:extensions.drop} shows the analogous information for the valid
+flags. In this case, the operation listed is also the one performed when a
+monitoring event is dropped due to insufficient slack. Note that for simplicity
+the policies for clean and invalid flags are shown and discussed separately
+here. However, the dataflow engine actually operates on pairs of these flags
+using a combined policy.
 
 \subsection{Array Bounds Check}
 
+As described in Section~\ref{sec:monitoring}, array bounds check is a
+monitoring scheme that attempts to detect buffer overflows where memory
+accesses go beyond the boundaries of an array.
+Buffer overflows can cause unreliable program execution or create openings for
+malicious attackers. One way to detect buffer overflows is a base and bounds
+approach \cite{hardbound-asplos08}. In this approach, metadata is
+associated with an array pointer when it is allocated that includes the base
+(start) address and bound (end) address of the corresponding array. On ALU
+instructions, this base and bound metadata is copied to the destination
+registers.  On store instructions, the metadata for the source register is
+copied to the metadata for the store address. Similarly, on load instructions,
+the metadata value for the load address is copied to the destination register's
+metadata. In addition, on load and store instructions, the memory address is
+checked to be within the base and bounds metadata. If it is not, then an
+out-of-bounds error is detected. These operations are summarized in
+Table~\ref{tab:extensions.monitor}.
+
+In terms of filtering using clean flags (Table~\ref{tab:extensions.filter}),
+array allocations are never filtered since these will always involve non-clean
+metadata (i.e., setting new base and bounds). For ALU operations, if both
+source operands are clean, then the event can be filtered by setting the
+destination register as clean. For load and store, only a single source needs
+to be checked to be clean in order for the event to be filtered. Similarly, the
+destination register or memory location needs to be marked as clean if the
+event is filtered.
+
+The invalid flags for BC operate similarly to the clean flags
+(Table~\ref{tab:extensions.drop}). When ALU, load, or store events are dropped or filtered,
+the destination register or memory location is marked as invalid. In addition,
+we need to handle the possibility of dropping an array allocation. In this
+case, the array pointer is marked as invalid. In terms of filtering out invalid
+events, for an ALU event, if either of the source registers is invalid then the
+event can be filtered. For load and store instructions, if the single source
+operand is invalid, then the event can be filtered.
+
 \subsection{Uninitialized Memory Check}
+
+Uninitialized memory check is a monitoring scheme that checks that memory is
+written to before it is read from. This is done by forwarding all load and
+store instructions to the monitoring core. For every byte of memory, the
+monitor keeps one bit of metadata. On a store to a memory location, the monitor
+marks the corresponding metadata bit to indicate that the memory location has
+been initialized. On a load, the monitor checks that the corresponding metadata
+bit has been previously marked as initialized.
+
+Rather than using the clean flags to mirror the initialization metadata that
+UMC stores, we use the clean flags as a coarse-grained version of the UMC
+metadata in order to more efficiently filter out monitoring operations. We use
+a clean flag per word (four bytes) of memory. A clean flag is set to dirty only
+if all four of the corresponding memory bytes have been marked as initialized.
+On a load, if the clean flag is marked as dirty, then we can filter the event
+since we know that all possible corresponding location memory locations have
+been marked as initialized. If the flag is marked as clean, then that indicates
+that at least one of the corresponding memory bytes has not been initialized
+and the monitoring core must perform a further check. Store instructions are
+never filtered out.
+
+On a dropped store instruction, the destination memory location is marked as
+invalid. On load instructions, we can filter them out if the source memory
+location has been invalidated. In this case, we do not have to perform any
+further operation since on load instructions, UMC only performs a check
+operation.
 
 \subsection{Dynamic Information Flow Tracking}
 
+Dynamic information flow tracking (DIFT) \cite{dift-asplos04} is a security
+monitoring scheme that seeks to detect when information from untrusted sources
+is used to affect the control flow.  In its simplest form, DIFT keeps a 1-bit
+metadata tag for each memory location and each register, indicating tainted or
+untainted. When data is read from an untrusted source, it is marked as tainted.
+As this data is used for other operations, the results of these operations are
+also marked as tainted. On an indirect jump, the taint bit of the register used
+is checked. If the register is found to be tainted, then an error is detected.
+We focus on a more heavy-weight approach that also allows some information of
+where flows originate from by using a multi-bit (32-bits in our implementation)
+metadata tag. This can be used to assist debugging in the case of an error. In
+this case, when data is marked from an untrusted source, the software specifies
+an identifier to set the metadata tag. This multi-bit tag is propagated on
+load, store, and ALU operations. If two different tags are used as sources to
+an ALU operation, then a new identifier is calculated based on the sources.
+These monitoring operations are summarized in
+Table~\ref{tab:extensions.monitor}.
+
+Table~\ref{tab:extensions.filter} shows how the clean flags are used for DIFT.
+The rules for ALU, load, and store instructions are same as for array bounds
+check. Similar to array allocations, for DIFT, software setting of metadata
+tags is never filtered out due to clean metadata. On indirect jump
+instructions, if the source register is clean, then the event can be filtered
+out as no error has occurred.
+
+Again, the invalid flags for DIFT operate similar to their operation for BC
+(Table~\ref{tab:extensions.drop}. In addition to operations for invalidating
+destination operands for ALU, load, and store instructions, the destination
+memory location is also invalidated when set tag operations dropped. Indirect
+jump events are filtered out if the source register is marked as invalid.
+However, no further metadata needs to be marked as invalid in this case.
+
 \subsection{Applicability to Other Schemes}
+
+In this section, we have discussed how our dataflow engine can be applied to
+three example monitoring schemes to enable reduced and adjustable overheads.
+However, our approach can be generally applied to many monitoring schemes. This
+is possible because the use of clean and invalidation flags is largely agnostic
+to the semantics of the specific monitoring scheme. That is, the dataflow
+engine must be configured based on the dataflow of the monitoring scheme, but
+it does not need detailed information of what the monitoring scheme does. 
+
+We do note some limitations to the proposed approach. Previous work
+\cite{fade-hpca14} that has looked at filtering in order to reduce monitoring
+overheads has also filtered out redundant updates where the source metadata
+matches the destination metadata. Since we do not read the actual metadata, our
+architecture is not able to identify these redundant updates. However, by using
+only 2-bit flags, the bandwidth need of our dataflow engine is reduced.  
+In addition, we note that filtering use clean flags works well when a large
+portion of instructions are not relevant to the monitoring scheme (e.g., array
+bounds check only cares about array pointers). However, if most instruction
+have dirty metadata, then very little filtering will be possible. 
+
+In terms of using invalidation to perform partial monitoring, this 
+approach works best for monitoring schemes where there are many pieces of
+independent metadata. Since marking a piece of metadata as invalid will cause
+future metadata with dependences to also be marked as invalid, schemes with
+large metadata dependency chains can quickly see large amounts of metadata
+become invalid. 
+
+Another limitation is that the dataflow engine, as described, only marks one
+flag location on each monitoring event. Similarly, the dataflow engine can only
+read in two sets of flags in order to determine whether an event can be
+filtered or not. This was done because we found that for many monitoring
+schemes, the monitoring operations corresponded to program instructions, which
+read up to two operands and write to one destination.  For monitoring schemes
+which update multiple pieces of metadata on a monitoring event, it may be
+adequate to associate a clean and invalid flag with a single piece.  For
+example, a scheme may use a data structure that includes several pieces of
+related metadata. On a drop, one of these pieces could be marked as invalid in
+order to indicate that the entire structure is invalid.  Similarly, marking one
+specified piece as clean may indicate that the entire data structure's metadata
+is clean.  Alternatively, the read and write capabilities of the dataflow
+engine could be expanded to support these more complex monitoring schemes.

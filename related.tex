@@ -21,8 +21,7 @@ architecture can be used to reduce the overheads when applying these schemes on
 a multi-core platform.
  
 % Filtering
-Hardbound filters out non-pointer data \cite{hardbound-asplos08}. FlexiTaint filters out some monitoring
-and performs it in hardware. FADE \cite{fade-hpca14} provides a more general filtering engine. It
+FADE \cite{fade-hpca14} provides a more general filtering engine. It
 filters out redundant updates and clean checks by reading metadata values. Our
 dataflow engine does not require reading the actual metadata values which may
 be large. We do not handle filtering redundant updates, but we do filter out
@@ -60,8 +59,8 @@ architecture provides a general hardware mechanism to control overheads of
 parallel monitoring architectures. In addition, these works prevented
 false positives by enabling and disabling monitoring using a source-dropping
 policy. Lo et al. \cite{lo-rtas14} developed a hardware architecture to limit
-monitoring in hard real-time systems. Their architecture performs last-minute
+monitoring in hard real-time systems. Their architecture performs all-event 
 dropping in order to guarantee strict deadlines. Our system allows for a
-trade-off between choosing source-dropping, last-minute dropping, or min-point
+trade-off between choosing source-event dropping, all-event dropping, or min-event
 dropping depending on the needs of the designer or user which has not been
 explored by these previous works. 
