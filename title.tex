@@ -15,20 +15,20 @@ Dataflow-Guided Filtering for Efficient and Adjustable Run-Time Monitoring
 Recent studies have proposed various parallel run-time monitoring techniques to
 improve the reliability, security, and debugging capabilities of computer
 systems. However, these run-time monitors can introduce large performance and energy
-overhead, especially when performed on programmable cores.
+overheads, especially when performed on programmable cores.
 %Traditionally, these overheads have been an
 %all-or-nothing cost; monitoring cannot be used if the overheads are considered
 %too large.  
 In this paper, we introduce a hardware dataflow tracking engine that can be
-used to filter out unnecessary monitoring and enable partial monitoring.
-The dataflow engine can identify events with clean metadata so that they can
+used to filter out unnecessary monitoring and enable adjustable partial monitoring.
+The dataflow engine can identify events with null metadata so that they can
 be filtered out. To further reduce the overhead of monitoring, we propose
 to enable a trade-off between monitoring coverage and overhead by dropping certain
-monitoring operations. For the partial monitoring, the dataflow engine is used
+monitoring operations. For this partial monitoring, the dataflow engine is used
 to track dropped monitoring flows so that false positives can be avoided.
 Given the architecture, we also investigate how the dropping decisions should be
 made for partial monitoring and show that there exists a trade-off between closely
-matching an overhead target and coverage that can be achieved.
+matching an overhead target and the coverage that can be achieved.
 % Our experiments show that the system is able to
 % closely meet the target overhead and achieve significant monitoring coverage
 % for reasonable overhead targets.

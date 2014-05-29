@@ -20,7 +20,7 @@ execution of certain types of instructions, the \emph{monitoring core} performs 
 series of \emph{monitoring operations}. The monitoring core operates in parallel to the
 main core. These events are referred to as \emph{monitoring events}. Depending
 on the type of monitoring event, different monitoring operations are
-executed. Monitoring events are buffered in a FIFO structure to decouple the
+executed. Information about monitoring events are sent to the monitoring core and buffered in a FIFO structure to decouple the
 running of the main core and the monitoring core. If the FIFO is full, then the main
 core is forced to stall on a monitoring event until a FIFO entry becomes
 available. These stalls are a major source of
@@ -38,7 +38,7 @@ detection \cite{cord-hpca06}, etc.  For example, an array bounds check (BC)
 \cite{hardbound-asplos08} can be implemented in order to detect
 when software attempts to read or write to a memory location outside of an
 array's bounds. This can be done by associating metadata with array pointers that 
-indicates the array's base and bound addresses. On loads or stores with the
+indicates the array's base (start) and bound (end) addresses. On loads or stores with the
 array
 pointer, the monitoring core checks that the memory address accessed is within the base and
 bound addresses. In addition, this base and bound metadata

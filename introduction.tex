@@ -27,32 +27,29 @@ overheads to just 1.1\% \cite{dift-asplos04}. However, fixed hardware loses
 the programmability of software, and cannot be updated or changed.
 
 % Filtering
-Recent studies have shown that filtering out monitoring checks on clean
+Recent studies have shown that filtering out monitoring checks on clean or null
 metadata can be used to reduce the overheads of monitoring \cite{fade-hpca14}. For example, for
 an array bounds check, checking non-pointer accesses is unnecessary. In this
 paper, we present an architecture that combines a hardware-based dataflow
-tracking engine with a software-based monitor in order to filter out both
-propagation and checking of clean metadata. By keeping a separate set of flags
-to track clean metadata, we are able to handle the common case of clean
-metadata without the need to read full metadata. By propagating these flags, we
-are also able to handle propagation of clean metadata efficiently in hardware.
-Thus, we are able to have the flexibility of software-based monitors with
-greatly reduced overheads.
+tracking engine with a software-based monitor in order to filter out monitoring operations 
+for null metadata. By keeping a separate set of flags
+to track null metadata, we are able to handle the common case of null
+metadata without the need to read the full metadata values. By propagating these flags, we
+are also able to handle propagation of null metadata efficiently in hardware.
+This filtering can be used to greatly reduce the overheads of monitoring.
 
 % Adjustable overhead
-With this filtering, we see overheads of XX\% - XX\% on average for
-uninitialized memory check, array bounds check, and multi-bit dynamic
-information flow tracking. 
+There is a limit to how effective filtering is at reducing monitoring overheads. 
 Traditionally, these overheads have been an all-or-nothing cost. If the
 designer finds that the overheads exceed their desired budget, then monitoring
 cannot be enabled.  
-Thus, we present an architecture that enables a trade-off between overheads and
-the monitoring coverage achieved. This is achieved by dynamically dropping
-monitoring operations when overheads are too high. We prevent false
-positives by extending the dataflow engine to also track these dropped
-monitoring flows. We investigate three different policies on when dropping decisions are
-made that cover a trade-off space between the ability to match a target overhead
-and the monitoring coverage achieved.
+Thus, we propose to perform partial monitoring to enable further reduction of overheads.
+ This is achieved by dynamically dropping
+monitoring operations when overheads exceed a specified overhead budget. We prevent false
+positives from partial monitoring by using the dataflow engine to track these dropped
+monitoring flows. We investigate different policies for deciding which events
+to drop for partial monitoring and show that there is a trade-off between
+closely matching the overhead budget and the monitoring coverage achieved.
 
 Although full monitoring coverage is always desired, trading off coverage for
 reduced overheads can be very useful. For example, this adjustable
@@ -66,12 +63,11 @@ which expect low coverage per run but use a large number of runs and users to
 collect debugging information~\cite{liblit-pldi05, chilimbi-asplos04,
 greathouse-cgo11}. 
 
-Thus, the main contributions of this paper are summarized as follows.
+The main contributions of this paper are summarized as follows.
 \begin{itemize}
-  \item We use a dataflow tracking engine to efficiently filter out monitoring events in order to reduce overheads.
-  \item We present an architecture that enables adjustable monitoring, creating a trade-off between monitoring coverage and overheads.
-  \item We show how the dataflow tracking engine can be used to prevent false positives for adjustable monitoring.
-  \item We explore the design space and trade-offs in dropping policies for performing adjustable monitoring.
+  \item We propose two optimizations for reducing the overheads of monitoring: filtering null metadata and performing partial monitoring.
+  \item We present a hardware architecture using a dataflow tracking engine to efficiently enable filtering and partial monitoring.
+  \item We investigate trade-off decisions for partial monitoring on the proposed architecture.
 \end{itemize}
 
 % %Invalidation in order to prevent false positives.
