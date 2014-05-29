@@ -3,8 +3,7 @@
 
 % Monitoring
 Many monitoring schemes have been developed for various security, reliability,
-debugging, and other capabilities.  As we described in
-Section~\ref{sec:extensions}, there exist monitoring schemes for uninitialized
+debugging, and other capabilities. There exist monitoring schemes for uninitialized
 memory check \cite{mondrian-asplos02}, array bounds check
 \cite{hardbound-asplos08, clause-ase07}, and dynamic information flow
 tracking \cite{dift-asplos04, raksha-isca07, loki-osdi08}.
@@ -60,8 +59,8 @@ architecture provides a general hardware mechanism to control overheads of
 parallel monitoring architectures. In addition, these works prevented
 false positives by enabling and disabling monitoring using a source-dropping
 policy. Lo et al. \cite{lo-rtas14} developed a hardware architecture to limit
-monitoring in hard real-time systems. Their architecture performs all-event 
+monitoring in hard real-time systems. Their architecture performs unrestricted 
 dropping in order to guarantee strict deadlines. Our system allows for a
-trade-off between choosing source-event dropping, all-event dropping, or min-event
+trade-off between choosing source-only dropping, unrestricted dropping, or split-point 
 dropping depending on the needs of the designer or user which has not been
 explored by these previous works. 

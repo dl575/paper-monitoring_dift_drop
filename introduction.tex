@@ -106,11 +106,11 @@ to (Y\%).
 % Section summary
 This paper is organized as follows. Section~\ref{sec:monitoring} presents the
 parallel run-time monitoring model that this paper assumes.
-Section~\ref{sec:filter} presents our architecture that uses dataflow-guided filtering
-in order to reduce monitoring overheads. In Section~\ref{sec:drop} we present
-how the dataflow tracking engine can be extended to enable adjustable overheads.
-Section~\ref{sec:extensions} covers example implementations of three monitoring
-schemes. Section~\ref{sec:evaluation} presents our evaluation methodology and
+Section~\ref{sec:optimizations} presents the high-level approach of how we aim
+to reduce overheads through and Section~\ref{sec:arch} describes our
+hardware architecture that supports this. Section~\ref{sec:policies}
+investigates the design space for dropping decisions for partial monitoring.
+Section~\ref{sec:evaluation} presents our evaluation methodology and
 results. Finally, we discuss related work in Section~\ref{sec:related} and
 conclude in Section~\ref{sec:conclusion}.
 
