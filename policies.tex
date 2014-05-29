@@ -1,13 +1,14 @@
 \section{Dropping Policies}
 \label{sec:policies}
 
-In order to match an overhead budget, we need to drop a portion of the
-monitoring events. In this section, we discuss how this dropping decision is
+Our goal with enabling partial monitoring is to allow for a specified overhead target or budget to be met while maximizing the amount of monitoring performed.
+This is done by dynamically dropping a portion of the monitoring operations. In this section, we discuss in detail how this dropping decision is
 made. Specifically, we first discuss how to measure the run-time monitoring
 overheads and when monitoring events need to be dropped in
-Section~\ref{sec:policies.slack}. Next, we investigate how the decision of
-which events to drop can create a trade-off between closely matching the
-overhead target and the coverage that can be achieved.
+Section~\ref{sec:policies.slack}. Next, we investigate trade-offs created by
+selecting which events are dropped. Different policies in determining which
+events can be dropped create a trade-off between how closely the overhead
+budget is met and the monitoring coverage achieved.
 
 \subsection{Measuring Monitoring Overheads}
 \label{sec:policies.slack}
@@ -92,7 +93,7 @@ long as slack is less than or equal to zero.  However, this can result in
 wasted work. For example, consider the metadata dependence graph shown in
 Figure~\ref{fig:drop.dataflow_graph}. Here, an edge from node {\tt A} to node
 {\tt B} represents that if event {\tt A} is dropped, then due to its
-invalidated metadata, it will cause event {\tt B} to be also dropped. Square
+invalidated metadata, it will cause event {\tt B} to be filtered. Square
 nodes indicate events where monitoring checks are performed. In the
 example, suppose that event {\tt E} is meant to perform a check operation but is dropped.
 In this situation, the
@@ -129,36 +130,34 @@ the root of these metadata flows. That is, we will decide to either monitor or
 not monitor an entire metadata flow. We refer to this dropping decision policy
 as \emph{source-only dropping} and we refer to the previous policy of 
 dropping any event as \emph{unrestricted dropping}.
-Figures~\ref{fig:drop.all_drop} and \ref{fig:drop.source_drop} shows a
+Figures~\ref{fig:drop.all_drop} and \ref{fig:drop.source_drop} show a
 comparison of where dropping decisions are made for these two policies. Source
 dropping will
-result in no wasted work. However, because of the coarser-grained decision, it
+result in no wasted work and thus better coverage. However, because of the coarser-grained decision, it
 may be more difficult to closely match overheads. Source dropping is expected
 to work well when there are a large number of independent metadata flows.
 
 Another possible method is to make the dropping decisions somewhere in between
-source-only dropping and unrestricted dropping. Looking at the graph from 
-Figure~\ref{fig:drop.dataflow_graph}, what we would like to do is make a
-decision at event {\tt C} whether to perform monitoring on that branch of the
-metadata flow. If we choose to perform monitoring, then we want to perform all
-monitoring on that flow. Instead, if we choose to drop event {\tt C}, then the
-entire flow is dropped with no wasted work. Similarly, dropping event {\tt F}
-drops the bottom flow with no wasted work and event {\tt A} can be dropped to
-drop the entire shown metadata flow with no wasted work. If the program can be
+source-only dropping and unrestricted dropping. From the graph in 
+Figure~\ref{fig:drop.dataflow_graph}, we can see that if the dropping
+decision is made at event {\tt C} then we can skip event {\tt E} with no wasted
+work. If we instead choose to perform monitoring for event {\tt C}, then we want to perform all
+monitoring on that flow. Similarly, event {\tt F} creates a decision point for
+the bottom flow that will result in no wasted work and dropping event {\tt A}
+allows the entire shown metadata flow to be dropped with no wasted work. If the
+program can be
 analyzed or profiled to identify these instructions which, if dropped, lead to
 no wasted work, then this information can be used at run-time to minimize the
-amount of wasted work. We refer to this policy as \emph{split-point dropping}.
+amount of wasted work. We refer to this policy as \emph{sub-flow dropping}.
 Figure~\ref{fig:drop.min_drop} shows the points were dropping decisions are
 made for this policy.
 Min-event dropping is a coarser-grained decision than unrestricted dropping, but
 finer-grained that source dropping. Thus, its ability to match overheads is
-expected to sit between these other two policies. Similarly, there is still a
-chance of wasted work due to strange splitting and merging metadata flow graph
-shapes, but typically we expect much less wasted work than unrestricted 
+expected to sit between these other two policies. Similarly, there still exists
+edge cases where wasted work can occur, but typically we expect much less
+wasted work than unrestricted 
 dropping. Thus, we expect the coverage achieved by split-point dropping for a
 certain overhead to fall between source and unrestricted dropping. These three
 dropping policies create a trade-off space between coverage achieved and
-ability to match an overhead target which we evaluate in detail in
-Section~\ref{sec:evaluation}.
-
+ability to match an overhead target.
 
