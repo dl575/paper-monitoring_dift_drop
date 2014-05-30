@@ -21,11 +21,11 @@ These run-time monitors introduce performance, power, and energy overheads.
 % other similar methods has been shown to introduce high overheads. For example,
 % dynamic information flow tracking (DIFT) implemented in software suffers a 3.6x
 % slowdown \cite{lift-micro06}. 
-Implementing monitors in dedicated hardware has shown to have very small
+Implementing monitors in dedicated hardware has been shown to have small
 performance impacts. For example, a dedicated hardware implementation of
 dynamic information flow tracking (DIFT) shows performance
 overheads of only 1.1\% \cite{dift-asplos04}. However, fixed hardware loses
-the programmability of software, and cannot be updated or changed. It also
+the programmability of software, and cannot be updated or changed. It 
 requires for monitors to be chosen and implemented at hardware design time.
 Recent studies \cite{lba-isca08} have proposed using parallel cores in a
 multi-core system to perform monitoring. This allows monitoring to be done
@@ -33,12 +33,11 @@ using parallel hardware while having the flexibility and programmability of
 software. However, due to the multiple cycles it may take for software to
 monitor an instruction, the overheads can easily increase execution time
 several fold.
-
 % Two optimizations
 In this paper, we present a hardware architecture that uses dynamic dataflow
-tracking in order to reduce the overheads of programmable parallel monitoring.
-This dataflow tracking engine is used to filter out unnecessary monitoring and
-enable partial monitoring.
+tracking in order to reduce the overheads of programmable parallel monitoring
+by filtering out unnecessary monitoring operations and by enabling partial
+monitoring.
 
 % Filtering
 Recent studies have shown that filtering out monitoring checks on clean or null
