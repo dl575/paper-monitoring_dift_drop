@@ -11,20 +11,20 @@
 & ALU   & At least one invalid source register & Invalidate destination register \\ \cline{2-4}
 & Load  & Invalid source memory location & Invalidate destination register \\ \cline{2-4}
 & Store & Invalid source register & Invalidate destination memory location \\
-\hline\hline
+\hline%\hline
 
-\multirow{2}{*}{UMC}  
-& Store & Never & Invalidate destination memory location \\ \cline{2-4}
-& Load & Invalid source memory location & Do nothing \\ 
-\hline\hline
-
-\multirow{5}{*}{DIFT}  
-& Software set tag & Never & Invalidate destination memory location \\ \cline{2-4}
-& ALU   & At least one invalid source register & Invalidate destination register \\ \cline{2-4}
-& Load  & Invalid source memory location & Invalidate destination register \\ \cline{2-4}
-& Store & Invalid source register & Invalidate destination memory location \\ \cline{2-4}
-& Indirect jump & Invalid source metadata & Do nothing \\ 
-\hline
+% \multirow{2}{*}{UMC}  
+% & Store & Never & Invalidate destination memory location \\ \cline{2-4}
+% & Load & Invalid source memory location & Do nothing \\ 
+% \hline\hline
+% 
+% \multirow{5}{*}{DIFT}  
+% & Software set tag & Never & Invalidate destination memory location \\ \cline{2-4}
+% & ALU   & At least one invalid source register & Invalidate destination register \\ \cline{2-4}
+% & Load  & Invalid source memory location & Invalidate destination register \\ \cline{2-4}
+% & Store & Invalid source register & Invalidate destination memory location \\ \cline{2-4}
+% & Indirect jump & Invalid source metadata & Do nothing \\ 
+% \hline
 
 
 \end{tabular}

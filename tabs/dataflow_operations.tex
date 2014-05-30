@@ -4,14 +4,23 @@
 \begin{tabular}{|l|l|l|l|}
 \hline
 
-{\bf Monitor} & {\bf Event} & {\bf Filter Condition} & {\bf Filter Operation} \\ \hline \hline
+{\bf Flag Type} & {\bf Event} & {\bf Filter Condition} & {\bf Dropping/Filter Operation} \\ \hline \hline
 
-\multirow{4}{*}{BC}  
+\multirow{4}{*}{Clean flag}  
 & Array allocation & Never & - \\ \cline{2-4}
 & ALU   & Both source registers are clean & Mark destination register as clean \\ \cline{2-4}
 & Load  & Source memory location is clean & Mark destination register as clean \\ \cline{2-4}
 & Store & Source register is clean & Mark destination memory location as clean \\
+\hline\hline
+
+\multirow{4}{*}{Invalid flag}  
+& Array allocation & Never & Invalidate array pointer \\ \cline{2-4}
+& ALU   & At least one invalid source register & Invalidate destination register \\ \cline{2-4}
+& Load  & Invalid source memory location & Invalidate destination register \\ \cline{2-4}
+& Store & Invalid source register & Invalidate destination memory location \\
 \hline%\hline
+
+
 
 % \multirow{2}{*}{UMC}  
 % & Store & Never & - \\ \cline{2-4}
