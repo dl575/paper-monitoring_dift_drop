@@ -166,12 +166,12 @@ amount of wasted work. We refer to this policy as \emph{sub-flow dropping}.
 Figure~\ref{fig:policies.min_drop} shows the points were dropping decisions are
 made for this policy.
 Sub-flow dropping is a coarser-grained decision than unrestricted dropping, but
-finer-grained that source dropping. Thus, its ability to match overheads is
+finer-grained that source-only dropping. Thus, its ability to match overheads is
 expected to sit between these other two policies. Similarly, there still exists
 edge cases where wasted work can occur, but typically we expect much less
 wasted work than unrestricted 
 dropping. Thus, we expect the coverage achieved by sub-flow dropping for a
-certain overhead to fall between source and unrestricted dropping. These three
+certain overhead to fall between source-only and unrestricted dropping. These three
 dropping policies create a trade-off space between coverage achieved and
 ability to match an overhead target.
 Figure~\ref{fig:policies.trade_off} summarizes this trade-off between coverage
