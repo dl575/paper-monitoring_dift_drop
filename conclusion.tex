@@ -1,2 +1,17 @@
 \section{Conclusion}
 \label{sec:conclusion}
+
+Parallel run-time monitoring techniques are attractive solutions for improving
+the reliability, security, and debugging capabilities of systems. In this
+paper, we have presented an architecture that reduces the overheads of
+monitoring through filtering and adjustable partial monitoring. This is done by
+using a hardware dataflow tracking engine in order to track and filter out
+monitoring for null metadata. In addition, the dataflow engine tracks invalid
+metdata flows in order to enable partial monitoring without false positives.
+Our experimental results show that filtering can greatly reduce the average
+overheads of monitoring from 7x, 18x, and 11x for UMC, BC, and DIFT down to 4x
+for UMC and BC and just 13\% for DIFT. With partial monitoring, we see that
+with a 50\% overhead budget, BC can still achieve 83\% coverage and UMC can
+still achieve 51\% coverage. Finally, we show that although source dropping can
+achieve better coverage than unrestricted dropping when it works, it is not
+able to match overhead targets as well as unrestricted dropping.
