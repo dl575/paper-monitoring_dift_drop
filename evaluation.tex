@@ -6,20 +6,57 @@
 
 We implemented our monitoring architecture for adjustable overheads by
 modifying the ARM version of the gem5 simulator \cite{gem5} to support parallel
-run-time monitoring. In order to explore the generality of the architecture for
+run-time monitoring. We model the main and monitoring cores as running at 2.5
+GHz with 4-way set-associative private L1 I/D caches and a shared 8-way 2 MB L2
+cache. This setup is similar to the Snapdragon 801 processor commonly found in
+mobile systems. The dataflow engine uses a 1 kB cache for flags.
+
+In order to explore the generality of the architecture for
 different monitors, we implemented three different monitors: uninitialized
 memory check (UMC), array bounds check (BC), and dynamic information flow
 tracking (DIFT).  Uninitialized memory check seeks to detect loading from
 memory locations that are not initialized first.  Array bounds check, as
 mentioned in Section~\ref{sec:monitoring} is a monitoring scheme that aims to
 detect buffer overflows where memory accesses go beyond the boundaries of an
-array.  Dynamic information flow tracking is a security monitoring scheme,
+array. We modify the implementation of {\tt malloc} to set base and bound
+metadata information. Dynamic information flow tracking is a security
+monitoring scheme,
 which detects when information from untrusted sources is used to affect the
-program control flow.  We tested our system using 12 benchmarks from SPEC
-CPU2006 \cite{spec2006}. For each benchmark, we simulated for 200 million
+program control flow. For our DIFT implementation, we set mark data read from
+files as untrusted. This data is marked with a 32-bit metadata identifier so
+that if an error is detected, it is possible to have information about where
+the information originated from. 
+
+We tested our system using all C benchmarks from SPECint
+CPU2006 \cite{spec2006}. We focus on the C benchmarks because of our
+modification of {\tt malloc} to support array bounds check. Although we do not
+show results for the C++ benchmarks, we note that the results for UMC and DIFT
+for these benchmarks are similar to the other results shown. For each
+benchmark, we simulated for 200 million
 instructions. An initial slack of 2 million cycles, which is less than 1\% of
 the total execution time, is given for a 10\% target overhead. This initial
 slack is scaled proportionally for other overhead targets.
+
+\subsection{Baseline Monitoring Overheads}
+% Full monitoring overheads
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=\columnwidth]{figs/data_full_mon.pdf}
+    \vspace{-0.2in}
+    \caption{Full monitoring overheads for UMC, BC, and DIFT.}
+    \label{fig:evaluation.full_mon}
+    \vspace{-0.1in}
+  \end{center}
+\end{figure} Figure~\ref{fig:evaluation.full_mon} shows the execution times of
+performing full monitoring normalized to the execution times of the benchmarks
+without monitoring. In these results, no filtering or partial monitoring is
+done. UMC shows normalized execution times from 5x to 11x with an average
+of 8x. BC shows normalized execution times of 15-28x with an average of
+22x while DIFT shows normalized execution times of 11x-17x with an average of
+14x. One of the reasons for these high overheads is that our implementations of
+these monitors dynamically allocate memory for new metadata. This can be an
+expensive, multi-cycle operation. Statically allocating memory for metadata
+will reduce the execution time but requires a large upfront memory footprint.
 
 \subsection{Filtering of Monitoring Events}
 
@@ -34,11 +71,7 @@ slack is scaled proportionally for other overhead targets.
   \end{center}
 \end{figure}
 
-Figure~\ref{fig:optimizations.full_mon} showed the execution time of benchmarks
-with monitoring normalized to without monitoring. In this case, filtering was
-not performed. UMC showed an 8x increase in execution
-time on average while BC and DIFT showed average execution time increases of
-21x and 14x respectively. Figure~\ref{fig:evaluation.filtering} shows the
+Figure~\ref{fig:evaluation.filtering} shows the
 normalized execution times with filtering enabled. We see significant
 reductions in overhead for all three monitoring schemes. UMC sees normalized
 execution times of 4x on average with filtering. For BC, normalized execution

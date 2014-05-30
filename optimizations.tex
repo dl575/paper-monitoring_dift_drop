@@ -1,17 +1,6 @@
 \section{Reducing Overheads of Run-Time Monitoring}
 \label{sec:optimizations}
 
-% Full monitoring overheads
-\begin{figure}
-  \begin{center}
-    \includegraphics[width=\columnwidth]{figs/data_full_mon.pdf}
-    \vspace{-0.2in}
-    \caption{Full monitoring overheads for uninitialized memory check (UMC), array bounds check (BC), and dynamic information flow tracking (DIFT).}
-    \label{fig:optimizations.full_mon}
-    \vspace{-0.1in}
-  \end{center}
-\end{figure}
-
 % Overview of overhead vs. coverage space
 \begin{figure}
   \begin{center}
@@ -27,11 +16,7 @@
 Although the monitoring core operates in parallel to the main core, the
 overheads of programmable monitoring can be high due to the multi-cycle
 operation of the monitoring core.
-Figure~\ref{fig:optimizations.full_mon} shows the full
-monitoring overheads for three example monitoring extensions: array bounds
-check (BC), uninitialized memory check (UMC), and dynamic information flow
-tracking (DIFT) (Section~\ref{sec:evaluation} details the experimental
-methodology). We see overheads from 4-28x. In order to reduce these overheads, we present two
+ In order to reduce these overheads, we present two
 optimizations. The first optimization is to filter out monitoring events which relate to
 null metadata which do not need to processed by the monitoring core (Section~\ref{sec:optimizations.filter}). Second, in order to allow
 further reduction in overheads, we propose to perform partial monitoring. This
