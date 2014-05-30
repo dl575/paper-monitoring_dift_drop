@@ -105,15 +105,12 @@ The main contributions of this paper are summarized as follows.
 In order to evaluate our approach, we applied it to 3 different monitoring
 techniques. These monitoring techniques vary in what events they monitor, the
 size and semantics of their metadata, and the operations performed on metadata.
-Our experiments show that with 10\% overheads, we can still provide 49-90\% of
-coverage on average depending on the monitoring technique. By increasing the
-overhead budget, the coverage rate can be increased. Our architecture is able
-to closely meet the specified budgets. For all but one benchmark, the overheads
-seen were within 2\% of the target overhead. Our results show that X policy is
-able to achieve very close overhead matching (within X\% on average) with an
-average coverage of X\%. On the other hand, by using Y policy, the overhead
-matching is not as high (within Y\% on average) but average coverage increases
-to (Y\%).
+Our experiments show that filtering reduces the average overhead of these
+monitors from 7-18x down to 13-300\%.
+In addition, with partial monitoring, for the monitoring schemes which still
+see average overheads of 300\%, we show that with just 50\% overheads, we can still
+provide 51-83\% of coverage on average. By increasing the
+overhead budget, this coverage rate can be increased. 
 
 % Section summary
 This paper is organized as follows. Section~\ref{sec:monitoring} presents the
