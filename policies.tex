@@ -116,13 +116,13 @@ since their results were not used for any monitoring checks.
     \label{fig:policies.source_drop}
   }
   \vspace{-0.1in}
-  \\
-  \subfloat[sub-flow dropping]{
-    \includegraphics[width=\columnwidth]{figs/min_drop.pdf}
-    \label{fig:policies.min_drop}
-  }
+%   \\
+%   \subfloat[sub-flow dropping]{
+%     \includegraphics[width=\columnwidth]{figs/min_drop.pdf}
+%     \label{fig:policies.min_drop}
+%   }
   \end{center}
-  \vspace{-0.2in}
+  \vspace{-0.1in}
   \caption{Comparison of dropping policies. Blue (dark) nodes indicate where
   dropping decisions are made.}
   \label{fig:policies.policies}
@@ -140,39 +140,39 @@ result in no wasted work and thus better coverage. However, because of the coars
 may be more difficult to closely match overheads. Source dropping is expected
 to work well when there are a large number of independent metadata flows.
 
-% Slack tracking module
-\begin{figure}
-  \begin{center}
-    \includegraphics[width=\columnwidth]{figs/policy_trade_off.pdf}
-    \vspace{-0.3in}
-    \caption{Slack tracking and drop decision hardware.}
-    \label{fig:policies.trade_off}
-    \vspace{-0.2in}
-  \end{center}
-\end{figure}
-
-Another possible method is to make the dropping decisions somewhere in between
-source-only dropping and unrestricted dropping. From the graph in 
-Figure~\ref{fig:policies.dataflow_graph}, we can see that if the dropping
-decision is made at event {\tt C} then we can skip event {\tt E} with no wasted
-work. If we instead choose to perform monitoring for event {\tt C}, then we want to perform all
-monitoring on that flow. Similarly, event {\tt F} creates a decision point for
-the bottom flow that will result in no wasted work and dropping event {\tt A}
-allows the entire shown metadata flow to be dropped with no wasted work. If the
-program can be
-analyzed or profiled to identify these instructions which, if dropped, lead to
-no wasted work, then this information can be used at run-time to minimize the
-amount of wasted work. We refer to this policy as \emph{sub-flow dropping}.
-Figure~\ref{fig:policies.min_drop} shows the points were dropping decisions are
-made for this policy.
-Sub-flow dropping is a coarser-grained decision than unrestricted dropping, but
-finer-grained that source-only dropping. Thus, its ability to match overheads is
-expected to sit between these other two policies. Similarly, there still exists
-edge cases where wasted work can occur, but typically we expect much less
-wasted work than unrestricted 
-dropping. Thus, we expect the coverage achieved by sub-flow dropping for a
-certain overhead to fall between source-only and unrestricted dropping. These three
-dropping policies create a trade-off space between coverage achieved and
-ability to match an overhead target.
-Figure~\ref{fig:policies.trade_off} summarizes this trade-off between coverage
-and ability to match overhead.
+% Trade-off between source-drop and unrestricted dropping
+% \begin{figure}
+%   \begin{center}
+%     \includegraphics[width=\columnwidth]{figs/policy_trade_off.pdf}
+%     \vspace{-0.3in}
+%     \caption{Slack tracking and drop decision hardware.}
+%     \label{fig:policies.trade_off}
+%     \vspace{-0.2in}
+%   \end{center}
+% \end{figure}
+% 
+% Another possible method is to make the dropping decisions somewhere in between
+% source-only dropping and unrestricted dropping. From the graph in 
+% Figure~\ref{fig:policies.dataflow_graph}, we can see that if the dropping
+% decision is made at event {\tt C} then we can skip event {\tt E} with no wasted
+% work. If we instead choose to perform monitoring for event {\tt C}, then we want to perform all
+% monitoring on that flow. Similarly, event {\tt F} creates a decision point for
+% the bottom flow that will result in no wasted work and dropping event {\tt A}
+% allows the entire shown metadata flow to be dropped with no wasted work. If the
+% program can be
+% analyzed or profiled to identify these instructions which, if dropped, lead to
+% no wasted work, then this information can be used at run-time to minimize the
+% amount of wasted work. We refer to this policy as \emph{sub-flow dropping}.
+% Figure~\ref{fig:policies.min_drop} shows the points were dropping decisions are
+% made for this policy.
+% Sub-flow dropping is a coarser-grained decision than unrestricted dropping, but
+% finer-grained that source-only dropping. Thus, its ability to match overheads is
+% expected to sit between these other two policies. Similarly, there still exists
+% edge cases where wasted work can occur, but typically we expect much less
+% wasted work than unrestricted 
+% dropping. Thus, we expect the coverage achieved by sub-flow dropping for a
+% certain overhead to fall between source-only and unrestricted dropping. These three
+% dropping policies create a trade-off space between coverage achieved and
+% ability to match an overhead target.
+% Figure~\ref{fig:policies.trade_off} summarizes this trade-off between coverage
+% and ability to match overhead.

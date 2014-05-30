@@ -60,7 +60,7 @@ parallel monitoring architectures. In addition, these works prevented
 false positives by enabling and disabling monitoring using only a source-dropping
 policy. Lo et al. \cite{lo-rtas14} developed a hardware architecture to limit
 monitoring in hard real-time systems. Their architecture performs unrestricted 
-dropping in order to guarantee strict deadlines. Our system allows for a
-trade-off between choosing source-only dropping, unrestricted dropping, or sub-flow 
-dropping depending on the needs of the designer or user which has not been
-explored by these previous works. 
+dropping in order to guarantee strict deadlines. 
+Our system allows either source-only dropping or unrestricted dropping to be performed.
+This allows the designer or user to choose the appropriate policy depending on
+the monitoring scheme which has not been previously explored.
