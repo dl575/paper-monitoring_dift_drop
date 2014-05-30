@@ -42,12 +42,12 @@ These sampling-based techniques all limit the debugging capabilities in order
 to provide lower performance overheads, similar to our architecture's goals.
 However, these approaches are not able to explicitly set an overhead budget, as
 our system is able to do. In addition, with the exception of Testudo, these
-methods have not considered parallel monitoring. Finally, we note that the
-concept of distributing the monitoring over many users and runs to increase
-coverage can also be enabled using our architecture.
+methods have not considered parallel monitoring. Our techniques for generally
+reducing the overheads of monitoring can also be used to enable these
+low-overhead, multi-user/run debugging techniques.
 
 % Limited Monitoring
-In terms of controlling overheads, the Quality Virtual Machine (QVM) is a
+In terms of partial monitoring, the Quality Virtual Machine (QVM) is a
 modification of the Java Virtual Machine (JVM) that supports run-time
 monitoring with controllable overheads \cite{qvm-oopsla08}. Similarly, Huang et
 al. created a framework for controlling the overheads of software-based

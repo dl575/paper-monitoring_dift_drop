@@ -42,7 +42,7 @@ indicates the array's base (start) and bound (end) addresses. On loads or stores
 array
 pointer, the monitoring core checks that the memory address accessed is within the base and
 bound addresses. In addition, this base and bound metadata
-is propagated on certain ALU instructions to track the creation of new array pointers.
+is propagated on ALU and memory instructions to track the corresponding array pointers.
 % One example is an uninitialized memory check (UMC) where monitoring is used to
 % detect when software attempts to read from a memory location that was not
 % previously initialized. This can be done by forwarding each load and store

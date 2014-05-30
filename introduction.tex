@@ -27,7 +27,7 @@ dynamic information flow tracking (DIFT) shows performance
 overheads of only 1.1\% \cite{dift-asplos04}. However, fixed hardware loses
 the programmability of software, and cannot be updated or changed. It 
 requires for monitors to be chosen and implemented at hardware design time.
-Recent studies \cite{lba-isca08} have proposed using parallel cores in a
+Recent studies \cite{lba-isca08, ruwase-spaa08, paralog-asplos10, oases-sigops09} have proposed using parallel cores in a
 multi-core system to perform monitoring. This allows monitoring to be done
 using parallel hardware while having the flexibility and programmability of
 software. However, due to the multiple cycles it may take for software to
@@ -50,8 +50,12 @@ By using the dataflow engine to track a separate set of flags
 indicating null metadata, we are able to handle the common case of null
 metadata without the need to read the full metadata values.
 
-Although full monitoring coverage is always desired, trading off coverage for
-reduced overheads can be very useful. For example, partial
+There is a limit to how effective filtering is at reducing monitoring overheads
+as it only eliminates unnecessary monitoring operations. The ability
+to also skip relevant monitoring operations can be used to further reduce overheads.
+Although this comes at the cost of reduced monitoring coverage (i.e.,
+effectiveness), this partial monitoring can still be very useful.
+For example, partial
 monitoring can enable a level of protection even for systems where the full
 monitoring overheads are too high. This is especially true for energy- or
 power-constrained systems or soft real-time systems where the monitoring
@@ -63,10 +67,6 @@ collect debugging information~\cite{liblit-pldi05, chilimbi-asplos04,
 greathouse-cgo11}. 
 
 % % Adjustable overhead
-% There is a limit to how effective filtering is at reducing monitoring overheads. 
-% Traditionally, these overheads have been an all-or-nothing cost. If the
-% designer finds that the overheads exceed their desired budget, then monitoring
-% cannot be enabled.  
 In this paper, we show how our dataflow-guided architecture is also able to
 enable partial monitoring. This is achieved by dynamically dropping monitoring
 operations when overheads exceed a specified overhead budget. We prevent false
@@ -79,8 +79,11 @@ budget and the monitoring coverage achieved.
 The main contributions of this paper are summarized as follows.
 \begin{itemize}
   \item We propose two optimizations for reducing the overheads of monitoring: filtering null metadata and performing partial monitoring.
-  \item We present a hardware architecture using a dataflow tracking engine to efficiently enable filtering and partial monitoring.
-  \item We investigate trade-off decisions for partial monitoring on the proposed architecture.
+  \item We present a hardware architecture using a dataflow tracking engine to
+  efficiently enable filtering and partial monitoring. This hardware
+  architecture is designed to be generally applicable to a wide-range of run-time monitoring
+  techniques.
+  \item We investigate interesting trade-off decisions for partial monitoring on the proposed architecture.
 \end{itemize}
 
 % %Invalidation in order to prevent false positives.

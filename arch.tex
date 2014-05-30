@@ -128,7 +128,7 @@ corresponding flag should also be marked as null.
 \subsection{Setting Dataflow Flags}
 \label{sec:arch.dropping}
 
-Although the dataflow engine automatically propagates information about
+Although the dataflow engine handles the propagation of information about
 non-null and invalid metadata, it also requires for these flows to be
 initialized. That is, there needs to be some way to mark metadata as non-null
 or invalid. These interfaces from the monitoring core and the dropping hardware
@@ -202,11 +202,14 @@ needs to be marked as null if the event is filtered.
 The invalid flags for array bounds check operate similarly to the null flags.
 When ALU, load, or store events are dropped or filtered, the destination
 register or memory location is marked as invalid. In addition, we need to
-handle the possibility of dropping an array allocation. In this case, the array
+handle the possibility of dropping an array allocation. In this case, the metadata for the array
 pointer is marked as invalid. In terms of filtering out invalid events, for an
-ALU event, if either of the source registers is invalid then the event can be
-filtered. For load and store instructions, if the single source operand is
-invalid, then the event can be filtered.
+ALU event, if \emph{either} of the source registers is invalid then the event can be
+filtered. This differs from the policy for null flags where the event can only
+filtered if \emph{both} flags are marked as null. This highlights the need to
+store and track separate bits for tracking null and invalid information. For
+load and store instructions, if the single source operand is invalid, then the
+event can be filtered.
 
 \subsection{Applicability to Other Schemes}
 
@@ -239,7 +242,7 @@ flag location on each monitoring event. Similarly, the dataflow engine can only
 read in two sets of flags in order to determine whether an event can be
 filtered or not. This was done because we found that for many monitoring
 schemes, the monitoring operations corresponded to program instructions, which
-read up to two operands and write to one destination.  For monitoring schemes
+read up to two operands and write to one destination. For monitoring schemes
 which update multiple pieces of metadata on a monitoring event, it may be
 adequate to associate a null and invalid flag with a single piece of metadata.  For
 example, a scheme may use a data structure that includes several pieces of
@@ -247,4 +250,4 @@ related metadata. On a drop, one of these pieces could be marked as invalid in
 order to indicate that the entire structure is invalid.  Similarly, marking one
 specified piece as null may indicate that the entire data structure's metadata
 is null.  Alternatively, the read and write capabilities of the dataflow
-engine could be expanded to support more complex monitoring schemes.
+engine could be expanded to support these more complex monitoring schemes.

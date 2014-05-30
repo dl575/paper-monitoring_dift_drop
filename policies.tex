@@ -71,7 +71,10 @@ cycle of the main core. This $k$ can be calculated by taking the reciprocal of
 the target budget. For example, if the target budget is 20\%, then the counter
 increments on every 5th clock cycle. The value of this counter is the
 accumulated slack. Whenever the main core is stalled due to the monitor, slack
-is decremented.
+is decremented. This can be difficult to determine precisely due to difficult
+to measure overheads such as contention for shared memory. However, we have
+found that using only the stalls due to FIFO back pressure works well in
+practice.
 
 \subsection{Dropping Decision Trade-Offs}
 \label{sec:policies.events}
