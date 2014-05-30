@@ -145,9 +145,40 @@ with filtering only.
 
 \subsection{Comparing Dropping Policies}
 
-In this section we evaluate the trade-offs of the three dropping policies
-presented in Section~\ref{sec:policies.events}: unrestricted dropping, source-only
-dropping, and sub-flow dropping.
+% UMC exec time
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=\columnwidth]{figs/data_umc_exec_time.pdf}
+    \vspace{-0.2in}
+    \caption{Error in meeting overhead budget for uninitialized memory check.}
+    \label{fig:evaluation.umc_exec_time}
+    \vspace{-0.2in}
+  \end{center}
+\end{figure}
+
+
+% UMC coverage across policies
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=\columnwidth]{figs/data_umc_coverage.pdf}
+    \vspace{-0.2in}
+    \caption{Coverage for uninitialized memory check for different dropping policies.}
+    \label{fig:evaluation.umc_coverage}
+    \vspace{-0.1in}
+  \end{center}
+\end{figure}
+In this section we evaluate the trade-offs of unrestricted dropping and source-only dropping.
+Figure~\ref{fig:evaluation.umc_exec_time} shows the difference between the
+overhead budget and the run-time monitoring overheads for UMC. A positive value
+means that the overhead target was overshot while a negative value indicates
+that the overhead budget was met. We see similar results for unrestricted
+dropping and source-only dropping due to the fact that UMC consists of a large
+number of independent monitoring flows.
+Figure~\ref{fig:evaluation.umc_coverage} shows the coverage of UMC for
+unrestricted dropping and source-only dropping. We see that source-dropping
+consistently achieves higher coverage than unrestricted dropping. This is due
+to the fact that some of the overheads of monitoring for unrestricted dropping
+are being spent on wasted work as discussed in Section~\ref{sec:policies.events}.
 
 % BC exec time
 \begin{figure}
@@ -160,25 +191,6 @@ dropping, and sub-flow dropping.
   \end{center}
 \end{figure}
 
-% UMC exec time
-\begin{figure}
-  \begin{center}
-    \includegraphics[width=\columnwidth]{figs/data_umc_exec_time.pdf}
-    \vspace{-0.2in}
-    \caption{Error in meeting overhead budget for uninitialized memory check.}
-    \label{fig:evaluation.umc_exec_time}
-    \vspace{-0.2in}
-  \end{center}
-\end{figure}
-
-First, we evaluate how well the different policies are able to meet a specified
-overhead budget. Figures~\ref{fig:evaluation.bc_exec_time} and
-\ref{fig:evaluation.umc_exec_time} show the difference between the run-time
-overheads seen and the overhead specified. These errors are averaged over all
-benchmarks. A positive value means that the
-overhead target was overshot while a negative value indicates that the
-overheads were below the specified budget.
-
 % BC coverage across policies
 \begin{figure}
   \begin{center}
@@ -190,22 +202,18 @@ overheads were below the specified budget.
   \end{center}
 \end{figure}
 
-% UMC coverage across policies
-\begin{figure}
-  \begin{center}
-    \includegraphics[width=\columnwidth]{figs/data_umc_coverage.pdf}
-    \vspace{-0.2in}
-    \caption{Coverage for uninitialized memory check for different dropping policies.}
-    \label{fig:evaluation.umc_coverage}
-    \vspace{-0.1in}
-  \end{center}
-\end{figure}
-
-Next, we evaluate the coverage achieved by the different policies.
-Figure~\ref{fig:evaluation.bc_coverage} shows the average coverage across
-benchmarks for each of the three policies with varying overhead budgets.
-Figure~\ref{fig:evaluation.umc_coverage} shows this data for uninitialized
-memory check.
+Next, we evaluate these trade-offs between source-only dropping and unrestricted dropping for BC.
+Figure~\ref{fig:evaluation.bc_exec_time} shows the overhead differences for BC
+and Figure~\ref{fig:evaluation.bc_coverage} shows the coverage for BC.
+From Figure~\ref{fig:evaluation.bc_exec_time}, we see that for several
+benchmarks, source-only drop fails to meet the specified overhead target.
+The overshoot of the overhead target is quite high with an overhead difference
+of 420\% for {\tt bzip2}, 120\% for {\tt gcc}, and 1500\% for {\tt hmmer}.
+Since only array allocations are considered source events for BC, it is
+difficult for source-only dropping to match overhead targets. Although
+Figure~\ref{fig:evaluation.bc_coverage} again shows higher coverage for
+source-only dropping, this is in part due to the fact that is running with
+higher overheads.
 
 \subsection{Multiple-Run Coverage}
 
