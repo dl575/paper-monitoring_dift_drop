@@ -32,8 +32,8 @@ CPU2006 \cite{spec2006}. We focus on the C benchmarks because of our
 modification of {\tt malloc} to support array bounds check. Although we do not
 show results for the C++ benchmarks, we note that the results for UMC and DIFT
 for these benchmarks are similar to the other results shown. For each
-benchmark, we simulated for 200 million
-instructions. An initial slack of 2 million cycles, which is less than 1\% of
+benchmark, we simulated for 1 billion instructions. An initial slack of 1
+million cycles, which is less than 1\% of
 the total execution time, is given for a 10\% target overhead. This initial
 slack is scaled proportionally for other overhead targets.
 
@@ -50,12 +50,12 @@ slack is scaled proportionally for other overhead targets.
 \end{figure} Figure~\ref{fig:evaluation.full_mon} shows the execution times of
 performing full monitoring normalized to the execution times of the benchmarks
 without monitoring. In these results, no filtering or partial monitoring is
-done. UMC shows normalized execution times from 5x to 11x with an average
-of 8x. BC shows normalized execution times of 15-28x with an average of
-22x while DIFT shows normalized execution times of 11x-17x with an average of
-14x. One of the reasons for these high overheads is that our implementations of
+done. UMC shows normalized execution times from 4x to 11x with an average
+of 7x. BC shows normalized execution times of 9-28x with an average of
+18x while DIFT shows normalized execution times of 6x-17x with an average of
+11x. One of the reasons for these high overheads is that our implementations of
 these monitors dynamically allocate memory for new metadata. This can be an
-expensive, multi-cycle operation. Statically allocating memory for metadata
+expensive, many-cycle operation. Statically allocating memory for metadata
 will reduce the execution time but requires a large upfront memory footprint.
 
 \subsection{Filtering of Monitoring Events}
@@ -65,7 +65,7 @@ will reduce the execution time but requires a large upfront memory footprint.
   \begin{center}
     \includegraphics[width=\columnwidth]{figs/data_filtering.pdf}
     \vspace{-0.2in}
-    \caption{Monitoring overheads with filtering for UMC, BC, and DIFT.}
+    \caption{Monitoring overheads with filtering null metadata for UMC, BC, and DIFT.}
     \label{fig:evaluation.filtering}
     \vspace{-0.1in}
   \end{center}
@@ -74,16 +74,18 @@ will reduce the execution time but requires a large upfront memory footprint.
 Figure~\ref{fig:evaluation.filtering} shows the
 normalized execution times with filtering enabled. We see significant
 reductions in overhead for all three monitoring schemes. UMC sees normalized
-execution times of 4x on average with filtering. For BC, normalized execution
-times drop from 21x down to 3x. This is not surprising since in the baseline
+execution times 2-6x with an average of 4x with null metadata filtering. For BC, normalized execution
+times drop from 18x down to 4x on average. The range of normalized execution
+times for filtered BC is 1.1-17x. This is not surprising since in the baseline
 implementation all loads and stores needed to be monitored. However, with
 filtering, only loads and stores corresponding to arrays need to be forwarded.
 Finally, DIFT sees the largest reduction in overheads with only 13\% overheads
-on average. This is due to the fact that for our implementation of DIFT on SPEC
-benchmarks, we mark data read from files as tainted. For most of these
+on average after filtering with a maximum of 42\%. This is due, in part, to the fact that
+for our implementation of DIFT on SPEC
+benchmarks, we only mark data read from files as tainted. For most of these
 benchmarks, this propagates to relatively few instructions. Instead, if we
-targeted network or streaming applications we would expect to see a less
-filtering
+targeted network or streaming applications, which have larger amounts in
+untrusted input data, we would expect to see less filtering.
 
 \subsection{Coverage with Adjustable Overheads}
 
@@ -111,20 +113,21 @@ filtering
 
 Although the overheads of DIFT are quite low after filtering, BC and UMC still
 show significant overheads. In this section, we evaluate the effectiveness of
-using partial monitoring to trade-off coverage for further reduced overheads.
+using partial monitoring (in addition to filtering) to trade-off coverage for further reduced overheads.
 Figure~\ref{fig:evaluation.bc_sweep} shows the monitoring coverage achieved by
 array bounds check as we vary the overhead budget. We measure monitoring
 coverage monitoring check operations that are still performed as a percentage
 of the total number of monitoring check operations. This number does not
 include the number metadata update operations that are done and serves as a
 better metric for the actual coverage of the security or reliability technique.
-The overhead is measured as a percentage of the program without monitoring. An
-unrestricted dropping policy is used here.
+The overhead is measured as a percentage of total number of checks performed
+with full monitoring. The results shown here are using an unrestricted dropping
+policy.
 
 We see that by varying the overhead budget, the coverage achieved also varies.
-Furthermore, with only a 50\% overhead budget, array bounds check still
-achieves 87\% monitoring coverage on average. This overhead budget corresponds
-to 26\% of the average overheads seen by BC after filtering. The high coverage
+With only a 50\% overhead budget, array bounds check still
+achieves 83\% monitoring coverage on average. This overhead budget corresponds
+to just 20\% of the average overheads seen by BC after filtering only. The high coverage
 achieved with such low overheads is due to two main effects.  The first is that
 monitoring can be done in parallel, providing monitoring coverage without
 introducing overheads. The second effect is that, although we aggressively
@@ -135,9 +138,9 @@ monitoring coverage.
 
 Figure~\ref{fig:evaluation.umc_sweep} shows the analogous graph for UMC. Again
 we see that varying overhead budgets enables partial monitoring. We see that
-with a 50\% overhead budget, UMC achieves 50\% monitoring coverage on average.
-This overhead budget corresponds to only 15\% of the overheads seen by UMC
-after filtering.
+with a 50\% overhead budget, UMC achieves 51\% monitoring coverage on average.
+Again, this overhead budget corresponds to only 20\% of the overheads seen by UMC
+with filtering only.
 
 \subsection{Comparing Dropping Policies}
 
