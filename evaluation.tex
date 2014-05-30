@@ -88,7 +88,7 @@ benchmarks, this propagates to relatively few instructions. Instead, if we
 targeted network or streaming applications, which have larger amounts in
 untrusted input data, we would expect to see less filtering.
 
-\subsection{Coverage with Adjustable Overheads}
+\subsection{Coverage with Adjustable Partial Monitoring}
 
 % BC sweep
 \begin{figure*}
@@ -126,9 +126,8 @@ with full monitoring. The results shown here are using an unrestricted dropping
 policy.
 
 We see that by varying the overhead budget, the coverage achieved also varies.
-With only a 50\% overhead budget, array bounds check still
-achieves 83\% monitoring coverage on average. This overhead budget corresponds
-to just 20\% of the average overheads seen by BC after filtering only. The high coverage
+With only a 10\% overhead budget, array bounds check still
+achieves 82\% monitoring coverage on average. The high coverage
 achieved with such low overheads is due to two main effects.  The first is that
 monitoring can be done in parallel, providing monitoring coverage without
 introducing overheads. The second effect is that, although we aggressively
@@ -139,9 +138,8 @@ monitoring coverage.
 
 Figure~\ref{fig:evaluation.umc_sweep} shows the analogous graph for UMC. Again
 we see that varying overhead budgets enables partial monitoring. We see that
-with a 50\% overhead budget, UMC achieves 51\% monitoring coverage on average.
-Again, this overhead budget corresponds to only 20\% of the overheads seen by UMC
-with filtering only.
+with a 10\% overhead budget, UMC achieves 32\% monitoring coverage on average
+and with a 50\% budget, UMC achieves 51\% coverage.
 
 \subsection{Comparing Dropping Policies}
 
