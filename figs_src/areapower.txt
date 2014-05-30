@@ -1,0 +1,23 @@
+Baseline:
+  Area 2.71 mm^2 std(0.0)
+  Peak Power 965.4 mW std(0.0)
+  Runtime power 384.9 mW std(30.2)
+['462.libquantum', '471.omnetpp', '400.perlbench', '401.bzip2', '429.mcf', '464.h264ref', '473.astar', '458.sjeng', '403.gcc', '456.hmmer', '483.xalan', '445.gobmk']
+1kB
+   Area (% mean, std) (absolute mean, std)
+   (0.072734000000000035, 4.163336342344337e-17) (0.19712100000000007, 8.3266726846886741e-17)
+   multidift
+     Peak Power (% mean, std) (absolute mean, std)
+     (0.074291666666666673, 0.0060938619984009764) (0.071720083333333337, 0.0058832205530975042)
+     Runtime Power (% mean, std) (absolute mean, std)
+     (0.11108641666666667, 0.0098242014048499395) (0.042724166666666674, 0.0045810576623259783)
+   umc
+     Peak Power (% mean, std) (absolute mean, std)
+     (0.048996000000000005, 0.0051061441584297892) (0.047300083333333333, 0.004929298859174148)
+     Runtime Power (% mean, std) (absolute mean, std)
+     (0.081541499999999989, 0.0093088355206223279) (0.03147341666666667, 0.0046924188762004415)
+   hb
+     Peak Power (% mean, std) (absolute mean, std)
+     (0.071117666666666676, 0.005712819361362264) (0.068655916666666664, 0.0055148874491134352)
+     Runtime Power (% mean, std) (absolute mean, std)
+     (0.10747166666666665, 0.0093185647172131011) (0.041361333333333326, 0.0044254717137146952)
