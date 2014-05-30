@@ -207,6 +207,38 @@ benchmarks for each of the three policies with varying overhead budgets.
 Figure~\ref{fig:evaluation.umc_coverage} shows this data for uninitialized
 memory check.
 
+\subsection{Multiple-Run Coverage}
+
+% Multi-run coverage with unrestricted dropping
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=\columnwidth]{figs/data_multirun_coverage.pdf}
+    \vspace{-0.2in}
+    \caption{Coverage over multiple runs for BC at 20\% overhead.}
+    \label{fig:evaluation.multirun}
+    \vspace{-0.1in}
+  \end{center}
+\end{figure}
+
+One possible application of partial monitoring with low overheads is to enable
+cooperative debugging. The idea with cooperative debugging is to enable partial
+monitoring with very low overheads across a large number of users or runs. By
+varying the pattern of partial monitoring done on each run, the goal is to
+achieve high or total coverage across all runs. Varying the monitoring that is
+done for different runs can be achieved by introducing some randomness into the
+dropping decision. Figure~\ref{fig:evaluation.multirun} shows the total
+coverage achieved over multiple runs for array bounds check running with a 20\%
+overhead budget and an unrestricted dropping policy. Here, when events are
+dropped probabilistically with the probability scaled proportionally to slack.
+That is, when slack is high, the probability of dropping is low and the
+probability increases as we run out of slack. We see that the coverage achieved
+quickly asymptotes for an unrestricted dropping policy. This is due to the fact
+that since there are multiple dependent monitoring operations that must be done
+in order for a final check to be successful, a small amount of randomness at
+each event quickly compounds to reduce the probability of certain checks to
+near zero. Instead, source dropping is much better suited for achieve high
+coverage over multiple runs.
+
 \subsection{Area and Power Overheads}
 
 % Area and Power Overheads
