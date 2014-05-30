@@ -33,18 +33,21 @@ these ideas.
 
 The instruction-grained run-time monitoring schemes we focus on typically
 manage a set of metadata information. This metadata information is used to
-verify security or reliability probabilities. For example, for array bounds
+verify security or reliability properties. For example, for array bounds
 check, the monitoring core stores metadata describing the base and bound
 addresses for array pointers. This metadata is then checked on load and store
-instructions. However, if the metadata for an event is null, then there is no need to perform the check since this represents a non-array pointer value. By
-identifying and filtering out these null monitoring events, we can reduce the overheads of
+instructions. However, if the metadata for an event is null, then there is no
+need to perform the check since this represents a non-array pointer value. By
+identifying and filtering out these null monitoring events, we can reduce the
+overheads of
 monitoring by reducing the amount of work the monitoring core must do.
 
 In order to filter out null monitoring events, we need an efficient method to
 keep track of which events are null. In addition, when we filter out a null
-monitoring event, we must ensure that any metadata updates that were skipped
-are handled properly.  Thus, when we filter out one of
-these events, we must ensure that the destination operand is also marked as null. 
+monitoring event, we must ensure that any metadata propagations that were
+skipped are handled properly. If this is not done, the monitoring core may
+operate on stale metadata. Thus, when we filter out a null monitoring event,
+we must ensure that the destination metadata is also marked as null. 
 In other words, we need to be able to track not only
 metadata which is initially null, but also the dataflow of null metadata. 
 

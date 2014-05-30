@@ -19,7 +19,7 @@ budget is met and the monitoring coverage achieved.
     \includegraphics[width=\columnwidth]{figs/slack.pdf}
     \vspace{-0.3in}
     \caption{Slack and its effect on monitoring over time.}
-    \label{fig:drop.slack}
+    \label{fig:policies.slack}
     \vspace{-0.1in}
   \end{center}
 \end{figure}
@@ -30,7 +30,7 @@ budget is met and the monitoring coverage achieved.
     \includegraphics[width=\columnwidth]{figs/stm.pdf}
     \vspace{-0.2in}
     \caption{Slack tracking and drop decision hardware.}
-    \label{fig:drop.stm}
+    \label{fig:policies.stm}
     \vspace{-0.1in}
   \end{center}
 \end{figure}
@@ -61,11 +61,11 @@ then stalled for 50 cycles due to monitoring, then the remaining slack is 150
 cycles. 
 In addition to this accumulated slack, a small amount of initial slack
 can be given in order for monitoring to be performed at the start of a program.
-Figure~\ref{fig:drop.slack} shows an example of how slack can change over time.
+Figure~\ref{fig:policies.slack} shows an example of how slack can change over time.
 If the slack falls below zero (i.e., the overhead budget is exceeded), then
 monitoring events should be dropped.
 
-Figure~\ref{fig:drop.stm} shows a hardware slack tracking module for
+Figure~\ref{fig:policies.stm} shows a hardware slack tracking module for
 keeping track of slack. The slack tracking module uses a counter that increments on every $k$-th
 cycle of the main core. This $k$ can be calculated by taking the reciprocal of
 the target budget. For example, if the target budget is 20\%, then the counter
@@ -83,7 +83,7 @@ is decremented.
     \vspace{-0.3in}
     \caption{Example dependence graph for metadata. Square nodes represent
     events where checks are performed.} 
-    \label{fig:drop.dataflow_graph}
+    \label{fig:policies.dataflow_graph}
     \vspace{-0.1in}
   \end{center}
 \end{figure}
@@ -91,7 +91,7 @@ is decremented.
 The simplest policy for when to drop monitoring events is to drop all monitoring events as
 long as slack is less than or equal to zero.  However, this can result in
 wasted work. For example, consider the metadata dependence graph shown in
-Figure~\ref{fig:drop.dataflow_graph}. Here, an edge from node {\tt A} to node
+Figure~\ref{fig:policies.dataflow_graph}. Here, an edge from node {\tt A} to node
 {\tt B} represents that if event {\tt A} is dropped, then due to its
 invalidated metadata, it will cause event {\tt B} to be filtered. Square
 nodes indicate events where monitoring checks are performed. In the
@@ -104,25 +104,25 @@ since their results were not used for any monitoring checks.
   \begin{center}
   \subfloat[unrestricted dropping]{
     \includegraphics[width=\columnwidth]{figs/all_drop.pdf}
-    \label{fig:drop.all_drop}
+    \label{fig:policies.all_drop}
   }
   \vspace{-0.1in}
   \\
   \subfloat[source-only dropping]{
     \includegraphics[width=\columnwidth]{figs/source_drop.pdf}
-    \label{fig:drop.source_drop}
+    \label{fig:policies.source_drop}
   }
   \vspace{-0.1in}
   \\
   \subfloat[split-point dropping]{
     \includegraphics[width=\columnwidth]{figs/min_drop.pdf}
-    \label{fig:drop.min_drop}
+    \label{fig:policies.min_drop}
   }
   \end{center}
   \vspace{-0.2in}
   \caption{Comparison of dropping policies. Blue (dark) nodes indicate where
   dropping decisions are made.}
-  \label{fig:drop.policies}
+  \label{fig:policies.policies}
 \end{figure}
 
 One method to eliminate this wasted work is to only make dropping decisions at
@@ -130,16 +130,27 @@ the root of these metadata flows. That is, we will decide to either monitor or
 not monitor an entire metadata flow. We refer to this dropping decision policy
 as \emph{source-only dropping} and we refer to the previous policy of 
 dropping any event as \emph{unrestricted dropping}.
-Figures~\ref{fig:drop.all_drop} and \ref{fig:drop.source_drop} show a
+Figures~\ref{fig:policies.all_drop} and \ref{fig:policies.source_drop} show a
 comparison of where dropping decisions are made for these two policies. Source
 dropping will
 result in no wasted work and thus better coverage. However, because of the coarser-grained decision, it
 may be more difficult to closely match overheads. Source dropping is expected
 to work well when there are a large number of independent metadata flows.
 
+% Slack tracking module
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=\columnwidth]{figs/policy_trade_off.pdf}
+    \vspace{-0.3in}
+    \caption{Slack tracking and drop decision hardware.}
+    \label{fig:policies.trade_off}
+    \vspace{-0.2in}
+  \end{center}
+\end{figure}
+
 Another possible method is to make the dropping decisions somewhere in between
 source-only dropping and unrestricted dropping. From the graph in 
-Figure~\ref{fig:drop.dataflow_graph}, we can see that if the dropping
+Figure~\ref{fig:policies.dataflow_graph}, we can see that if the dropping
 decision is made at event {\tt C} then we can skip event {\tt E} with no wasted
 work. If we instead choose to perform monitoring for event {\tt C}, then we want to perform all
 monitoring on that flow. Similarly, event {\tt F} creates a decision point for
@@ -149,7 +160,7 @@ program can be
 analyzed or profiled to identify these instructions which, if dropped, lead to
 no wasted work, then this information can be used at run-time to minimize the
 amount of wasted work. We refer to this policy as \emph{sub-flow dropping}.
-Figure~\ref{fig:drop.min_drop} shows the points were dropping decisions are
+Figure~\ref{fig:policies.min_drop} shows the points were dropping decisions are
 made for this policy.
 Min-event dropping is a coarser-grained decision than unrestricted dropping, but
 finer-grained that source dropping. Thus, its ability to match overheads is
@@ -160,4 +171,5 @@ dropping. Thus, we expect the coverage achieved by split-point dropping for a
 certain overhead to fall between source and unrestricted dropping. These three
 dropping policies create a trade-off space between coverage achieved and
 ability to match an overhead target.
-
+Figure~\ref{fig:policies.trade_off} summarizes this trade-off between coverage
+and ability to match overhead.
