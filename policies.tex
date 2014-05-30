@@ -114,7 +114,7 @@ since their results were not used for any monitoring checks.
   }
   \vspace{-0.1in}
   \\
-  \subfloat[split-point dropping]{
+  \subfloat[sub-flow dropping]{
     \includegraphics[width=\columnwidth]{figs/min_drop.pdf}
     \label{fig:policies.min_drop}
   }
@@ -162,12 +162,12 @@ no wasted work, then this information can be used at run-time to minimize the
 amount of wasted work. We refer to this policy as \emph{sub-flow dropping}.
 Figure~\ref{fig:policies.min_drop} shows the points were dropping decisions are
 made for this policy.
-Min-event dropping is a coarser-grained decision than unrestricted dropping, but
+Sub-flow dropping is a coarser-grained decision than unrestricted dropping, but
 finer-grained that source dropping. Thus, its ability to match overheads is
 expected to sit between these other two policies. Similarly, there still exists
 edge cases where wasted work can occur, but typically we expect much less
 wasted work than unrestricted 
-dropping. Thus, we expect the coverage achieved by split-point dropping for a
+dropping. Thus, we expect the coverage achieved by sub-flow dropping for a
 certain overhead to fall between source and unrestricted dropping. These three
 dropping policies create a trade-off space between coverage achieved and
 ability to match an overhead target.

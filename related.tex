@@ -21,11 +21,11 @@ a multi-core platform.
  
 % Filtering
 FADE \cite{fade-hpca14} presents a general filtering engine in order to reduce
-the overheads of monitoring. It filters out redundant updates and clean checks
+the overheads of monitoring. It filters out redundant updates and null checks
 by reading metadata values. We do not handle filtering redundant updates, but
-we do filter out clean checks as well as clean (i.e., uninitialized)
+we do filter out null checks as well as null (i.e., uninitialized)
 propagations.  We are able to do this because the dataflow engine can also
-propagate the clean information.  In addition, our dataflow engine only
+propagate the null information.  In addition, our dataflow engine only
 requires reading and writing 2-bit flags rather than the entire metadata.  As
 we have shown, our dataflow engine also enables adjustable overheads without
 false positives which is not a capability described by FADE.
@@ -57,10 +57,10 @@ software-based monitoring and thus their mechanisms modify the software
 monitoring framework in order to enable or disable monitoring. Instead, our
 architecture provides a general hardware mechanism to control overheads of
 parallel monitoring architectures. In addition, these works prevented
-false positives by enabling and disabling monitoring using a source-dropping
+false positives by enabling and disabling monitoring using only a source-dropping
 policy. Lo et al. \cite{lo-rtas14} developed a hardware architecture to limit
 monitoring in hard real-time systems. Their architecture performs unrestricted 
 dropping in order to guarantee strict deadlines. Our system allows for a
-trade-off between choosing source-only dropping, unrestricted dropping, or split-point 
+trade-off between choosing source-only dropping, unrestricted dropping, or sub-flow 
 dropping depending on the needs of the designer or user which has not been
 explored by these previous works. 

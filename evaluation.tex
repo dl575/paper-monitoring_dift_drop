@@ -22,10 +22,11 @@ array. We modify the implementation of {\tt malloc} to set base and bound
 metadata information. Dynamic information flow tracking is a security
 monitoring scheme,
 which detects when information from untrusted sources is used to affect the
-program control flow. For our DIFT implementation, we set mark data read from
-files as untrusted. This data is marked with a 32-bit metadata identifier so
+program control flow. For the benchmarks we consider, we mark data read from
+files as untrusted. We implemented a multi-bit DIFT scheme which marks
+untrusted data with a 32-bit metadata identifier so
 that if an error is detected, it is possible to have information about where
-the information originated from. 
+the data originated from. 
 
 We tested our system using all C benchmarks from SPECint
 CPU2006 \cite{spec2006}. We focus on the C benchmarks because of our
@@ -223,7 +224,7 @@ memory check.
   \end{center}
 \end{table}
 
-Adding the dropping hardware in order to enable adjustable overheads adds
+Adding the dataflow engine in order to enable filtering and adjustable adjustable adds
 overheads in terms of area and power. We use McPat \cite{mcpat-micro09} to get
 a first-order estimate of these area and power overheads in a 40 nm technology
 node. McPat estimates the main core area as 1.96 mm$^2$ and the peak power usage as
@@ -231,14 +232,16 @@ node. McPat estimates the main core area as 1.96 mm$^2$ and the peak power usage
 mW. These area and power numbers consist of the core and
 L1 cache, but do not include L2 cache, memory controller, and other
 peripherals. The power numbers include dynamic as well as static (leakage)
-power. For the dropping hardware, the ALUs, MIRF, MIC, and
-configuration tables are modeled using the corresponding objects in McPat. We
+power. For the dataflow engine, we modeled the ALUs used for address
+calculation, the dataflow flag register file and cache, the configuration
+tables, and the filter decision table. These were modeled using the
+corresponding objects in McPat. We
 note that this is only a rough area and power result since components such as the
 wires connecting these modules have not been modeled. However, this gives a
 sense of the order-of-magnitude overheads involved with implementing our
 approach.
 
-For a 1 kB MIC, an additional 0.183 mm$^2$ of silicon area is needed, an
+Our results show that an additional 0.183 mm$^2$ of silicon area is needed, an
 increase of 9\% of the main core area. Table~\ref{tab:evaluation.area_power}
 shows the peak and runtime power overheads. The peak power is 13-19 mW, which is
 11-16\% of the main core's peak power usage. The average runtime power is 8-11

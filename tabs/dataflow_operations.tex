@@ -1,5 +1,5 @@
 
-% Operations for handling clean flags
+% Operations for handling null flags
 
 \begin{tabular}{|l|l|l|l|}
 \hline
@@ -8,9 +8,9 @@
 
 \multirow{4}{*}{Clean flag}  
 & Array allocation & Never & - \\ \cline{2-4}
-& ALU   & Both source registers are clean & Mark destination register as clean \\ \cline{2-4}
-& Load  & Source memory location is clean & Mark destination register as clean \\ \cline{2-4}
-& Store & Source register is clean & Mark destination memory location as clean \\
+& ALU   & Both source registers are null & Mark destination register as null \\ \cline{2-4}
+& Load  & Source memory location is null & Mark destination register as null \\ \cline{2-4}
+& Store & Source register is null & Mark destination memory location as null \\
 \hline\hline
 
 \multirow{4}{*}{Invalid flag}  
@@ -29,10 +29,10 @@
 % 
 % \multirow{5}{*}{DIFT}  
 % & Software set tag & Never & - \\ \cline{2-4}
-% & ALU   & Both source registers are clean & Mark destination register as clean \\ \cline{2-4}
-% & Load  & Source memory location is clean & Mark destination register as clean \\ \cline{2-4}
-% & Store & Source register is clean & Mark destination memory location as clean \\ \cline{2-4}
-% & Indirect jump & Source register is clean & Do nothing \\ 
+% & ALU   & Both source registers are null & Mark destination register as null \\ \cline{2-4}
+% & Load  & Source memory location is null & Mark destination register as null \\ \cline{2-4}
+% & Store & Source register is null & Mark destination memory location as null \\ \cline{2-4}
+% & Indirect jump & Source register is null & Do nothing \\ 
 % \hline
 
 
