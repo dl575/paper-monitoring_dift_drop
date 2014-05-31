@@ -6,7 +6,7 @@ This is done by dynamically dropping a portion of the monitoring operations. In 
 made. Specifically, we first discuss how to measure the run-time monitoring
 overheads and when monitoring events need to be dropped in
 Section~\ref{sec:policies.slack}. Next, we investigate trade-offs created by
-selecting which events are dropped. Different policies in determining which
+selecting which events are dropped (Section~\ref{sec:policies.events}). Different policies in determining which
 events can be dropped create a trade-off between how closely the overhead
 budget is met and the monitoring coverage achieved.
 
@@ -71,10 +71,10 @@ cycle of the main core. This $k$ can be calculated by taking the reciprocal of
 the target budget. For example, if the target budget is 20\%, then the counter
 increments on every 5th clock cycle. The value of this counter is the
 accumulated slack. Whenever the main core is stalled due to the monitor, slack
-is decremented. This can be difficult to determine precisely due to difficult
-to measure overheads such as contention for shared memory. However, we have
-found that using only the stalls due to FIFO back pressure works well in
-practice.
+is decremented. This can be difficult to determine precisely due to the
+difficulty in measuring certain overheads such as contention for shared memory.
+However, we have found that using only the stalls due to FIFO back pressure
+works well in practice.
 
 \subsection{Dropping Decision Trade-Offs}
 \label{sec:policies.events}
@@ -128,7 +128,7 @@ since their results were not used for any monitoring checks.
   \label{fig:policies.policies}
 \end{figure}
 
-One method to eliminate this wasted work is to only make dropping decisions at
+An alternative dropping policy which eliminates this wasted work is to only make dropping decisions at
 the root of these metadata flows. That is, we will decide to either monitor or
 not monitor an entire metadata flow. We refer to this dropping decision policy
 as \emph{source-only dropping} and we refer to the previous policy of 
@@ -137,7 +137,7 @@ Figures~\ref{fig:policies.all_drop} and \ref{fig:policies.source_drop} show a
 comparison of where dropping decisions are made for these two policies. Source
 dropping will
 result in no wasted work and thus better coverage. However, because of the coarser-grained decision, it
-may be more difficult to closely match overheads. Source dropping is expected
+may be more difficult to closely match overheads. We expect source dropping 
 to work well when there are a large number of independent metadata flows.
 
 % Trade-off between source-drop and unrestricted dropping

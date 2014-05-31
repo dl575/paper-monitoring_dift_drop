@@ -18,7 +18,7 @@ overheads of programmable monitoring can be high due to the multi-cycle
 operation of the monitoring core.
  In order to reduce these overheads, we present two
 optimizations. The first optimization is to filter out monitoring events which relate to
-null metadata which do not need to processed by the monitoring core (Section~\ref{sec:optimizations.filter}). Second, in order to allow
+null metadata which do not need to be processed by the monitoring core (Section~\ref{sec:optimizations.filter}). Second, in order to allow
 further reduction in overheads, we propose to perform partial monitoring. This
 allows us to further reduce the overheads of monitoring by trading-off
 monitoring coverage. Figure~\ref{fig:optimizations.overview} shows an overview
@@ -73,7 +73,7 @@ example, a false positive can occur for array bounds check if an event is
 dropped that handles copying a pointer. Since the new pointer does not have
 correct base and bound address metadata, it will incorrectly cause errors to be
 raised.  We accept false negatives as the
-loss in coverage that we trade off in order to limit overheads.  However, we
+loss in coverage that we trade-off in order to limit overheads.  However, we
 must safely drop monitoring events in such a way as to avoid false positives so
 that the system does not incorrectly raise an error.
 

@@ -31,8 +31,8 @@ In this section, we will describe our dataflow-guided hardware architecture for
 enabling both filtering and partial monitoring.
 Figure~\ref{fig:arch.overview} shows a high-level block diagram of the
 architecture. The basic idea is to insert this dataflow-guided hardware between the main core and
-the monitoring core that will reduce the number of monitoring events that reach
-the monitoring core and thus reduce the overheads of monitoring.
+the monitoring core. This hardware reduces the number of monitoring events that reach
+the monitoring core in order to reduce monitoring overheads.
 
 As in the baseline architecture from Section~\ref{sec:monitoring}, events from
 the main core are first buffered in a FIFO. 
@@ -66,12 +66,12 @@ monitoring core to be processed.
 In order to perform filtering, we need to be able to identify and track flows
 of null metadata. Similarly, for partial monitoring,
  we need to be able to track the flow of invalid metadata. In
-order to efficiently these flows, we use a dedicated hardware
+order to efficiently track these flows, we use a dedicated hardware
 dataflow engine. A block diagram of the dataflow engine is shown in
 Figure~\ref{fig:arch.dataflow}.
 
 % Flags and flag storage
-In order track both null metadata flows and invalid metadata flows, the
+In order to track both null metadata flows and invalid metadata flows, the
 dataflow engine tracks the flow of 2-bit flags. One bit is used to
 mark metadata as null while the other bit is used to mark metadata as invalid.
 Monitoring schemes typically keep metadata corresponding to the main core's
@@ -136,7 +136,9 @@ are marked in Figure~\ref{fig:arch.overview}.
 
 Metadata is marked as non-null when the monitoring core writes a valid metadata
 value. When the monitoring core performs these metadata update operations, it
-also writes to the corresponding dataflow flag to mark the flag as non-null.
+also writes to the corresponding dataflow flag to mark the flag as non-null. In
+addition, it also re-validates the flag if it was set as invalid due to a
+dropped monitoring event.
 
 Flags are marked as invalid when a monitoring event is dropped due to
 insufficient overhead budget. Thus, whenever a monitoring event is dropped, the
@@ -194,8 +196,8 @@ flags using a combined policy.
 In terms of filtering using null flags, array allocations are never filtered
 since these will always involve non-null metadata (i.e., setting new base and
 bounds). For ALU operations, if both source operands are null, then the event
-can be filtered by setting the destination register as null. For load and
-store, only a single source needs to be checked to be null in order for the
+can be filtered by setting the destination register as null. For loads and
+stores, only a single source needs to be checked to be null in order for the
 event to be filtered. Similarly, the destination register or memory location
 needs to be marked as null if the event is filtered.
 
@@ -246,7 +248,7 @@ read up to two operands and write to one destination. For monitoring schemes
 which update multiple pieces of metadata on a monitoring event, it may be
 adequate to associate a null and invalid flag with a single piece of metadata.  For
 example, a scheme may use a data structure that includes several pieces of
-related metadata. On a drop, one of these pieces could be marked as invalid in
+related metadata. On a drop, one portion of the data structure could be marked as invalid in
 order to indicate that the entire structure is invalid.  Similarly, marking one
 specified piece as null may indicate that the entire data structure's metadata
 is null.  Alternatively, the read and write capabilities of the dataflow

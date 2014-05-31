@@ -4,7 +4,7 @@
 \subsection{Experimental Setup}
 \label{sec:evaluation.setup}
 
-We implemented dataflow-guided monitoring architecture by
+We implemented our dataflow-guided monitoring architecture by
 modifying the ARM version of the gem5 simulator \cite{gem5} to support parallel
 run-time monitoring. We model the main and monitoring cores as running at 2.5
 GHz with 4-way set-associative private L1 I/D caches and a shared 8-way 2 MB L2
@@ -16,21 +16,22 @@ different monitors, we implemented three different monitors: uninitialized
 memory check (UMC), array bounds check (BC), and dynamic information flow
 tracking (DIFT).  Uninitialized memory check seeks to detect loading from
 memory locations that are not initialized first.  Array bounds check, as
-mentioned in Section~\ref{sec:monitoring} is a monitoring scheme that aims to
+mentioned in Section~\ref{sec:monitoring}, is a monitoring scheme that aims to
 detect buffer overflows where memory accesses go beyond the boundaries of an
 array. We modify the implementation of {\tt malloc} to set base and bound
 metadata information. Dynamic information flow tracking is a security
-monitoring scheme,
+monitoring scheme
 which detects when information from untrusted sources is used to affect the
-program control flow. For the benchmarks we consider, we mark data read from
+program control flow (i.e., indirect control instructions). For the benchmarks we consider, we mark data read from
 files as untrusted. We implemented a multi-bit DIFT scheme which marks
 untrusted data with a 32-bit metadata identifier so
 that if an error is detected, it is possible to have information about where
 the data originated from. 
 
 We tested our system using all C benchmarks from SPECint
-CPU2006 \cite{spec2006}. We focus on the C benchmarks because of our
-modification of {\tt malloc} to support array bounds check. Although we do not
+CPU2006 \cite{spec2006}. Since our implementation of BC depends on the
+modification of {\tt malloc} to set array bounds information, we focus on the C
+SPECint benchmarks. Although we do not
 show results for the C++ benchmarks, we note that the results for UMC and DIFT
 for these benchmarks are similar to the other results shown. For each
 benchmark, we simulated for 1 billion instructions. An initial slack of 1
@@ -57,7 +58,8 @@ of 7x. BC shows normalized execution times of 9-28x with an average of
 11x. One of the reasons for these high overheads is that our implementations of
 these monitors dynamically allocate memory for new metadata. This can be an
 expensive, many-cycle operation. Statically allocating memory for metadata
-will reduce the execution time but requires a large upfront memory footprint.
+will reduce the execution time but requires a large upfront memory footprint
+which caused issues with our simulator.
 
 \subsection{Filtering of Monitoring Events}
 
@@ -75,17 +77,17 @@ will reduce the execution time but requires a large upfront memory footprint.
 Figure~\ref{fig:evaluation.filtering} shows the
 normalized execution times with filtering enabled. We see significant
 reductions in overhead for all three monitoring schemes. UMC sees normalized
-execution times 2-6x with an average of 4x with null metadata filtering. For BC, normalized execution
+execution times of 2-6x with an average of 4x with null metadata filtering. For BC, normalized execution
 times drop from 18x down to 4x on average. The range of normalized execution
 times for filtered BC is 1.1-17x. This is not surprising since in the baseline
 implementation all loads and stores needed to be monitored. However, with
 filtering, only loads and stores corresponding to arrays need to be forwarded.
 Finally, DIFT sees the largest reduction in overheads with only 13\% overheads
-on average after filtering with a maximum of 42\%. This is due, in part, to the fact that
+on average after filtering, with a maximum of 42\%. This is due, in part, to the fact that
 for our implementation of DIFT on SPEC
 benchmarks, we only mark data read from files as tainted. For most of these
 benchmarks, this propagates to relatively few instructions. Instead, if we
-targeted network or streaming applications, which have larger amounts in
+targeted network or streaming applications, which have larger amounts of
 untrusted input data, we would expect to see less filtering.
 
 \subsection{Coverage with Adjustable Partial Monitoring}
@@ -116,14 +118,19 @@ Although the overheads of DIFT are quite low after filtering, BC and UMC still
 show significant overheads. In this section, we evaluate the effectiveness of
 using partial monitoring (in addition to filtering) to trade-off coverage for further reduced overheads.
 Figure~\ref{fig:evaluation.bc_sweep} shows the monitoring coverage achieved by
-array bounds check as we vary the overhead budget. We measure monitoring
-coverage monitoring check operations that are still performed as a percentage
-of the total number of monitoring check operations. This number does not
-include the number metadata update operations that are done and serves as a
-better metric for the actual coverage of the security or reliability technique.
-The overhead is measured as a percentage of total number of checks performed
-with full monitoring. The results shown here are using an unrestricted dropping
-policy.
+array bounds check as we vary the overhead budget. 
+We define \emph{monitoring coverage} as the 
+percentage of checks that are performed 
+(indirect jumps in DIFT, loads in UMC, and memory accesses in BC). 
+The metric is chosen to understand
+how likely an error/attack instance is to be detected on an individual system. 
+While we could not evaluate real errors/attacks due to difficulty in setting up
+a large number of bugs and exploits, we believe that the percentage of checks
+provides a good estimate of detection probability when errors/attacks are 
+uniformly distributed across checks.
+Note that this metric is different from the
+percentage of monitoring events that are not dropped, which includes
+non-check instructions.
 
 We see that by varying the overhead budget, the coverage achieved also varies.
 With only a 10\% overhead budget, array bounds check still
@@ -138,8 +145,9 @@ monitoring coverage.
 
 Figure~\ref{fig:evaluation.umc_sweep} shows the analogous graph for UMC. Again
 we see that varying overhead budgets enables partial monitoring. We see that
-with a 10\% overhead budget, UMC achieves 32\% monitoring coverage on average
-and with a 50\% budget, UMC achieves 51\% coverage.
+with a 10\% overhead budget, UMC achieves 32\% monitoring coverage on average.
+By increasing this overhead budget to 50\%, UMC achieves 51\% coverage. Even
+higher coverage can be achieved by allowing higher overheads.
 
 \subsection{Comparing Dropping Policies}
 
@@ -148,7 +156,7 @@ and with a 50\% budget, UMC achieves 51\% coverage.
   \begin{center}
     \includegraphics[width=\columnwidth]{figs/data_umc_exec_time.pdf}
     \vspace{-0.2in}
-    \caption{Error in meeting overhead budget for uninitialized memory check.}
+    \caption{Error in meeting overhead budget for uninitialized memory check for different dropping policies.}
     \label{fig:evaluation.umc_exec_time}
     \vspace{-0.2in}
   \end{center}
@@ -165,7 +173,7 @@ and with a 50\% budget, UMC achieves 51\% coverage.
     \vspace{-0.1in}
   \end{center}
 \end{figure}
-In this section we evaluate the trade-offs of unrestricted dropping and source-only dropping.
+In this section we evaluate the trade-offs between unrestricted dropping and source-only dropping.
 Figure~\ref{fig:evaluation.umc_exec_time} shows the difference between the
 overhead budget and the run-time monitoring overheads for UMC. A positive value
 means that the overhead target was overshot while a negative value indicates
@@ -183,7 +191,7 @@ are being spent on wasted work as discussed in Section~\ref{sec:policies.events}
   \begin{center}
     \includegraphics[width=\columnwidth]{figs/data_bc_exec_time.pdf}
     \vspace{-0.2in}
-    \caption{Error in meeting overhead budget for array bounds check.}
+    \caption{Error in meeting overhead budget for array bounds check for different dropping policies.}
     \label{fig:evaluation.bc_exec_time}
     \vspace{-0.2in}
   \end{center}
@@ -220,21 +228,22 @@ higher overheads.
   \begin{center}
     \includegraphics[width=\columnwidth]{figs/data_multirun_coverage.pdf}
     \vspace{-0.2in}
-    \caption{Coverage over multiple runs for BC at 20\% overhead.}
+    \caption{Coverage over multiple runs for BC at 10\% overhead.}
     \label{fig:evaluation.multirun}
     \vspace{-0.1in}
   \end{center}
 \end{figure}
 
 One possible application of partial monitoring with low overheads is to enable
-cooperative debugging. The idea with cooperative debugging is to enable partial
+cooperative debugging. The idea with cooperative debugging is to use partial
 monitoring with very low overheads across a large number of users or runs. By
 varying the pattern of partial monitoring done on each run, the goal is to
-achieve high or total coverage across all runs. Varying the monitoring that is
+achieve high coverage across multiple runs. Varying the monitoring that is
 done for different runs can be achieved by introducing some randomness into the
 dropping decision. Figure~\ref{fig:evaluation.multirun} shows the total
-coverage achieved over multiple runs for array bounds check running with a 20\%
-overhead budget and an unrestricted dropping policy. Here, when events are
+coverage achieved over multiple runs for array bounds check running with a 10\%
+overhead budget and an unrestricted dropping policy. Each run was simulated for
+100 million instructions. For these simulations, events were
 dropped probabilistically with the probability scaled proportionally to slack.
 That is, when slack is high, the probability of dropping is low and the
 probability increases as we run out of slack. We see that the coverage achieved
@@ -242,7 +251,7 @@ quickly asymptotes for an unrestricted dropping policy. This is due to the fact
 that since there are multiple dependent monitoring operations that must be done
 in order for a final check to be successful, a small amount of randomness at
 each event quickly compounds to reduce the probability of certain checks to
-near zero. Instead, source-only dropping is much better suited for achieve high
+near zero. Instead, source-only dropping is much better suited for achieving high
 coverage over multiple runs.
 
 \subsection{Area and Power Overheads}
@@ -262,7 +271,7 @@ coverage over multiple runs.
   \end{center}
 \end{table}
 
-Adding the dataflow engine in order to enable filtering and adjustable adjustable adds
+Adding the dataflow engine in order to enable filtering and partial monitoring adds
 overheads in terms of area and power. We use McPat \cite{mcpat-micro09} to get
 a first-order estimate of these area and power overheads in a 40 nm technology
 node. McPat estimates the main core area as 2.71 mm$^2$ and the peak power usage as
@@ -274,7 +283,7 @@ power. For the dataflow engine, we modeled the ALUs used for address
 calculation, the dataflow flag register file and cache, the configuration
 tables, and the filter decision table. These were modeled using the
 corresponding memory and ALU objects in McPat. We
-note that this is only a rough area and power result since components such as the
+note that this is only a rough area and power estimate since components such as the
 wires connecting these modules have not been modeled. However, this gives a
 sense of the order-of-magnitude overheads involved with implementing our
 approach.
@@ -283,6 +292,6 @@ Our results show that an additional 0.197 mm$^2$ of silicon area is needed, an
 increase of 7\% of the main core area. Table~\ref{tab:evaluation.area_power}
 shows the peak and runtime power overheads averaged across all benchmarks with
 a 50\% monitoring overhead target. The peak power is 5-7 mW, which is
-5-7\% of the main core's peak power usage. The average runtime power is 3-4 
-mW, corresponding to 8-11\% of the main core's runtime power.
+less than 1\% of the main core's peak power usage. Similarly, the average runtime power is 3-4 
+mW, corresponding to about 1\% of the main core's runtime power.
 
