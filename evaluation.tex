@@ -77,13 +77,16 @@ which caused issues with our simulator.
 Figure~\ref{fig:evaluation.filtering} shows the
 normalized execution times with filtering enabled. We see significant
 reductions in overhead for all three monitoring schemes. UMC sees normalized
-execution times of 2-6x with an average of 4x with null metadata filtering. For BC, normalized execution
-times drop from 18x down to 4x on average. The range of normalized execution
+execution times of 2-6x with an average of 4x with null metadata filtering.
+This is an average reduction in overheads of 52\%. For BC, normalized execution
+times drop from 18x down to 4x on average (an 82\% reduction). The range of normalized execution
 times for filtered BC is 1.1-17x. This is not surprising since in the baseline
 implementation all loads and stores needed to be monitored. However, with
 filtering, only loads and stores corresponding to arrays need to be forwarded.
 Finally, DIFT sees the largest reduction in overheads with only 13\% overheads
-on average after filtering, with a maximum of 42\%. This is due, in part, to the fact that
+on average after filtering, a 90\% reduction in monitoring overheads, with a
+maximum overhead of 42\% after filtering. This is due, in part, to the fact
+that
 for our implementation of DIFT on SPEC
 benchmarks, we only mark data read from files as tainted. For most of these
 benchmarks, this propagates to relatively few instructions. Instead, if we
