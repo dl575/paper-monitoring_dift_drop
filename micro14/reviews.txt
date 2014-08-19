@@ -1,0 +1,213 @@
+===========================================================================
+                          MICRO 2014 Review #41A
+                     Updated 11 Jul 2014 1:14:19pm EDT
+---------------------------------------------------------------------------
+   Paper #41: Dataflow-Guided Filtering for Efficient and Adjustable
+              Run-Time Monitoring
+---------------------------------------------------------------------------
+
+
+                         ===== Paper summary =====
+
+The paper proposes an architecture for filtering the monitoring data flow between a main core and a monitoring core. The main contribution is the design of this dataflow filtering architecture, and the exploration of the tradeoff between dropping monitoring events in this architecture and the overhead seen by the monitoring core.
+
+                           ===== Strengths =====
+
+- Architecture definition of a dataflow tracking engine for filtering and possibly dropping monitoring events, while ensuring no false positives
+- The dataflow tracking engine is able to operate on monitoring uninitialized memory, array bound checks, information flow tracking, and basically any monitoring based on mapping effective addresses and contents of memory accesses
+
+                          ===== Weaknesses =====
+
+- There seems to be an implicit assumption that metadata is stored in the main memory space, at some reserved virtual address but this is not clear
+- There is no discussion on how medata dependence graph is encoded and how it is processed: by the dataflow tracking engine, or by the monitoring core? If the former (which I assume), the tracking engine does not seem to have the requires computing capabilities nor the time budget
+
+         Pre-rebuttal overall merit: 3. Weak accept - I support accepting
+                                        this paper, but will not champion
+                                        it
+                 Reviewer expertise: 2. Some familiarity
+
+                    ===== Comments to the Authors =====
+
+There are a lot of dots to be filled between this paper and the actual implementation of a simple monitoring scheme like array bound checks. A description of a working system, including how metadata is represented and accessed in 'source only dropping', is required so one can be convinced this works.
+
+===========================================================================
+                          MICRO 2014 Review #41B
+                     Updated 12 Jul 2014 4:23:28am EDT
+---------------------------------------------------------------------------
+   Paper #41: Dataflow-Guided Filtering for Efficient and Adjustable
+              Run-Time Monitoring
+---------------------------------------------------------------------------
+
+
+                         ===== Paper summary =====
+
+The paper proposes a technique using "taint propagation" to filter the set of data that are then more carefully analyzed.  This, in turn, reduces the overhead caused by more heavy-weight analysis (by removing useless checks) and provides an ability to tune the performance overhead to a specific target at the expense of analysis coverage.
+
+                           ===== Strengths =====
+
+The core idea of using a simple dynamic information flow scheme as a performance optimization for a variety of other analysis methods is interesting (in particular the idea of doing simple DIFT analysis to track regions where the more sophisticated analysis in now invalid is a particularly nice way to think about things)
+
+In addition, the idea of using that same analysis to manage overheads to reach some target is also interesting.
+
+                          ===== Weaknesses =====
+
+Much of the benefit realized by reducing null-analysis and information-flow sampling has been covered by prior work (discussed below)
+
+The base-lines for performance seem to be quite high, and there is now comparison to related architectures.
+
+         Pre-rebuttal overall merit: 2. Weak reject - I do not support
+                                        accepting this paper, but could be
+                                        convinced to accept it
+                 Reviewer expertise: 3. Knowledgeable
+
+                    ===== Comments to the Authors =====
+
+Two very related works that cover important parts of this work:
+
+"FlexiTaint: A Programmable Accelerator for Dynamic Taint Propagation" From that paper: "To reduce the number of TPC accesses and keep the TPC single-ported, we rely on two key observations that hold for most (but not all) types of instructions in the schemes we studied. First, if inputs are untainted (zero-taint), the output is also untainted. Second, if only one of the operands has a non-zero taint, the result taint is simply a copy of the non- zero input taint. To exploit these observations, we use a programmable Filter Taint Propagation Table (Filter TPT) to selectively enable these optimizations for opcodes to which they are applicable according to the current set of taint propagation rules."  While the authors already point out that some of the filtering ideas have been done in other related work, these ideas go back even further back.  More discussion of what exactly is being claimed as novel is required.
+
+"Flexible and Efficient Instruction-Grained Run-Time Monitoring Using On-Chip Reconfigurable Fabric".  In this work an RTL implementation is created that looks at exactly the same set of analysis applications (plus one extra).  From the abstract: "To evaluate the FlexCore architecture, we implemented an RTL prototype along with several extensions including uninitialized memory read checking, dynamic information flow tracking, array bound checking, and soft error checking.".  Furthermore, they apply a very simple form of performance limiting analysis: "The architecture provides three choices regarding whether an instruction should be forwarded or not. A FIFO can be configured to (i) ignore an instruction, (ii) forward an instruction only if a FIFO entry is available (ignore if the FIFO is full), or (iii) always forward an instruction."  Of course this is not seeking a specific overhead target as this paper is, but it is related.
+
+In that paper the authors also discuss software only schemes and their overheads (most of these just run on one core).  "For DIFT, previous software implementations have placed the performance overhead as high as 37 times [2]. Even a highly optimized implementation on high-end superscalar processors reported an average slowdown of 3.6 times [10]. For UMC, Purify [14] performs similar checks by adding state bits to each byte in memory, and was reported to be up to 5.5 times slower. The array bound check in software can also incur a noticeable slowdown in memory intensive programs up to 1.69 times even with extensive optimizations [18]."  It seems odd that the hardware assisted baseline in this paper is as bad or worse than the best software-only schemes.
+This paper would be a natural point of comparison in that they have an RTL level implementation, they address the same exact set of analysis types, and they have reasonable overheads: "For example, array-bound checks can be performed by the reconfigurable fabric with a 18% average slowdown and 22% additional power consumption while an ASIC implementation results in a 8% slowdown with 8% additional power consumption. Dynamic Information Flow Tracking (DIFT) on the FlexCore design incurs a 17% slowdown with a 21% power overhead compared to the 5% and 6% overheads of an ASIC."  Some discussion, or even better experimental results, comparing these two approaches is definitely needed.
+
+Overall the submitted paper has some good ideas (I like the problem of performance/accuracy targeting in the face of weird data-flow dependencies), but the paper right would benefit from more focus.  This lack of focus shows through in all of the redundancy in the paper (for example section 3 is almost entirely repeat) and in the way that both ideas and details are somewhat haphazardly thrown around without adequate discussion (for example section 6.6 opens many questions and is a very different from the rest of the paper reads like it was inserted in at the last minute).  Examples of other statements requiring clarification:
+
+"This filter decision table is configured by the monitoring scheme on system initialization." Is this system boot?  Program loading?  Any thoughts on how this might be done?
+
+"Since marking a piece of metadata as invalid will cause future metadata with dependences to also be marked as invalid, schemes with large metadata dependency chains can quickly see large amounts of metadata become invalid." A really interesting point that begs some quantification and further evaluation, but goes no where.
+
+"Our goal with enabling partial monitoring is to allow for a specified overhead target or budget to be met while maximizing the amount of monitoring performed."  Again, this is a great point, but more quantification would be helpful -- what is the best you could do if you knew all dataflows ahead of time?  How close did you get to this limit?
+
+"Whenever the main core is stalled due to the monitor, slack is decremented. This can be difficult to determine precisely due to the difficulty in measuring certain overheads such as contention for shared memory. However, we have found that using only the stalls due to FIFO back pressure works well in practice."  Again, how did you figure this out?  How do you know that this works well in practice?  what other ideas did you try?  What happens if your program actually have shared memory?
+
+"For each benchmark, we simulated for 1 billion instructions. An initial slack of 1 million cycles, which is less than 1% of the total execution time, is given for a 10% target overhead. This initial slack is scaled proportionally for other overhead targets."  If you don't know aprior how long a program will run, how do you know how much slack to associate to it?
+
+"We define monitoring coverage as the percentage of checks that are performed (indirect jumps in DIFT, loads in UMC, and memory accesses in BC). "  This is the pretty much the only discussion of the most important metric of the paper.  Does this mean a check is only counted if it is truly valid?  Are there false positives or negatives?  Information flow tracking is an approximate thing (there are ways to fool it), does this metric consider this?
+
+                    ===== Questions for Rebuttal =====
+
+
+
+Information flow tracking can have false positives and negatives (e.g. implicit flows), is there any work to examine the effect of these on the analysis performed?
+
+What is the argument for using extra hardware + another core as supposed just a small programable unit (as described in the two related works from the comments to authors).
+
+===========================================================================
+                          MICRO 2014 Review #41C
+                     Updated 16 Jul 2014 4:38:31pm EDT
+---------------------------------------------------------------------------
+   Paper #41: Dataflow-Guided Filtering for Efficient and Adjustable
+              Run-Time Monitoring
+---------------------------------------------------------------------------
+
+
+                         ===== Paper summary =====
+
+The paper presents and evaluates two optimizations to a hardware-supported runtime monitoring system, where the main core runs an application and the monitoring core performs sidelined monitoring activities. First, they provide support for eliminating "null data" from being communicated, e.g. nothing to check regarding array bounds calculations. The second contribution is an exploration of partial coverage in exchange for lower overhead. In this case, the user dictates an overhead budget, and the monitoring coverage is adjusted accordingly. They leverage a hardware based dataflow engine to do the filtering.
+
+                           ===== Strengths =====
+
+The second contribution, exploring partial coverage, certainly has many applications, including profiling and sampling. Therefore, sweeping the design space is an interesting contribution to the research community.
+
+                          ===== Weaknesses =====
+
+The first contribution, eliminating null data, seems a lot like a solution to a problem that shouldn't have existed in the first place.  It is unlikely to be broadly applicable. I actually think it is a minute optimization to the hardware, and probably warrants no more than a paragraph of attention.
+
+         Pre-rebuttal overall merit: 3. Weak accept - I support accepting
+                                        this paper, but will not champion
+                                        it
+                 Reviewer expertise: 3. Knowledgeable
+
+                    ===== Comments to the Authors =====
+
+Overall, I found the general area, partial monitoring, to be interesting and relevant. I found the evaluation section to be well done. And I found the writing to be mostly well done. I worry, however, that there will not be wide interest in this particular implementation of partial monitoring. The space overhead of 7% seems very high given the fairly limited utility of the dataflow engine. The approach wasn't well sold in the example applications. Array bounds checks, memory checks, etc. are best implemented with full coverage. Meanwhile other applications, like profiling, can tolerate lower coverage. 
+
+It seems like the user might be better served to target other metrics, like the coverage itself, in partial monitoring. For instance, I might want to tolerate whatever overhead is necessary to achieve at least 90% coverage. Or perhaps I'd like to find the knee of the curve.
+
+Minor points:
+- Figures 9 and 10 should have the same y-axis scale.
+
+                    ===== Questions for Rebuttal =====
+
+Why did you choose memory checking, array bounds checking and flow tracking as the target monitoring activities? It seems dangerous to provide less than full coverage on these monitors. Meanwhile, applications like profiling, can easily tolerate partial coverage and still remain fairly accurate. That trade-off seems much more interesting.
+
+===========================================================================
+                          MICRO 2014 Review #41D
+                     Updated 5 Aug 2014 10:44:28pm EDT
+---------------------------------------------------------------------------
+   Paper #41: Dataflow-Guided Filtering for Efficient and Adjustable
+              Run-Time Monitoring
+---------------------------------------------------------------------------
+
+
+                         ===== Paper summary =====
+
+The goal of this paper is to build  runtime monitoring hardware for program bugs by running the monitor on a separate core in a multicore processor. The authors claim that they are able to achieve lower performance through dropping certain monitoring events and through avoiding the processing of null metadata tags. The proposed idea is evaluated using three relatively simple and well-known debugging tasks- checking for array bounds, DIFT and uninitialized memory checking.
+
+                           ===== Strengths =====
+
+-the paper is well written and easy to read
+-hardware debugging support is a critical area of research
+
+                          ===== Weaknesses =====
+
+-the core idea is sec 2 is virtually the same as Heapmon published in 2004 IBM PAC2 conference
+-dropping monitoring events without understanding the implications, and claiming the false -ves can be ignored undermine the soundness of the proposed debugging tool
+
+         Pre-rebuttal overall merit: 1. Reject - I am against accepting
+                                        this paper
+                 Reviewer expertise: 4. Expert
+
+                    ===== Comments to the Authors =====
+
+The ideas proposed in your paper on runtime monitoring on a separate core with a FIFO queue in-between and filtering of unnecessary events were the core contributions of Heapmon published in IBM PAC2 conference in 2004. You should refer to that paper, and see how your proposed ideas are any different from theirs.
+
+Your argument that certain monitoring events can be dropped without understanding the implications of this action on the accuracy of runtime monitoring is unjustified. Also your claim that false negatives (one where the actual errors go unreported) are ok to have, is simply not correct. For example, in your DIFT application, can you afford to have a tainted variable be used by an untrusted function without your runtime tool actually reporting that this is happening? You should explain.
+
+Your reported savings in runtime overheads seem to be possible due to the use of SPEC benchmarks which have limited I/O to begin with. How about more I/O intensive benchmarks? 
+
+The claim that your work can emulate all of the prior works on memory debugging and control flow integrity checking is somewhat misleading. It is unclear to me what the real differences are, and how your scheme can emulate every single one of them? Your scope should be more well defined.
+
+===========================================================================
+                          MICRO 2014 Review #41E
+                     Updated 15 Aug 2014 4:20:35pm EDT
+---------------------------------------------------------------------------
+   Paper #41: Dataflow-Guided Filtering for Efficient and Adjustable
+              Run-Time Monitoring
+---------------------------------------------------------------------------
+
+
+                         ===== Paper summary =====
+
+The paper proposes a framework for run-time monitoring of programs. The proposed framework implements "dataflow-guided" filtering to enable selective monitoring of instructions within a program. The authors measure the effectiveness of their technique for three applications: array bounds checking, DIFT for tracking uses of untrusted data and  tracking reads from uninitialized memory.
+
+                           ===== Strengths =====
+
+The paper proposes a gradual and useful advance over state-of-the-art.
+
+                          ===== Weaknesses =====
+
+The paper is low on novelty.
+
+Poor baseline.
+
+         Pre-rebuttal overall merit: 2. Weak reject - I do not support
+                                        accepting this paper, but could be
+                                        convinced to accept it
+                 Reviewer expertise: 3. Knowledgeable
+
+                    ===== Comments to the Authors =====
+
+The proposed work has many similarities to "Flexible and Efficient Instruction-Grained Run-Time Monitoring Using On-Chip Reconfigurable Fabric" which appeared in Micro 2010 in design and execution. In the Micro 2010 paper authors propose using a FIFO to transmit instruction events from a core to a reconfigurable fabric on the side. The authors of that paper also propose filtering out unnecessary types of instructions. This paper does not compare the benefits of the new filtering technique (data flow filtering) to Micro 2010 paper. How much additional benefit does filtering provide over the filtering technique proposed in that paper? 
+
+In this paper DIFT is synonymously used with one application of DIFT to detect use of untrusted data. However if DIFT is implemented to support configurable policies many of the proposed techniques can implemented with just DIFT: UMC checking is same as checking for untrusted inputs except that untrusted inputs are uninitialized locations; Bounds checking involves propagating the bounds tag with the execution and checking the tag on each load and store. Many more performance and monitoring optimizations are possible with DIFT (and with low performance overheads). It would be better for the authors to explain the relationship of the proposed technique to general technique of DIFT instead of one application of DIFT.
+
+The baseline described in section 6.2 appears to be selected based on what runs in the simulator instead of using state-of-the-art ("statically allocating memory for metadata will reduce execution time but requires large memory footprint ...which caused issues with our simulator"). For future revisions please choose a more suitable baseline.
+
+                    ===== Questions for Rebuttal =====
+
+How is this paper "Flexible and Efficient Instruction-Grained Run-Time Monitoring Using On-Chip Reconfigurable Fabric" related to your work? 
+
+A processor with hardware support for information flow tracking mechanism and support for *configurable* policies can be re-purposed to provide the same functionality as the technique proposed in the paper - Do you agree?
+
