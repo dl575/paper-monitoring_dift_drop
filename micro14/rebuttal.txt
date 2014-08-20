@@ -1,0 +1,113 @@
+Review-A
+
+-How is metadata dependence graph encoded and processed?
+The full graph structure does not need to be stored. The dataflow engine
+dynamically propagates the information about whether metadata is null or
+invalid. Source-only dropping is enabled by only making dropping decisions on
+explicit instructions which modify metadata. This does not require information
+about the full dependence graph to identify.
+
+Review-B
+
+-Previous work has removed null-metadata (e.g., FlexiTaint).
+As we mention in the paper, we are not the first work to filter out null
+metadata. However, we show how a single dataflow engine can be used to provide
+both this filtering mechanism as well a dropping mechanism to further reduce
+overheads.
+
+-FlexCore allows an instruction type to be not forwarded or not forwarded if
+the FIFO is full.
+Our implementation also filters out instruction types which are not
+relevant to the monitor. Not forwarding instructions if the FIFO is full can
+lead to false positives which FlexCore does not prevent.
+
+-Baseline overheads are high. In addition, FlexCore shows much lower overheads.
+One reason for our high baseline overheads is due to the need to dynamically
+allocate memory space for metadata due to the large metadata we are using.
+FlexCore shows much lower overheads by performing monitoring on a
+reconfigurable fabric. This requires dedicated on-chip reconfigurable
+fabric for this purpose. Our evaluation focuses on a core-based monitor but our
+techniques could also be applied to FlexCore to further reduce its overheads.
+
+-Information flow tracking can have false positives and negatives (e.g.,
+implicit flows). Is the effect of these examined?
+In this work we have focused on the false positives and negatives that arise
+from dropping a portion of the information flow tracking operations. We have
+not looked at the inherent false positives and negatives that arise with
+specific information flow tracking schemes, such as handling implicit flows.
+
+-Why use extra HW + extra core as opposed to a programmable HW unit?
+We focused our evaluation on a core-based monitor as this has greater
+flexibility and requires less hardware changes to implement.
+However, our techniques could also be applied to hardware monitors such as
+FlexiTaint and FlexCore to enable reduced overheads by filtering and
+dropping monitoring events.
+
+Review-C
+
+-Why choose security monitoring instead of applications like profiling which
+ can tolerate partial coverage?
+Profiling would also serve as a good application for our system and we
+could study such a scheme on our system in the future. We chose to focus
+on security monitoring as the issues with targeting security monitoring
+were a superset of those for most profiling monitors (e.g., dealing with false
+positives). 
+
+Review-D
+
+-Core idea of Section 2 (monitoring) is same as Heapmon.
+Section 2 describes our baseline run-time monitoring architecture.  Our work
+extends previous work on run-time monitoring, such as Heapmon and others, by
+filtering out monitoring on null metadata and dropping monitoring events to
+further reduce overheads.
+
+-Claiming false negatives can be ignored undermines the soundness of the
+ monitoring. Can you afford for tainted variable to be used by untrusted
+ function?
+Although full monitoring is always desired, if the performance overheads
+of full monitoring cannot be tolerated, then false negatives are a
+necessary trade off. The alternative would be to completely disable
+monitoring (i.e., 100% false negatives).
+
+-Claim that work can emulate all prior works on memory debugging and control
+ flow integrity check. How can your scheme emulate every single one of them?
+As the monitor is implemented in software on a core, it can support a wide
+range of monitoring operations. Specifically, any monitoring technique
+which performs operations in response to instruction executions should be
+implementable.
+
+Review-E
+
+-How much additional benefit does data-flow filtering provide over
+ instruction-type filtering (FlexCore)?
+Like FlexCore, our system also filters out monitoring for instruction
+types which are not relevant to a monitoring technique. The results we
+show are the additional benefit of our technique on top of
+instruction-type filtering.
+
+-Baseline selected based on what runs on simulator instead of
+ state-of-the-art (dynamic allocation due to memory issues with simulator). 
+Monitoring tags can require a large memory space. This is a problem not
+unique to our baseline, though it is not always addressed. We have chosen to
+deal with this by performing dynamic allocation of memory for metadata rather
+than statically allocating a large memory space for metadata (up to 4 GB).
+This comes at a trade-off in overheads. UMC, which has smaller metadata, was
+implemented by statically allocating the metadata memory and thus does not
+see as high overheads as BC and DIFT. A dedicated metadata TLB could be used
+to reduce these overheads.
+
+-Processor with hardware support for information flow tracking and support
+ for configurable policies can be re-purposed to provide same functionality as
+ the technique proposed in the paper. 
+Our technique for using a dataflow engine for filtering and dropping metadata
+can be applied to both core-based monitors and dedicated hardware monitors such
+as a hardware-supported information flow tracking mechanism. For a sufficiently
+configurable information flow track module, it may be possible to incorporate
+this into the information flow tracking policy.  However, as far as we know, we
+are the first to propose using this flow tracking mechanism to provide both
+filtering and dropping of monitoring events to reduce monitoring overheads. In
+addition, there are monitoring schemes that may not be possible to be mapped to
+information flow tracking (e.g., control flow integrity checking, hardware
+error detection, etc.) in which case a separate dataflow engine, such as the
+one we describe, would be needed to enable filtering and dropping.
+
