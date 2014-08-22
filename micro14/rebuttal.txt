@@ -4,9 +4,9 @@ General
 etc.)?
 Run-time monitoring is a well studied problem. However, our work is the first
 that proposes a general hardware platform that allows for an adjustable
-overhead target by trading off coverage for overhead.
-While we use a core-based monitor to demonstrate techniques, our platform
-is applicable to other types of monitors such as FlexCore.
+overhead target by trading off coverage for overhead.  While we use a
+core-based monitor to demonstrate techniques, our platform is applicable to
+other types of monitors such as FlexCore.
 
 Review-A
 
@@ -21,15 +21,15 @@ Review-B
 -How does this compare to FlexCore's dropping of events?
 We ensure that false positives do not occur when events are dropped. FlexCore
 does not prevent these false positives. Our dropping is also more intelligent
-selectively dropping based on the overhead target and importance.
+by selectively dropping based on the overhead target and importance.
 
 -Baseline overheads are high.
 Our overheads are comparable to previous work such as [Newsome NDSS'05]
 (24-37x) and [Chen ASID'06] (4-10x). More recent works have aggressively
-optimized these monitors to reduce overheads. Yet, the overhead especially
-for monitors with large tags can still be significant.
-The dataflow engine can be applied to the optimized monitors to further
-reduce the overhead or enable coverage at a lower overhead target. 
+optimized these monitors to reduce overheads. Yet, the overhead, especially for
+monitors with large tags, can still be significant. Our dataflow engine can be
+applied to the optimized monitors to further reduce the overhead or enable
+coverage at a lower overhead target. 
 
 -The dataflow engine does not track implicit flows. Can this lead to
 false positives or negatives?
@@ -40,19 +40,18 @@ support to ensure no false positives on our hardware platform.
 
 -Why use extra HW + extra core as opposed to a programmable HW unit?
 We evaluated our idea on a core-based monitor as this represents the most
-flexible design and leverages multi-cores with less hardware changes.
-However, our techniques could
-also be applied to hardware monitors, such as FlexiTaint and FlexCore, to enable
-adjustable overheads.
+flexible design and leverages multi-cores with less hardware changes. However,
+our techniques could also be applied to hardware monitors, such as FlexiTaint
+and FlexCore, to enable adjustable overheads.
 
 Review-C
 
 -Why choose security monitoring instead of applications like profiling which
  can tolerate partial coverage?
 We agree that profiling is a promising application for our platform with
-adjustable overhead.
-We focused on monitors for program bugs because they address important problems
-and represent a general case where false positives need to be handled.
+adjustable overhead. We focused on monitors for program bugs because they
+address important problems and represent a general case where false positives
+need to be handled.
 
 Review-D
 
@@ -80,7 +79,7 @@ instruction-type filtering.
  state-of-the-art (dynamic allocation of memory).
 We implemented dynamic metadata allocation because it is required for monitors
 with large metadata (for example, 64-bits per word in bound checking or
-32-bit per byte for multi-bit DIFT). We also tested static allocation for 
+32-bits per byte for multi-bit DIFT). We also tested static allocation for 
 smaller metadata.
 
 -Processor with hardware support for information flow tracking can provide the
