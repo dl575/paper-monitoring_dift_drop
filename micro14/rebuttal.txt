@@ -5,6 +5,8 @@ etc.)?
 Run-time monitoring is a well studied problem. However, our work is the first
 that proposes a general hardware platform that allows for an adjustable
 overhead target by trading off coverage for overhead.
+While we use a core-based monitor to demonstrate techniques, our platform
+is applicable to other types of monitors such as FlexCore.
 
 Review-A
 
@@ -18,26 +20,28 @@ Review-B
 
 -How does this compare to FlexCore's dropping of events?
 We ensure that false positives do not occur when events are dropped. FlexCore
-does not prevent these false positives.
+does not prevent these false positives. Our dropping is also more intelligent
+selectively dropping based on the overhead target and importance.
 
 -Baseline overheads are high.
 Our overheads are comparable to previous work such as [Newsome NDSS'05]
 (24-37x) and [Chen ASID'06] (4-10x). More recent works have aggressively
-optimized these monitors to reduce overheads, though these overheads could
-still be considered too high to enable monitoring in certain contexts. These
-optimizations could be applied to our system as well, resulting in higher
-coverage at the same target overhead or comparable coverage at even lower
-overheads.
+optimized these monitors to reduce overheads. Yet, the overhead especially
+for monitors with large tags can still be significant.
+The dataflow engine can be applied to the optimized monitors to further
+reduce the overhead or enable coverage at a lower overhead target. 
 
--Information flow tracking can have false positives and negatives (e.g.,
-implicit flows). Is the effect of these examined?
-The information flow tracking scheme that we examined only tracked explicit
-flows. Monitoring schemes which track implicit flows may require additional
+-The dataflow engine does not track implicit flows. Can this lead to
+false positives or negatives?
+The monitors that we examined only tracked explicit flows. As a results,
+the dataflow engine only needed to track explicit flows.
+Monitoring schemes which track implicit flows may require additional
 support to ensure no false positives on our hardware platform.
 
 -Why use extra HW + extra core as opposed to a programmable HW unit?
-We evaluated our idea on a core-based monitor as this has greater flexibility
-and requires less hardware changes to implement. However, our techniques could
+We evaluated our idea on a core-based monitor as this represents the most
+flexible design and leverages multi-cores with less hardware changes.
+However, our techniques could
 also be applied to hardware monitors, such as FlexiTaint and FlexCore, to enable
 adjustable overheads.
 
@@ -45,9 +49,10 @@ Review-C
 
 -Why choose security monitoring instead of applications like profiling which
  can tolerate partial coverage?
-We focused on security monitoring due to the challenges that arise with false
-positives for these monitoring techniques. Our platform could also be used with
-profiling applications in order to enable reduced and adjustable overheads.
+We agree that profiling is a promising application for our platform with
+adjustable overhead.
+We focused on monitors for program bugs because they address important problems
+and represent a general case where false positives need to be handled.
 
 Review-D
 
@@ -59,24 +64,24 @@ monitoring (i.e., 100% false negatives).
 
 -How can your scheme emulate other monitoring techniques?
 As the monitor is implemented in software on a core, it can support a wide
-range of monitoring operations. Specifically, any instruction-grained
-monitoring technique should be implementable.
+range of monitoring operations. Specifically, any technique that monitors
+a trace of instructions should be implementable.
 
 Review-E
 
 -How much additional benefit does data-flow filtering provide over
  instruction-type filtering (FlexCore)?
-Like FlexCore, our system also filters out monitoring for instruction
+Like FlexCore, our baseline system filters out monitoring for instruction
 types which are not relevant to a monitoring technique. The results we
 show are the additional benefit of our technique on top of
 instruction-type filtering.
 
 -Baseline selected based on what runs on simulator instead of
  state-of-the-art (dynamic allocation of memory).
-Dynamic allocation of metadata memory is required for the large metadata used
-by the monitors we evaluated (up to 4 GB total memory required). Static
-allocation may be possible for systems with large memory space, but was not
-reasonable for our target system.
+We implemented dynamic metadata allocation because it is required for monitors
+with large metadata (for example, 64-bits per word in bound checking or
+32-bit per byte for multi-bit DIFT). We also tested static allocation for 
+smaller metadata.
 
 -Processor with hardware support for information flow tracking can provide the
 same functionality.
@@ -85,6 +90,6 @@ which has not been studied by previous works on hardware support for
 information flow tracking. The monitoring techniques we evaluated could be
 implemented with a sufficiently configurable information flow tracking
 mechanism. However, there are other monitors (e.g., control flow integrity
-checking, hardware error detection, etc.) which our technique could also be
-applied to.
+checking, hardware error detection, race detection, etc.) that cannot be 
+implemented as DIFT but can use our technique.
 
