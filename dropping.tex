@@ -1,0 +1,238 @@
+\section{Adjustable Monitoring Infrastructure}
+\label{sec:dropping}
+
+In this section, we present an architecture that can limit the amount of
+monitoring performed in order to meet a target overhead budget. We consider the
+overhead budget as a soft constraint that we seek to stay below or close to,
+but do not require strict guarantees that it is met. For this paper, we focus on
+the performance overhead of monitoring, though other overheads could also be
+considered. 
+
+% Overview of full architecture
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=\columnwidth]{figs/architecture_overview.pdf}
+    \vspace{-0.2in}
+    \caption{Block diagram of architecture for monitoring with reduced and adjustable overheads.}
+    \label{fig:dropping.overview}
+    \vspace{-0.1in}
+  \end{center}
+\end{figure}
+
+Figure~\ref{fig:dropping.overview} shows a high-level block diagram of our
+proposed architecture for enabling partial monitoring. The basic idea is to
+insert hardware between the main core and the monitoring core to transparently
+drop monitoring events. 
+
+There were three main challenges in designing this dropping hardware:
+\begin{enumerate}
+  \item \textbf{General:} The hardware needs to be applicable to a wide range of monitoring schemes.
+  \item \textbf{No false positives:} False positives should never occur as a result of dropping.
+  \item \textbf{Intelligent dropping:} The hardware needs to maximize the amount of useful monitoring done while staying within the overhead budget.
+\end{enumerate}
+
+In order to reduce overheads, the ``Drop'' module decides when monitoring event
+should be skipped.  This decision of when to drop and which monitoring events
+to dropped is discussed in more detail in Section~\ref{sec:policies}.
+
+When an event is dropped, metadata needs to be invalidated in order to prevent
+false positives. This is done using a hardware dataflow engine.
+Sections~\ref{sec:dropping.false_neg_pos} and
+\ref{sec:dropping.prevent_false_pos} discuss these false positive issues and
+the dataflow engine in detail. 
+
+In addition, we can use the dataflow engine to filter out monitoring operations
+that would be operating on invalid metadata. This maximizes the useful
+monitoring that is done by the monitoring core.
+Section~\ref{sec:dropping.filter} talks about how this is done using
+information from the dataflow engine.
+
+\subsection{False Negatives and False Positives}
+\label{sec:dropping.false_neg_pos}
+
+% Example of dropping
+\begin{figure*}
+  \begin{center}
+  \subfloat[no error] {
+    \includegraphics[trim=1.6in 0 0 0,clip=true]{figs/example_no_error.pdf}
+    \label{fig:dropping.example_no_error}
+  }
+  \hspace{0.2in}
+  \subfloat[false negative] {
+    \includegraphics[trim=1.6in 0 0 0,clip=true]{figs/example_false_negative.pdf}
+    \label{fig:dropping.example_false_negative}
+  }
+  \hspace{0.2in}
+  \subfloat[false positive] {
+    \includegraphics[trim=1.6in 0 0 0,clip=true]{figs/example_false_positive.pdf}
+    \label{fig:dropping.example_false_positive}
+  }
+  \caption{Dropping}
+  \label{fig:dropping.example_dropping}
+  \end{center}
+\end{figure*}
+
+Our goal is to drop some monitoring operations in order to reduce the overheads
+of run-time monitoring. This dropping can affect the functionality of the
+monitoring schemes. There are three possible outcomes for dropping a
+monitoring operation. The first is that there is no difference in operation
+from the original execution. For example, if we drop line 3 from our array
+bounds check example (see Figure~\ref{fig:dropping.example_no_error}), then the
+check on accessing {\tt x+7} is skipped. However, this is a valid access and so
+skipping the check does not change anything.
+
+On the other hand, if the monitoring for accessing memory location {\tt y+7} on
+line 4 is skipped (see Figure~\ref{fig:dropping.example_false_negative}), then
+a false negative occurs. Originally, the monitor would catch this access as an
+out-of-bounds access and raise an error. However, if the monitoring operation
+for this is dropped, then the error is not detected. This is the trade-off that
+we make in order to reduce overheads. That is, instead of either 100\% coverage
+with all the associated overheads or no coverage and no overheads, we 
+enable middle points of partial coverage with some fraction of the full
+overheads.
+
+The final possible outcome of dropping a monitoring operation is shown in
+Figure~\ref{fig:dropping.example_dropping}. In this case, the monitoring for
+line 1 is dropped, causing the bound information for pointer {\tt x} to never
+be set. The result is that when the access using {\tt x} is checked on line 3,
+an error will be raised. This creates a false positive where an error is
+incorrectly raised. Although false negatives are part of the trade-off we make
+to reduce overheads, we need to prevent false positives.
+
+\subsection{Invalidation for Preventing False Positives}
+\label{sec:dropping.prevent_false_pos}
+
+In analyzing various monitoring schemes, we found that monitoring operations
+are primarily of two types: \emph{checks} and \emph{metadata updates}. Monitors
+\emph{check} certain properties to ensure correct main program execution (lines
+3-4 of Figure~\ref{fig:monitoring.example_full}) and they \emph{update} metadata
+for bookkeeping (lines 1-2 of Figure~\ref{fig:monitoring.example_full}). Skipping
+a check operation can only cause false negatives and will never cause a false
+positive (see Figure~\ref{fig:dropping.example_no_error} and
+Figure~\ref{fig:dropping.example_false_negative}). Therefore, we may simply
+skip a check operation. Skipping an update operation can cause false
+negatives but may also cause false positives (see
+Figure~\ref{fig:dropping.example_false_positive}). 
+
+% Example with invalidation
+\begin{figure*}
+  \begin{center}
+    \includegraphics[]{figs/example_invalid.pdf}
+    \caption{Invalidation flags are used to prevent false positives.}
+    \label{fig:dropping.example_invalid}
+    \vspace{-0.1in}
+  \end{center}
+\end{figure*}
+
+Essentially, when an update operation is skipped, we can no longer trust the
+corresponding metadata.  Thus, our approach is to mark these metadata as
+invalid. Furthermore, metadata that would be derived from these dropped events
+should also be marked as invalid. Figure~\ref{fig:dropping.example_invalid}
+shows an example of how associating an invalid flag with metadata can be used
+to avoid false positives.  In this case, when the monitoring operation to set
+the metadata on {\tt x} is dropped, the metadata for {\tt x} is also marked as
+invalid. The result is that when the metadata for {\tt x} is checked on line 3,
+no error is raised since the metadata is invalid. Note that in this case, the
+check on line 4 is also skipped. This is necessary because an error would have
+been raised even if the access was in bounds.
+
+\subsection{Dataflow Engine for Preventing False Positives}
+\label{sec:dropping.arch}
+
+% Dataflow engine high-level
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=\columnwidth]{figs/dataflow_overview.pdf}
+    \caption{Hardware support for dropping.}
+    \label{fig:dropping.dataflow_overview}
+    \vspace{-0.1in}
+  \end{center}
+\end{figure}
+
+In order to efficiently support dropping monitoring events and to prevent false
+positives, we propose to insert a hardware module between the main and
+monitoring core (see Figure~\ref{fig:dropping.dataflow_overview}). 
+This module performs dataflow tracking on invalidation information in
+order to prevent false positives. In addition, checks on invalid metadata are not useful and
+thus are filtered out by the hardware module before reaching the monitor.
+Similarly, updating metadata based on metadata that is invalid is also not a
+productive use of the monitor. Thus, in order to save the use of the monitor
+for useful operations, the hardware module also filters out update operations
+based on invalid metadata.
+
+% Detailed architecture of dataflow engine
+\begin{figure*}
+  \begin{center}
+    \includegraphics[width=\linewidth]{figs/dataflow_architecture.pdf}
+    \vspace{-0.2in}
+    \caption{Hardware architecture of the dataflow engine.}
+    \label{fig:dropping.dataflow} 
+    \vspace{-0.1in}
+  \end{center}
+\end{figure*}
+
+Figure~\ref{fig:dropping.dataflow} shows a detailed block diagram of the
+hardware module inserted between the main core and the monitoring. 
+Monitoring schemes typically keep metadata corresponding to the main core's
+register file as well as the main core's memory space. Similarly, the dataflow
+engine uses an on-chip register file to store flags for register file metadata.
+In addition, a set of flags are stored that correspond to memory metadata.
+These memory metadata flags are accessed through a cache and backed to main
+memory. All flags are initialized as valid when the system starts. 
+
+% Address calculation and configuration
+On a monitoring event, the dataflow engine reads in up to two flags in order to
+determine whether the event can be filtered.  The flags to be read in typically correspond to the source
+operands of the monitored instruction. For example, on a load, the dataflow
+engine will typically read in the flags corresponding the memory location
+accessed.
+However, the architecture is designed such that the address of flags to be read
+is calculated dynamically and can be configured depending on the monitoring
+scheme. Specifically, there exists a configuration table that outputs a set of
+control signals depending on the instruction type of the monitoring event.
+These control signals are used to control a pair of address calculation units which each
+contain a simple ALU. The inputs to the ALU are information from the monitored
+event and a constant that is specified from the configuration table. One common
+use of this address calculation is to transform addresses from byte-addressed
+to word-addressed by right shifting the passed memory address by 2 bits.
+
+\subsection{Filtering Invalid Events}
+\label{sec:dropping.filter}
+
+% Filtering decision
+The decision of whether an event can be filtered out is determined using a
+lookup table. This filter decision table is configured by the monitoring scheme
+on system initialization. The lookup table determines whether an event can be
+filtered out based on the pair of input flags read and the instruction type of
+the monitored event.
+For example, on an ALU instruction, if both of the source operand flags
+indicate that the corresponding metadata is null, then typically the instruction can be
+filtered out. Similarly, on an ALU instruction, if either of the source operand
+flags indicate that their corresponding metadata is invalid, then the
+instruction can also be filtered out. This filter decision is sent to the
+``Filter'' block shown in Figure~\ref{fig:dropping.overview} which will simply pop
+filtered entries from the FIFO and not forward them. If an entry is not
+filtered, then this Filter block will pop the monitoring event entry from the
+FIFO and forward it along the datapath.
+
+% Propagating flag information
+Finally, when an event is filtered out, it is necessary to propagate the flag
+information for the filtered event. In addition to the decision of whether to
+filter an event, the filter decision table also includes information about
+whether the destination flag should be written to and what value should be
+written to it. A third address calculation unit generates the write address for
+this destination flag. For example, for an ALU instruction, this will
+correspond to the destination register of the ALU instruction. If this ALU
+instruction is filtered out due to having a pair of null source operands, then
+the filter decision table will indicate that the destination register's
+corresponding flag should also be marked as null. 
+
+% Flags are marked as invalid when a monitoring event is dropped due to
+% insufficient overhead budget. Thus, whenever a monitoring event is dropped, the
+% dropping hardware indicates this to the dataflow engine. The dataflow engine's
+% write address is configured for the appropriate destination flag. When it
+% receives an invalidation signal from the dropping hardware, the
+% dataflow engine marks this destination flag as invalid.
+
+
+

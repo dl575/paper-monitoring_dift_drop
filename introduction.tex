@@ -34,27 +34,11 @@ software. However, due to the multiple cycles it may take for software to
 monitor an instruction, the overheads can easily increase execution time
 several fold.
 % Two optimizations
-In this paper, we present a hardware architecture that uses dynamic dataflow
-tracking in order to reduce the overheads of programmable parallel monitoring
-by filtering out unnecessary monitoring operations and by enabling partial
-monitoring.
+Since these overheads can be prohibitive for run-time use, we propose to enable
+partial monitoring in order to reduce the overheads.
 
-% Filtering
-Recent studies have shown that filtering out monitoring checks on clean or null
-metadata can be used to reduce the overheads of monitoring \cite{fade-hpca14}.
-For example, for
-an array bounds check, checking non-pointer accesses is unnecessary. 
-In this paper, we use a hardware-based dataflow tracking engine to track and
-filter out these null metadata monitoring operations.
-By using the dataflow engine to track a separate set of flags
-indicating null metadata, we are able to handle the common case of null
-metadata without the need to read the full metadata values.
-
-There is a limit to how effective filtering is at reducing monitoring overheads
-as it only eliminates unnecessary monitoring operations. The ability
-to also skip relevant monitoring operations can be used to further reduce overheads.
-Although this comes at the cost of reduced monitoring coverage (i.e.,
-effectiveness), this partial monitoring can still be very useful.
+Although partial monitoring comes at the cost of reduced monitoring coverage (i.e.,
+effectiveness), this can still be very useful.
 For example, partial
 monitoring can enable a level of protection even for systems where the full
 monitoring overheads are too high. This is especially true for energy- or
@@ -66,24 +50,34 @@ which expect low coverage per run but use a large number of runs and users to
 collect debugging information~\cite{liblit-pldi05, chilimbi-asplos04,
 greathouse-cgo11}. 
 
-% % Adjustable overhead
-In this paper, we show how our dataflow-guided architecture is also able to
-enable partial monitoring. This is achieved by dynamically dropping monitoring
-operations when overheads exceed a specified overhead budget. We prevent false
-positives from partial monitoring by using the dataflow engine to track these
-dropped monitoring flows. With this architecture, we investigate different
-policies for deciding which events to drop for partial monitoring. These
-different policies show a trade-off between closely matching the overhead
-budget and the monitoring coverage achieved.
+% Adjustable overhead
+Partial monitoring with adjustable overheads is achieved by dynamically
+dropping monitoring operations when overheads exceed a specified overhead
+budget.  In order to prevent dropped monitoring operations from leading to a
+false positive, we need to track these dropped flows.  We present a
+hardware-based dataflow tracking engine that keeps track of these dropped
+flows. With this architecture, we investigate different policies for deciding
+which events to drop for partial monitoring. These different policies show a
+trade-off between closely matching the overhead budget and the monitoring
+coverage achieved.
 
-The main contributions of this paper are summarized as follows.
+% Filtering
+Recent studies have shown that filtering out monitoring checks on clean or null
+metadata can be used to reduce the overheads of monitoring \cite{fade-hpca14}.
+For example, for an array bounds check, checking non-pointer accesses is
+unnecessary. In addition to enabling partial monitoring, we show how a simple
+extension to our dataflow engine enables this null metadata filtering.
+
+The main contributions of this paper are summarized as follows:
 \begin{itemize}
-  \item We propose two optimizations for reducing the overheads of monitoring: filtering null metadata and performing partial monitoring.
   \item We present a hardware architecture using a dataflow tracking engine to
-  efficiently enable filtering and partial monitoring. This hardware
-  architecture is designed to be generally applicable to a wide-range of run-time monitoring
-  techniques.
-  \item We investigate interesting trade-off decisions for partial monitoring on the proposed architecture.
+  efficiently enable partial monitoring while preventing false positives. This
+  hardware architecture is designed to be generally applicable to a wide-range
+  of run-time monitoring techniques.
+  \item We investigate interesting trade-offs in deciding what to skip for
+  partial monitoring on the proposed architecture.
+  \item We extend the dataflow engine to enable filtering null metadata to
+  reduce overheads.
 \end{itemize}
 
 % %Invalidation in order to prevent false positives.
@@ -114,11 +108,11 @@ overhead budget, this coverage rate can be increased.
 
 % Section summary
 This paper is organized as follows. Section~\ref{sec:monitoring} presents the
-parallel run-time monitoring model that this paper assumes.
-Section~\ref{sec:optimizations} presents the high-level approach of how we aim
-to reduce overheads through filtering and partial monitoring and Section~\ref{sec:arch} describes our
-hardware architecture that supports this. Section~\ref{sec:policies}
+baseline parallel run-time monitoring model that this paper assumes.
+Section~\ref{sec:dropping} discusses enabling partial monitoring using our dataflow tracking engine.
+Section~\ref{sec:policies}
 investigates the design space for dropping decisions for partial monitoring.
+Section~\ref{sec:filtering} shows how the dataflow tracking engine can be extended to filter null metadata.
 Section~\ref{sec:evaluation} presents our evaluation methodology and
 results. Finally, we discuss related work in Section~\ref{sec:related} and
 conclude in Section~\ref{sec:conclusion}.

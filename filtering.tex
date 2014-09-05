@@ -1,0 +1,23 @@
+\section{Filtering Null Metadata}
+\label{sec:filtering}
+
+One way to reduce the number of monitoring events that must be handled by the
+monitor is to filter out monitoring events that correspond to operating on null
+or uninitialized metadata. Null metadata typically corresponds to events that
+are not relevant to the monitor. For example, Hardbound
+\cite{hardbound-asplos08} filters out operations on non-pointer (i.e., no base
+and bounds metadata) instructions since it is not relevant to array bounds
+checking. More recently, FADE \cite{fade-hpca14} has been proposed a general
+hardware module to perform this null metadata filtering for a variety of
+monitoring schemes. 
+
+We enable this null metadata filtering by
+simply extending the dataflow flags to be two bits wide in order to keep track
+of both validity due to dropping and null information.
+All flags are initialized to valid and null. Whenever the monitor sets metadata
+to a non-null value, it will also mark the corresponding flag in the dataflow
+engine as non-null. In addition to checking validity when reading flags, the
+flags are also checked for whether the metadata is null. An event only
+continues to the monitor if all source flags are valid and any source flag is
+marked as non-null.
+

@@ -1,6 +1,39 @@
 \section{Parallel Programmable Run-Time Monitoring}
 \label{sec:monitoring}
 
+\subsection{Overheads of Run-Time Monitoring}
+
+% Previous work overheads
+\begin{table*}[tb]
+  \begin{center}
+    \vspace{-0.0in}
+    \begin{footnotesize}
+    \input{tabs/previous_overheads}
+    \end{footnotesize}
+    \caption{Overheads of various proposed run-time monitoring systems.}
+    \vspace{-0.2in}
+    \label{tab:monitoring.previous_overheads}
+  \end{center}
+\end{table*}
+
+There have been numerous previous works exploring various implementations of
+run-time monitoring systems. Table~\ref{tab:monitoring.previous_overheads}
+summarizes some of these implementations and the average and worst-case
+overheads reported. These systems vary in their hardware complexity,
+flexibility, monitoring schemes, and overheads. Dedicated hardware can provide low 
+overheads for specific monitoring schemes. However, more pronounced overheads are seen for 
+flexible monitoring systems that implement monitoring on a processor core
+\cite{lba-asid06, lba-isca08, nagarajan-interact08} or using an FPGA fabric
+\cite{flexcore-micro10}. These systems allow a wide range of monitoring schemes to
+be implemented on the same hardware architecture and also allow monitors to be modified and updated after deployment. However, in order to support this flexibility, they can easily incur tens of percent of
+overhead in the average-case and severalfold slowdowns in the worst-case. Partial monitoring
+can be a useful technique for reducing overheads for any of these systems.
+In this paper, we will focus our discussion on using a parallel
+processing core to implement the monitor. Our evaluation includes results
+for both the core-based monitor as well as a higher performance FPGA-based monitor.
+
+\subsection{Baseline Architecture}
+
 % Run-time monitoring overview
 \begin{figure}
   \begin{center}
@@ -56,8 +89,36 @@ is propagated on ALU and memory instructions to track the corresponding array po
 % example, the Log-Based Architecture \cite{lba-isca08} uses processor cores in a
 % multi-core system as monitors. The FlexCore architecture
 % \cite{flexcore-micro10} instead uses an FPGA-fabric to implement the
-% monitor. The approach we describe in this paper applies to any of these
+% monitor. 
+% 
+% The approach we describe in this paper applies to any of these
 % parallel monitors. However, for experiments, we model an FPGA-based monitor
 % similar to FlexCore.  The on-chip FPGA fabric is used to implement the
 % ``Monitor'' block in Figure~\ref{fig:arch.overview} while the FIFO from the
 % main core and metadata cache are implemented as ASICs.
+
+% Example monitor
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=\columnwidth]{figs/example_full.pdf}
+    \vspace{-0.2in}
+    \caption{Example of array bounds check monitor.}
+    \label{fig:monitoring.example_full}
+    \vspace{-0.1in}
+  \end{center}
+\end{figure} 
+
+Figure~\ref{fig:monitoring.example_full} shows an example pseudo-code segment and
+the corresponding monitoring operations for an array bounds check monitor. 
+First, an array {\tt x} is allocated using {\tt malloc}. When this happens, the
+monitor associates the array with metadata corresponding to its base and bounds
+address. Next, {\tt y} is set to point to the middle of {\tt y}. The metadata
+for {\tt y} is the same as the metadata {\tt x} to ensure that accesses using
+{\tt y} do not exceed the bounds of {\tt x}. Finally, both pointers {\tt x} and
+{\tt y} are used to perform a write. In both cases, the monitor checks whether
+the address that is written to is within the bounds stored in the metadata. In
+the first case, {\tt x+7} is within the original array's bounds. In the second
+case, {\tt y+7} is not within the array's bounds and the monitor will raise an
+error.
+
+
