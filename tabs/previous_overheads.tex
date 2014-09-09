@@ -1,21 +1,24 @@
-\begin{tabular}{|l|p{2in}|r|r|}
+%\begin{tabular}{|l|p{2in}|r|r|}
+\begin{tabular}{|l|l|l|r|}
 
 \hline
-{\bf Name} & {\bf Description} & {\bf Average Overhead} & {\bf Worst-case Overhead} \\ \hline\hline
+{\bf Name} & {\bf Type} & {\bf Monitoring scheme and flexibility} & {\bf Slowdown (avg./worst)} \\ \hline\hline
 
-DIFT \cite{dift-asplos04} & Dedicated hardware for information flow tracking & 1.1\% & 23\% \\ \hline
-FlexiTaint \cite{flexitaint-hpca08} & Dedicated hardware for configurable information flow tracking & 1.1\%-3.7\% & 8.7\% \\ \hline
-Hardbound \cite{hardbound-asplos08} & Dedicated hardware for array bounds check & 5\%-9\% & 22\% \\ \hline
-Harmoni \cite{harmoni-dsn12} & Configurable hardware for tag-based monitoring & 1\%-10\% & 20\% \\ \hline\hline
+DIFT \cite{dift-asplos04} & Custom HW & DIFT only & 1.1\% / 23\% \\ \hline
+FlexiTaint \cite{flexitaint-hpca08} & Custom HW & DIFT w/ programmable policies & 1.1\%-3.7\% / 8.7\% \\ \hline
+Hardbound \cite{hardbound-asplos08} & Custom HW & Array bounds checks only & 5\%-9\% / 22\% \\ \hline
+Harmoni \cite{harmoni-dsn12} & Custom HW & Tag-based monitors & 1\%-10\% / 20\% \\ \hline\hline
 
-FlexCore \cite{flexcore-micro10} & FPGA-based monitor & 1.05x-1.44x & 1.84x \\ \hline
-Log-Based Architecture \cite{lba-asid06} & Core-based monitor & 3.23x-7.80x & 11x \\ \hline
-Log-Based Architecture Optimized \cite{lba-isca08} & Core-based monitor with hardware acceleration  & 1.02x-3.27x & 5x \\ \hline
-Multi-core DIFT \cite{nagarajan-interact08} & Core-based with per-application optimized dynamic information flow tracking monitor & 1.48x & 2.2x \\ \hline\hline
+FlexCore \cite{flexcore-micro10} & Dedicated FPGA & Instruction-trace monitoring & 1.05x-1.44x / 1.84x \\ \hline
+FADE \cite{FIXME} & Core+Custom HW & Instruction-trace monitoring (effective when HW filters work) & \\ \hline
+LBA-accelerated \cite{lba-isca08} & Multi-core+Custom HW & Instruction-trace monitoring (effective when accelerators work) & 1.02x-3.27x / 5x \\ \hline
+LBA \cite{lba-asid06} & Multi-core+Custom HW & Instruction trace monitoring & 3.23x-7.80x / 11x \\ \hline \hline
 
-LIFT \cite{lift-micro06} & Dynamic binary instrumentation for information flow tracking & 3.6x & 7.9x \\ \hline
-Purfiy \cite{purify-usenix92} & Dynamic binary instrumentation for memory leaks & 2.3x & 5.5x \\ \hline
-TaintCheck \cite{taintcheck-05} & Dynamic binary instrumentation for taint analysis & 10x & 27x \\ \hline
+Multi-core DIFT \cite{nagarajan-interact08} & SW (multithreaded) & DIFT (compiled for each application) & 1.48x / 2.2x \\ \hline
+
+LIFT \cite{lift-micro06} & SW (DBI) & DIFT (fully flexible) & 3.6x / 7.9x \\ \hline
+Purfiy \cite{purify-usenix92} & SW (DBI) & Memory leak checks (fully flexible) & 2.3x / 5.5x \\ \hline
+TaintCheck \cite{taintcheck-05} & SW (DBI) & DIFT (fully flexible) & 10x / 27x \\ \hline
 
 
 \end{tabular}
