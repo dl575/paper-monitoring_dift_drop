@@ -16,26 +16,47 @@
 
 \subsection{Overhead of Run-Time Monitoring}
 
-There have been a number of proposals for run-time monitoring systems, exploring various
-design points in the trade-off space between efficiency and flexibility.
+There have been a number of proposals for run-time monitoring systems exploring various
+design points. % in the trade-off space between efficiency and flexibility.
 Table~\ref{tab:monitoring.previous_overheads} summarizes some of representative designs
-and their reported performance overhead.
+and their reported performance overhead. The previous studies clearly show that there
+exist trade-offs among efficiency, flexibility, and hardware costs. 
+For example, a run-time monitoring scheme can often be realized with fairly low
+performance overhead (less than 20\%) if implemented with custom hardware that is
+designed only for one monitor or a narrow set of monitors. However, the custom
+hardware monitors cannot be modified or updated, and require dedicated silicon area. 
+One the other hand, flexible systems that support a wide range of monitors lead 
+to noticeable performance overhead, often too high for wide deployment in practice.
+Software-only implementations \cite{FIXME} or multi-core monitors with minimal
+hardware changes \cite{lba-asid06} are reported to have severalfold slowdowns.
+On-chip FPGA monitors \cite{flexcore-micro10} and cores with monitoring accelerators
+\cite{lba-isca08, fade-hpca14} can reduce overhead significantly, but still show
+slowdowns of several tens of percents in some cases.
 
-summarizes some of these implementations and the average and worst-case
-overheads reported. These systems vary in their hardware complexity,
-flexibility, monitoring schemes, and overheads. Dedicated hardware can provide low 
-overheads for specific monitoring schemes. However, more pronounced overheads are seen for 
-flexible monitoring systems that implement monitoring on a processor core
-\cite{lba-asid06, lba-isca08, nagarajan-interact08} or using an FPGA fabric
-\cite{flexcore-micro10}. These systems allow a wide range of monitoring schemes to
-be implemented on the same hardware architecture and also allow monitors to be modified and updated after deployment. However, in order to support this flexibility, they can easily incur tens of percent of
-overhead in the average-case and severalfold slowdowns in the worst-case. Partial monitoring
-can be a useful technique for reducing overheads for any of these systems.
-In this paper, we will focus our discussion on using a parallel
+
+\subsection{Partial Monitoring for Adjustable Overhead}
+
+In this paper, we investigate adding a new dimension to the trade-off space of 
+run-time monitors by allowing coverage or accuracy of a monitor to be traded
+off for lower performance and/or hardware overhead.
+
+namely coverage/accuracy of monitors.
+
+
+will focus our discussion on using a parallel
 processing core to implement the monitor. Our evaluation includes results
 for both the core-based monitor as well as a higher performance FPGA-based monitor.
 
-\subsection{Adjustable and Programmable Monitoring}
+Benefits - low overhead or simpler HW
+
+\subsection{Applications and Metrics}
+
+Three main app
+- Partial protection for run-time attacks or bugs: you care about the dynamic coverage 
+- Soft real-time systems: tight deadline required
+- Sampling for Profiling: target metric - accuracy
+
+\subsection{Challenges}
 
 There were three main challenges in designing this dropping hardware:
 \begin{enumerate}
@@ -44,7 +65,5 @@ There were three main challenges in designing this dropping hardware:
   \item \textbf{Intelligent dropping:} The hardware needs to maximize the amount of useful monitoring done while staying within the overhead budget.
 \end{enumerate}
 
-
-\subsection{Applications and Metrics}
 
 
