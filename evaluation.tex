@@ -32,10 +32,10 @@ load, store, and control instructions that are executed. This profiling
 information can be useful for performing optimizations. Additionally, recent
 work has shown that this information can be used to detect malicious software \cite{tang-raid14}.
 
-ED: We need to point out that these monitors cannot be implemented with a simple
+\ED{We need to point out that these monitors cannot be implemented with a simple
 1-bit dataflow engine (DIFT) that we use for filtering. 
 Point: address potential reviewer questions on why don't we just use a 
-programmable dataflow engine for monitoring.
+programmable dataflow engine for monitoring.}
 
 We tested our system using all C benchmarks from SPECint
 CPU2006 \cite{spec2006}. Since our implementation of BC depends on the
@@ -77,13 +77,13 @@ monitors must dynamically allocate memory for new metadata. On the other hand,
 IMP does not require this dynamic allocation and is overall a simple monitor.
 Thus, its overheads are much lower.
 
-ED: we need to better justify the high overhead. 
+\ED{we need to better justify the high overhead. 
 Key points: 1) the overhead is in line with LBA, which represent multi-core
 monitoring w/ low HW costs.
 2) If we are going to mention dynamic memory allocation. We need to say why
 it's really necessary -- it's not our implementation problem. It's something
 that you need to have for large meta-data. Also, I don't think UMC would need
-dynamic allocation.
+dynamic allocation.}
 
 \subsection{Filtering of Monitoring Events}
 
