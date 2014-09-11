@@ -12,7 +12,7 @@ cache. This setup is similar to the Snapdragon 801 processor commonly found in
 mobile systems. The dataflow engine uses a 1 kB cache for flags.
 
 In order to explore the generality of the architecture for
-different monitors, we implemented three different monitors: uninitialized
+different monitors, we implemented four different monitors: uninitialized
 memory check (UMC), array bounds check (BC), dynamic information flow
 tracking (DIFT), and instruction-mix profiling (IMP).  Uninitialized memory
 check seeks to detect loading from
@@ -31,6 +31,11 @@ the data originated from. Instruction-mix profiling counts the number of ALU,
 load, store, and control instructions that are executed. This profiling
 information can be useful for performing optimizations. Additionally, recent
 work has shown that this information can be used to detect malicious software \cite{tang-raid14}.
+
+ED: We need to point out that these monitors cannot be implemented with a simple
+1-bit dataflow engine (DIFT) that we use for filtering. 
+Point: address potential reviewer questions on why don't we just use a 
+programmable dataflow engine for monitoring.
 
 We tested our system using all C benchmarks from SPECint
 CPU2006 \cite{spec2006}. Since our implementation of BC depends on the
@@ -71,6 +76,14 @@ example, because of the large metadata requirements of UMC, BC, and DIFT, these
 monitors must dynamically allocate memory for new metadata. On the other hand,
 IMP does not require this dynamic allocation and is overall a simple monitor.
 Thus, its overheads are much lower.
+
+ED: we need to better justify the high overhead. 
+Key points: 1) the overhead is in line with LBA, which represent multi-core
+monitoring w/ low HW costs.
+2) If we are going to mention dynamic memory allocation. We need to say why
+it's really necessary -- it's not our implementation problem. It's something
+that you need to have for large meta-data. Also, I don't think UMC would need
+dynamic allocation.
 
 \subsection{Filtering of Monitoring Events}
 
@@ -146,14 +159,15 @@ using partial monitoring (in addition to filtering) to trade-off coverage for fu
 Figure~\ref{fig:evaluation.bc_sweep} shows the monitoring coverage achieved by
 array bounds check as we vary the overhead budget. 
 We define \emph{monitoring coverage} as the 
-percentage of checks that are performed 
+percentage of dynamic checks that are performed 
 (indirect jumps in DIFT, loads in UMC, and memory accesses in BC). 
 The metric is chosen to understand
-how likely an error/attack instance is to be detected on an individual system. 
-While we could not evaluate real errors/attacks due to difficulty in setting up
-a large number of bugs and exploits, we believe that the percentage of checks
-provides a good estimate of detection probability when errors/attacks are 
-uniformly distributed across checks.
+how likely an error/attack instance is to be detected on an individual system, 
+assuming that errors/attacks are uniformly distributed across checks. 
+%While we could not evaluate real errors/attacks due to difficulty in setting up
+%a large number of bugs and exploits, we believe that the percentage of checks
+%provides a good estimate of detection probability when errors/attacks are 
+%uniformly distributed across checks.
 Note that this metric is different from the
 percentage of monitoring events that are not dropped, which includes
 non-check instructions.

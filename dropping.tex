@@ -4,7 +4,7 @@
 In this section, we present our hardware architecture that enables partial
 monitoring for adjustable overheads. Section~\ref{sec:dropping.baseline} first
 describes our baseline model for run-time monitoring while the rest of the
-Section describes our design.
+section describes our design.
 
 \subsection{Baseline Architecture}
 \label{sec:dropping.baseline}
@@ -19,6 +19,8 @@ Section describes our design.
     \vspace{-0.1in}
   \end{center}
 \end{figure}
+
+ED: monitoring core vs. monitor? 
 
 Figure~\ref{fig:monitoring.overview} shows an overview of the run-time monitoring
 model that is assumed in this paper.  The \emph{main program} is a computation
@@ -39,6 +41,8 @@ from the main core.
 If the monitoring core
 detects an inconsistent or undesired behavior in the monitoring events, then
 an error is detected. 
+
+ED: describe reg/mem meta-data both in the figure and in the text.
 
 There are many possible monitoring schemes that can be implemented on this type
 of fine-grained parallel monitoring architecture such as memory protection

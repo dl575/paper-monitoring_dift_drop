@@ -25,16 +25,16 @@ For example, a run-time monitoring scheme can often be realized with fairly low
 performance overhead (less than 20\%) if implemented with custom hardware that is
 designed only for one monitor or a narrow set of monitors. However, the custom
 hardware monitors cannot be modified or updated, and require dedicated silicon area. 
-One the other hand, flexible systems that support a wide range of monitors lead 
+On the other hand, flexible systems that support a wide range of monitors lead 
 to noticeable performance overhead, often too high for wide deployment in practice.
 Software-only implementations \cite{FIXME} or multi-core monitors with minimal
 hardware changes \cite{lba-asid06} are reported to have severalfold slowdowns.
 On-chip FPGA monitors \cite{flexcore-micro10} and cores with monitoring accelerators
 \cite{lba-isca08, fade-hpca14} can reduce overhead significantly, but still show
 slowdowns of several tens of percents in some cases.
-In today's monitoring systems, the overhead is often unpredictable because they
+In today's monitoring systems, the overhead is also unpredictable because they
 depend heavily on the characteristics of applications and monitoring operations.
-In summary, users need to either pay noticeable overhead or the cost of custom
+In summary, users currently need to either pay noticeable overhead or the cost of custom
 hardware in order to use fine-grained run-time monitoring in deployed systems.
 
 \subsection{Partial Monitoring for Adjustable Overhead}
@@ -45,17 +45,19 @@ operations if necessary. In essence, this framework adds a new dimension to
 the monitor design space by allowing coverage or accuracy to be traded off
 for lower overhead. For example, the capability to adjust overhead allows users
 to use monitoring with partial coverage in order to reduce performance
-overhead. Alternatively, partial monitoring can allow users to use simple
-one may choose to use simple hardware such as a
-multi-core without elaborate acceleration features to provide partial monitoring
-with the performance overhead that is comparable to custom hardware.
+or energy overhead. Alternatively, partial monitoring allows designers to use
+less expensive hardware for a given performance overhead budget.
+%simple hardware such as a
+%multi-core without elaborate acceleration features to provide partial monitoring
+%with the performance overhead that is comparable to custom hardware.
 
-In this framework, a user can specify how much monitoring should be done such as a target 
+In this framework, a user specifies how much monitoring should be done in a form of
+a target 
 overhead budget, a target coverage, a percentage of monitoring operations to be performed, etc.
 Then, the framework dynamically drops a portion of monitoring operations to match
 the target. In particular, this paper focuses on matching a performance overhead target
 while maximizing the coverage. Given that the overhead of custom hardware monitors can
-already be quite low, the focus will be enabling the trade-off in {\em general-purpose} 
+already be quite low, the focus is on enabling the trade-off in {\em general-purpose} 
 monitoring systems that support a wide range of monitors.
 We also consider the target overhead as a soft constraint and do not aim to
 provide a strict worst-case guarantee.
@@ -80,21 +82,21 @@ The main metric that represents the effectiveness of monitoring in this case is
 the coverage (the percentage of checks there were performed) over multiple runs.
 
 {\bf Monitoring of soft real-time systems:}
-Soft real-time systems or interactive systems often need to meet deadlines or response
+Soft real-time systems or interactive systems need to meet deadlines or response
 time requirements. Unfortunately, the overhead of run-time monitoring is often 
-unpredictable and varies significantly depending on the application and monitoring
+unpredictable and varies significantly depending on the application and monitor
 characteristics. The partial monitoring framework allows monitoring to be performed
 while providing a level of guarantee on its impact on the execution time. 
 In this case, it is important that the system can closely match the desired
 overhead target while maximizing the effectiveness of monitoring.
 
 {\bf Partial protection for low overhead:}
-Even without real-time constraints, systems may have tight budgets for performance
-or hardware overhead that they can tolerate for run-time monitoring. In such cases,
+Even without real-time constraints, systems may have tight budgets for performance,
+energy, or hardware overhead that they can tolerate for run-time monitoring. In such cases,
 full monitoring cannot be enabled unless its overhead is low enough. The adjustable
 monitoring allows partial protection on such systems. For example, array bounds
-may be checked for a portion of memory accesses, or a subset of information flows
-may be tracked in DIFT for attack detection. In this scenario, the effectiveness of 
+may be checked for a subset of memory accesses. For DIFT, a subset of information flows
+may be tracked for partial attack detection. In this scenario, the effectiveness of 
 partial monitoring can be measured as the percentage of run-time checks that are
 performed on each program run, which reflects how likely for a bug or an attack 
 to be detected for a system. 
@@ -115,17 +117,17 @@ overhead introduces new challenges that need to be addressed.
 The following summarizes the main design goals and associated design challenges.
 
 \begin{enumerate}
-  \item \textbf{General:} The framework needs to be general enough to be applicable to 
-  a wide range of monitoring schemes. Because we target flexible, general-purpose
-  run-time monitoring systems, a solution that only works for one monitoring scheme will
-  not work.
+  \item \textbf{General:} Because we mainly target flexible run-time monitoring systems,
+  which often have high overhead, the framework also needs to be general enough to be
+  applicable to a wide range of monitoring scheme.
 
   \item \textbf{No false positive:} The framework needs to ensure that dropping a portion
-  of monitoring operations does not lead to a false positive. We solve this problem using
-  a data-flow engine that tracks invalid monitoring meta-data (Section~\ref{sec:dropping}).
+  of monitoring operations does not lead to a false positive. We found that a data-flow
+  that tracks invalid meta-data can serve as a general solution to this problem 
+  (Section~\ref{sec:dropping}).
 
   \item \textbf{Intelligent dropping:} The framework needs to match the overhead budget
-  while maximizing the effectiveness of monitoring. To this end, adjustable overhead
+  while maximizing the effectiveness of monitoring. To this end, partial 
   monitoring needs to carefully choose which operations to drop and when. We address this
   problem by studying different dropping policies (Section~\ref{sec:policies}) and their
   trade-offs.
