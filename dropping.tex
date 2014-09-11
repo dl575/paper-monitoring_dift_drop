@@ -15,14 +15,14 @@ section describes our design.
     \includegraphics[width=\columnwidth]{figs/monitoring_architecture.pdf}
     \vspace{-0.2in}
     \caption{Overview of run-time monitoring architecture.}
-    \label{fig:monitoring.overview} 
+    \label{fig:dropping.overview} 
     \vspace{-0.1in}
   \end{center}
 \end{figure}
 
 \ED{Should we use monitoring core or just monitor?}
 
-Figure~\ref{fig:monitoring.overview} shows an overview of the run-time monitoring
+Figure~\ref{fig:dropping.overview} shows an overview of the run-time monitoring
 model that is assumed in this paper.  The \emph{main program} is a computation
 task that performs the original function of the system and is run on the
 \emph{main core}.  On certain events during the main program, such as the
@@ -84,12 +84,12 @@ is propagated on ALU and memory instructions to track the corresponding array po
     \includegraphics[]{figs/example_full.pdf}
     \vspace{-0.2in}
     \caption{Example of array bounds check monitor.}
-    \label{fig:monitoring.example_full}
+    \label{fig:dropping.example_full}
     \vspace{-0.1in}
   \end{center}
 \end{figure*} 
 
-Figure~\ref{fig:monitoring.example_full} shows an example pseudo-code segment,
+Figure~\ref{fig:dropping.example_full} shows an example pseudo-code segment,
 its assembly level instructions, and the corresponding monitoring operations
 for an array bounds check monitor. 
 First, an array {\tt x} is allocated using {\tt malloc}. 
@@ -214,7 +214,7 @@ to reduce overheads, we need to prevent false positives.
 
 The key cause of false positives is dropping monitoring operations that update
 metadata. Dropping monitoring operations that check for an error (such as check
-found for line 4 in Figure~\ref{fig:monitoring.example_full} can only cause
+found for line 4 in Figure~\ref{fig:dropping.example_full} can only cause
 false negatives but will never cause false positives. On the other hand,
 skipping monitoring operations that update metadata can lead to false positives
 and false negatives.
@@ -350,4 +350,46 @@ propagation is required.
 % dataflow engine marks this destination flag as invalid.
 
 
+\subsection{Filtering Null Metadata}
+\label{sec:dropping.null_filtering}
+
+% Null filtering code example
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=\columnwidth]{figs/example_null_filtering.pdf}
+    \vspace{-0.2in}
+    \caption{Example of using information about null metadata to filter monitoring events.}
+    \label{fig:dropping.example_null} 
+    \vspace{-0.1in}
+  \end{center}
+\end{figure}
+
+One way to reduce the number of monitoring events that must be handled by the
+monitor is to filter out monitoring events that correspond to operating on null
+or uninitialized metadata. Null metadata typically corresponds to events that
+are not relevant to the monitor. For example, Hardbound
+\cite{hardbound-asplos08} filters out operations on non-pointer (i.e., no base
+and bounds metadata) instructions since it is not relevant to array bounds
+checking. More recently, FADE \cite{fade-hpca14} has been proposed a general
+hardware module to perform this null metadata filtering for a variety of
+monitoring schemes. 
+
+Figure~\ref{fig:dropping.example_null} shows an example of how this null filtering operates.
+Here, the main core's code has been slightly modified from
+Figure~\ref{fig:dropping.example_full} and {\tt r2} on line 2 is no longer set as an array pointer.
+Without null metadata filtering, the instructions for lines 2 and 4 would be
+forwarded to the monitor since the system does not know whether {\tt r2}
+contains a pointer address or not. However, if we use a flag to mark {\tt r2}
+as null when it is loaded with a constant, then we can propagate this null
+information and filter out monitoring for lines 2 and 4.
+
+The operations performed by null filtering are almost identical to the
+operations needed for invalidation shown in
+Figure~\ref{fig:dropping.example_invalid}.
+Thus, we can easily enable this null metadata filtering on our architecture by
+simply extending the dataflow flags to be two bits wide. One bit is used to
+keep track of invalidation information while the second bit is used to keep
+track of null information. All flags are initialized to null and the filter
+decision table is extended with the propagation and filtering decision rules
+for null metadata filtering.
 
