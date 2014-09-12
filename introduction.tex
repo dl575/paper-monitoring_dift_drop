@@ -38,13 +38,13 @@ flexibility, and hardware costs for implementing run-time monitors. Custom
 hardware designs that target a single or narrow-range of monitors have been
 shown to have low performance overheads. On the other hand, flexible systems
 that support a range of monitors have shown much higher overheads. In this
-paper, we explore a new trade-off dimension for run-time monitoring designs. We
+paper, we explore a new trade-off dimension for run-time monitor designs. We
 propose to enable low overhead monitors without sacrificing flexibility by
-using partial monitoring. This instead allows a trade-off between overheads and
+using partial monitoring. In essence, this enables a trade-off between overheads and
 monitoring coverage or accuracy.
 
 Although partial monitoring comes at the cost of reduced monitoring coverage (i.e.,
-effectiveness), this can still be very useful.
+effectiveness), this can still be useful in many scenarios.
 For example, partial
 monitoring can enable a level of protection even for systems where the full
 monitoring overheads are too high. This is especially true for energy- or
@@ -68,7 +68,7 @@ trade-off between closely matching the overhead budget and the monitoring
 coverage achieved.
 
 % Filtering
-Recent studies have shown that filtering out monitoring checks on clean or null
+Recent studies have shown that filtering out monitoring operations on clean or null
 metadata can be used to reduce the overheads of monitoring \cite{fade-hpca14}.
 For example, for an array bounds check, checking non-pointer accesses is
 unnecessary. In addition to enabling partial monitoring, we show how a simple
@@ -80,8 +80,8 @@ The main contributions of this paper are summarized as follows:
   efficiently enable partial monitoring while preventing false positives. This
   hardware architecture is designed to be generally applicable to a wide-range
   of run-time monitoring techniques.
-  \item We investigate interesting trade-offs in deciding what to skip for
-  partial monitoring on the proposed architecture.
+  \item We investigate multiple policies on when and which operations to drop 
+  for partial monitoring, and show the trade-offs in the design space.
   \item We extend the dataflow engine to enable filtering null metadata to
   reduce overheads.
 \end{itemize}
@@ -111,17 +111,22 @@ size and semantics of their metadata, and the operations performed on metadata.
 % see average overheads of 300\%, we show that with just 10\% overheads, we can still
 % provide 32-82\% of coverage on average. By increasing the
 % overhead budget, this coverage rate can be increased. 
-These monitors show baseline overheads of 4-16x without null metadata filtering
-and 1.1-4.3x after null metadata filtering.  Our results show that with 1.5x
-overhead, coverage of 43-82\% on average can still be achieved and that
-overhead and coverage can be varied to create a trade-off.
+These monitors show slowdowns of 1.1-4.3x with the null metadata filtering when
+implemented on a multi-core platform.
+%4-16x without null metadata filtering
+%and 1.1-4.3x after null metadata filtering.  
+Our results show that the partial monitoring can still achieve coverage of 43-82\%
+on average at the reduced slowdown of 1.5x. 
+The results also show that overhead and coverage can be varied to create a trade-off.
 
 % Section summary
-This paper is organized as follows. Section~\ref{sec:monitoring} presents the
-baseline parallel run-time monitoring model that this paper assumes.
-Section~\ref{sec:dropping} discusses enabling partial monitoring using our dataflow tracking engine.
+This paper is organized as follows. Section~\ref{sec:monitoring} introduces the notion
+of adjustable run-time monitoring with partial monitoring.
+Section~\ref{sec:dropping} discusses the hardware architecture that enables 
+partial monitoring using our dataflow tracking engine.
 Section~\ref{sec:policies}
-investigates the design space for dropping decisions for partial monitoring.
+investigates the design space for dropping policies that determine when and which
+monitoring operations to drop.
 Section~\ref{sec:evaluation} presents our evaluation methodology and
 results. Finally, we discuss related work in Section~\ref{sec:related} and
 conclude in Section~\ref{sec:conclusion}.

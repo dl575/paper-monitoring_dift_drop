@@ -23,8 +23,8 @@ overheads, especially when performed on programmable cores.
 %too large.  
 In this paper, we introduce a hardware dataflow tracking engine that enables
 adjustable overheads through partial monitoring. This allows a trade-off to be
-made between monitoring coverage and overhead. We show how this dataflow engine
-can be extended to filter out monitoring operations associated with null
+made between monitoring coverage and overhead. This dataflow engine
+can also be extended to filter out monitoring operations associated with null
 metadata in order to reduce overheads.
 % In this paper, we introduce a hardware dataflow tracking engine that can be
 % used to filter out unnecessary monitoring and enable adjustable partial monitoring.
@@ -33,10 +33,12 @@ metadata in order to reduce overheads.
 % to enable a trade-off between monitoring coverage and overhead by dropping certain
 % monitoring operations. For this partial monitoring, the dataflow engine is used
 % to track dropped monitoring flows so that false positives can be avoided.
-Given this architecture, we also investigate how the dropping decisions should be
+Given this architecture, we investigate how the dropping decisions should be
 made for partial monitoring and show that there exists a trade-off between closely
 matching an overhead target and the coverage that can be achieved.
-Our experimental results show that overheads can be reduced from 4-16x on
-average to 1.5x while still achieving 43-82\% coverage.
+Our experimental results show that overheads can be reduced significantly 
+by trading off coverage. For example, the proposed architecture can still
+achieve 43-82\% coverage when the slowdown is reduced from 1.1-4.3x to 1.5x.
+\Ed{It's a bit strange to say reduced from 1.1x to 1.5x. Revise?}
 
 \end{abstract}
