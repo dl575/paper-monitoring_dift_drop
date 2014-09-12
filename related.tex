@@ -19,7 +19,7 @@ be generally applicable to any of these instruction-grained monitoring schemes.
 % architecture can be used to reduce the overheads when applying these schemes on
 % a multi-core platform.
  
-\Ed{I don't think we need to have a separate discussion on FADE. It's mentioned 
+\ED{I don't think we need to have a separate discussion on FADE. It's mentioned 
 in Section 2.}
 % Filtering
 FADE \cite{fade-hpca14} presents a general filtering engine in order to reduce
@@ -54,7 +54,7 @@ designed for one specific monitor, these
 methods have not considered parallel monitoring. Our techniques for generally
 reducing the overheads of monitoring can also be used to enable these
 low-overhead, multi-user/run debugging techniques.
-\Ed{clarify how our approach is different. Is it more general - supporting
+\ED{clarify how our approach is different. Is it more general - supporting
 a large class of monitors? Is it different because it is for parallel monitoring?
 If so, what's the significance of the parallel monitors?}
 
@@ -77,5 +77,5 @@ dropping in order to guarantee strict deadlines.
 Our system allows either source-only dropping or unrestricted dropping to be performed.
 This allows the designer or user to choose the appropriate policy depending on
 the monitoring scheme which has not been previously explored.
-\Ed{Is the use of source vs. unrestricted dropping the only major difference for
+\ED{Is the use of source vs. unrestricted dropping the only major difference for
 this work? That sounds rather weak.}

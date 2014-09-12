@@ -6,13 +6,15 @@
 
 We implemented our dataflow-guided monitoring architecture by
 modifying the ARM version of the gem5 simulator \cite{gem5} to support parallel
-run-time monitoring. We model the main and monitoring cores as running at 2.5
+run-time monitoring. We implement the monitor as a software-based monitor
+running on a parallel processor core. We model the main and monitoring cores as
+running at 2.5
 GHz with 4-way set-associative private L1 I/D caches and a shared 8-way 2 MB L2
 cache. This setup is similar to the Snapdragon 801 processor commonly found in
 mobile systems. The dataflow engine uses a 1 kB cache for flags.
 
 In order to explore the generality of the architecture for
-different monitors, we implemented four different monitors: uninitialized
+different monitors, we implemented five different monitors: uninitialized
 memory check (UMC), array bounds check (BC), dynamic information flow
 tracking (DIFT), instruction-mix profiling (IMP), and LockSet-based race detection (LS).  Uninitialized memory
 check seeks to detect loading from
@@ -34,9 +36,9 @@ work has shown that this information can be used to detect malicious software \c
 LockSet attempts to detect possible race conditions in multi-threaded programs
 by associating information about which locks have access to shared memory
 locations. If a shared memory location is accessed without the use of a lock
-then a race condition may exist.
-Note that, although our dataflow engine performs similar operations to the DIFT
-monitor, the dataflow engine operates on smaller, 2-bit flags.
+then a race condition may exist. Since we implement the monitor using a
+processor core and our dataflow engine was designed to be generally applicable,
+the same hardware platform supports all of these monitoring techniques.
 
 We tested our system using benchmarks from SPECint
 CPU2006 \cite{spec2006}. Since our implementation of BC depends on the
@@ -94,14 +96,14 @@ Figure~\ref{fig:evaluation.filtering} shows the
 normalized execution times with filtering enabled. We see significant
 reductions in overhead for all three monitoring schemes. UMC sees normalized
 execution times of 1.7-7x with an average of 4x with null metadata filtering.
-This is an average reduction in overheads of 65\%. For BC, normalized execution
-times drop from 16x down to 3x on average (an 80\% reduction). The range of normalized execution
+For BC, normalized execution
+times drop from 16x down to 3x on average. The range of normalized execution
 times for filtered BC is 1.1-8.3x. 
 % This is not surprising since in the baseline
 % implementation all loads and stores needed to be monitored. However, with
 % filtering, only loads and stores corresponding to arrays need to be forwarded.
 Finally, DIFT sees the largest reduction in overheads with only 10\% overheads
-on average after filtering, an 88\% reduction in monitoring overheads, with a
+on average after filtering, with a
 maximum overhead of 31\% after filtering. This is due, in part, to the fact
 that for our implementation of DIFT on SPEC
 benchmarks, we only mark data read from files as tainted. For most of these
@@ -109,13 +111,13 @@ benchmarks, this propagates to relatively few instructions. Instead, if we
 targeted network or streaming applications, which have larger amounts of
 untrusted input data, we would expect to see less filtering. IMP does not have
 null metadata and thus is not affected by null metadata filtering.
-LS (not shown) had 1.03-1.72x after null metadata filtering and average
-overhead observed was 1.33x for the SPLASH-2 benchmarks.
+Overheads for LS (not shown) are 1.03-1.72x after null metadata filtering and the average
+overhead observed is 1.33x for the SPLASH-2 benchmarks.
 These overheads are similar to previous results for multi-core monitoring with
 minimal hardware costs such as LBA \cite{lba-asid06} (see
 Table~\ref{tab:monitoring.previous_overheads}). In
 Section~\ref{sec:evaluation.fpga}, we evaluate a higher performance, FPGA-based
-monitor that shows low tens of percent of overhead.
+monitor that shows low tens of percent of overhead. 
 
 \subsection{Coverage with Adjustable Partial Monitoring}
 
@@ -163,8 +165,7 @@ monitor that shows low tens of percent of overhead.
   \end{center}
 \end{figure*}
 
-Although the overheads of DIFT are quite low after filtering, BC and UMC still
-show significant overheads. Similarly, the overheads of IMP are not improved by filtering. In this section, we evaluate the effectiveness of
+In this section, we evaluate the effectiveness of
 using partial monitoring (in addition to filtering) to trade-off coverage for further reduced overheads.
 Figure~\ref{fig:evaluation.bc_sweep} shows the monitoring coverage achieved by
 array bounds check as we vary the overhead budget. 
@@ -183,10 +184,10 @@ percentage of monitoring events that are not dropped, which includes
 non-check instructions.
 
 We see that by varying the overhead budget, the coverage achieved also varies.
-With only a 1.1x overhead target, array bounds check still
+With only a 1.1x overhead target (10\% slowdown), array bounds check still
 achieves 84\% monitoring coverage on average. The high coverage
 achieved with such low overheads is due to two main effects.  The first is that
-monitoring can be done in parallel, providing monitoring coverage without
+monitoring can be done in parallel, providing a certain level of monitoring coverage without
 introducing overheads. The second effect is that, although we aggressively
 filter out monitoring events, there may still exist a large number of
 monitoring events that do not lead to security or reliability checks. As a
@@ -201,6 +202,8 @@ average. Even higher coverage can be achieved by allowing higher overheads.
 Similarly, Figure~\ref{fig:evaluation.ls_sweep} shows the coverage achieved by LS.
 With a 1.1x overhead, LS achieves 53\% coverage on average. This increases to
 71\% coverage with a 1.2x overhead. 
+Since the overheads of DIFT are low to begin with, setting an overhead target
+1.1x is enough for all benchmarks tested to reach 100\% coverage.
 \DAN{Try to explain water\_nsquared results not reaching 100\%?}
 
 The instruction-mix profiling monitor does not perform check operations. Thus,
@@ -230,11 +233,12 @@ In addition to evaluating our system for a core-based monitor, we also
 evaluated partial monitoring on a higher performance FPGA-based monitor. This
 setup is based on the FlexCore \cite{flexcore-micro10} setup and uses a
 fully-pipelined monitor running on an FPGA fabric at half the frequency of the
-main core. We show results only for UMC. In this case, full overheads of
-monitoring range from 10-70\%. Figure~\ref{fig:evaluation.fpga_umc_sweep} shows
-the coverage achieved as we sweep overhead from 1-70\%. We see that partial
+main core. We show results for UMC due to space constraints though other
+monitors show similar trends. In this case, full overheads of
+monitoring range from 1.1-1.7x. Figure~\ref{fig:evaluation.fpga_umc_sweep} shows
+the coverage achieved as we sweep overhead from 1.01-1.7x. We see that partial
 monitoring can allow the overheads of such a system to be pushed below 10\%
-while still providing partial coverage.
+while still providing over 50\% coverage.
 
 \subsection{Comparing Dropping Policies}
 
@@ -286,7 +290,7 @@ overhead budget and the run-time monitoring overheads for UMC. A positive value
 means that the overhead target was overshot while a negative value indicates
 that the overhead budget was met. We see similar results for unrestricted
 dropping and source-only dropping due to the fact that UMC consists of a large
-number of independent monitoring flows.
+number of short, independent monitoring chains.
 Figure~\ref{fig:evaluation.umc_coverage} shows the coverage of UMC for
 unrestricted dropping and source-only dropping. We see that, in several cases, source-only dropping
 achieves higher coverage than unrestricted dropping. On average, unrestricted
@@ -343,7 +347,7 @@ From Figure~\ref{fig:evaluation.bc_exec_time}, we see that for several
 benchmarks, source-only drop fails to meet the specified overhead target.
 The overshoot of the overhead target is quite high with an overhead differences
 of 420\% for {\tt bzip2}, 120\% for {\tt gcc}, and 1500\% for {\tt hmmer}.
-Since only array allocations are considered source events for BC, it is
+Since only array allocations are considered as source events for BC, it is
 difficult for source-only dropping to match overhead targets. Although
 Figure~\ref{fig:evaluation.bc_coverage} shows higher coverage for
 source-only dropping, this is largely due to the fact that is running with
@@ -378,9 +382,9 @@ that events are not dropped. Since the goal is code coverage, coverage here is
 measured as the percentage of static instructions which are monitored. Each run
 was simulated for 200 million instructions. 
 We see that for the unrestricted dropping policy there is almost no increase in
-coverage.  This is due to the fact that since there are multiple dependent
-monitoring operations that must be done in order for a final check to be
-successful as discussed in Section~\ref{sec:policies.when}.
+coverage.  This is due to the fact that it is likely that at least one
+monitoring event in a chain will be dropped with the unrestricted dropping
+policy. 
 Instead, source-only
 dropping is much better suited for achieving high coverage over multiple runs.
 Source-only dropping shows a 5\% increase in coverage with only seven runs.

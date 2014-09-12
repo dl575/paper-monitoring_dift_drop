@@ -39,6 +39,9 @@ program's memory. Similarly, monitors also typically maintain a set of metadata
 corresponding to the main core's register file.
 %We refer to these stalls and other overheads, such as
 %contention for shared resources, as \emph{monitoring overheads}. 
+Monitors typically maintain metadata corresponding to each memory location
+({\tt mem\_metadata[addr]}) and register ({\tt rf\_metadata[reg\_id]}) of the
+main core.
 If the monitor
 detects an inconsistent or undesired behavior in the monitoring events, then
 an error is detected. 
@@ -91,23 +94,25 @@ is propagated on ALU and memory instructions to track the corresponding array po
 Figure~\ref{fig:dropping.example_full} shows an example pseudo-code segment,
 its assembly level instructions, and the corresponding monitoring operations
 for an array bounds check monitor. 
-First, an array {\tt x} is allocated using {\tt malloc}. 
+First, an array {\tt x} is allocated using {\tt malloc} (line 1). 
 As {\tt malloc} returns the array's address in a register, the monitor
 associates base and bounds metadata with the corresponding metadata. 
-Next, pointer {\tt y} is set to point to the middle of array {\tt x}. 
+Next, pointer {\tt y} is set to point to the middle of array {\tt x} (line 2). 
 At the assembly level, a register {\tt r2} is set to array {\tt x}'s address plus an offset.
 The monitor propagates the metadata of the original pointer in {\tt r1} to the
 metadata of {\tt r2}. This is to ensure that pointer {\tt y} is not used to exceed the array's bounds.
-Finally, both pointers {\tt x} and {\tt y} are used to perform a write. 
-This requires setting register {\tt r3} to the write value. When this happens,
+Line 3a shows setting register {\tt r3} to a constant value of 1.
+When this happens,
 {\tt r3}'s metadata is also reset to NULL in case it previously stored a
-pointer. In both cases, the monitor checks whether the address that is written
-to is within the bounds stored in the metadata. In the first case, {\tt x+12}
+pointer. 
+Finally, the value of {\tt r3} is written using both pointers {\tt x} and {\tt y}.
+In both cases, the monitor checks whether the address that is written
+to is within the bounds stored in the metadata. In the first case (line 3b), {\tt x+12}
 is within the original array's bounds. No error is raised and the metadata of
 {\tt r3} is propagated to the metadata of the store address. If {\tt r3} were a
 pointer, than this would allow a future instruction to load the pointer and use
 it to access the corresponding array or data structure. In the second case,
-{\tt y+12} corresponds to {\tt x+20} which is not within the array's bounds and
+{\tt y+12} (line 4) corresponds to {\tt x+20} which is not within the array's bounds and
 the monitor will raise an error. 
 
 Here, we have shown the dynamic sequence of operations of the monitor.
@@ -218,7 +223,9 @@ false negatives but will never cause false positives. On the other hand,
 skipping monitoring operations that update metadata can lead to false positives
 and false negatives.
 Essentially, when an update operation is skipped, we can no longer trust the
-corresponding metadata. Thus, our general approach for preventing false positives is to mark these metadata as
+corresponding metadata. Thus, our general approach for preventing false
+positives is to add a 1-bit flag to each metadata in order to mark these
+metadata as
 invalid. Furthermore, this invalidation information is propagated in the same
 way that metadata is. Figure~\ref{fig:dropping.example_invalid}
 shows an example of associating invalid flags with metadata. In the example, no
@@ -267,7 +274,7 @@ There are two operations that are done for handling invalidation information:
 \end{figure*}
 
 Thus, the hardware acts effectively as a dataflow tracking engine in order to
-track invalid flags. Figure~\ref{fig:dropping.dataflow} shows a detailed block
+track a 1-bit invalid flag per metadata. Figure~\ref{fig:dropping.dataflow} shows a detailed block
 diagram of this hardware module. The dataflow engine uses two address
 calculation units to read in up two invalid flags. These source invalid flags
 are used to decide whether a monitoring event should filtered. A third address
@@ -365,7 +372,7 @@ propagation is required.
 
 One way to reduce the number of monitoring events that must be handled by the
 monitor is to filter out monitoring events that correspond to operating on null
-or uninitialized metadata. Null metadata typically corresponds to events that
+metadata. Null metadata corresponds to events that
 are not relevant to the monitor. For example, Hardbound
 \cite{hardbound-asplos08} filters out operations on non-pointer (i.e., no base
 and bounds metadata) instructions since it is not relevant to array bounds
@@ -384,11 +391,16 @@ information and filter out monitoring for lines 2 and 4.
 
 The operations performed by null filtering are almost identical to the
 operations needed for invalidation shown in
-Figure~\ref{fig:dropping.example_invalid}.
+Figure~\ref{fig:dropping.example_invalid}. Instead of taking a logical OR of the
+source invalid flags to determine whether monitoring can be skipped, null
+metadata filtering takes a logical AND of the source null flags.
 Thus, we can easily enable this null metadata filtering on our architecture by
-simply extending the dataflow flags to be two bits wide. One bit is used to
+extending the dataflow flags to be two bits wide. One bit is used to
 keep track of invalidation information while the second bit is used to keep
 track of null information. All flags are initialized to null and the filter
 decision table is extended with the propagation and filtering decision rules
 for null metadata filtering.
+The results is a single hardware design that provides enables both partial
+monitoring and null metadata filtering.
+
 

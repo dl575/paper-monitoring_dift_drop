@@ -7,12 +7,12 @@ section, we discuss some of the options and trade-offs for dropping policies.
 We split this decision into two components:
 \begin{enumerate}
   \item When do we need to drop events in order to enable reduced overheads?
-  \item Which events should be valid for dropping?
+  \item Which events should be dropped?
 \end{enumerate}
 
 Section~\ref{sec:policies.when} discusses options for deciding when events are
 dropped while Section~\ref{sec:policies.which} discusses trade-offs for which
-events are capable of being dropped. 
+events can be dropped. 
 
 % Our goal with enabling partial monitoring is to allow for a specified overhead target or budget to be met while maximizing the amount of monitoring performed.
 % This is done by dynamically dropping a portion of the monitoring operations. In this section, we discuss in detail how this dropping decision is
@@ -38,7 +38,7 @@ events are capable of being dropped.
 
 In this section, we discuss two possible ways to determine when events should be dropped.
 The first possibility is to probabilistically drop events. By setting the probability of
-dropping events appropriately, overheads can be reduced. This is works well for
+dropping events appropriately, overheads can be reduced. This works well for
 enabling partial monitoring for cooperative testing and debugging since the
 randomness allows different users and runs to monitor different portions of the
 program. However, using a probabilistic dropping policy can make it difficult
@@ -95,7 +95,7 @@ cycle of the main core. This $k$ can be calculated by taking the reciprocal of
 the target budget. For example, if the target budget is 20\%, then the counter
 increments on every 5th clock cycle. The value of this counter is the
 accumulated slack. Whenever the main core is stalled due to the monitor, the measured slack
-is decremented. This can be difficult to determine precisely due to the
+is decremented. It is difficult to perfectly determine when the main core is impacted by monitoring due to the
 difficulty in measuring certain overheads such as contention for shared memory.
 However, we have found that using only the stalls due to FIFO back pressure
 works well in practice.
@@ -116,18 +116,19 @@ works well in practice.
 \end{figure}
 
 In addition to deciding when dropping is required, trade-offs also exist in
-deciding which dropping events can be dropped.
-The simplest policy is to drop all monitoring events as
-long as slack is less than or equal to zero.  However, this can result in
+deciding which events should be dropped.
+The simplest policy is to drop any monitoring events when slack is less than or equal to zero.  However, this can result in
 wasted work. For example, consider the metadata dependence graph shown in
 Figure~\ref{fig:policies.dataflow_graph}. Here, an edge from node {\tt A} to node
 {\tt B} represents that if event {\tt A} is dropped, then due to its
-invalidated metadata, it will cause event {\tt B} to be filtered. Square
+invalidated metadata, it will cause event {\tt B} to be dropped. Square
 nodes indicate events where monitoring checks are performed. In the
 example, suppose that event {\tt E} is meant to perform a check operation but is dropped.
 In this situation, the
 monitoring operations that were done for events {\tt C} and {\tt D} were wasted
 since their results were not used for any monitoring checks.
+That is, by the time we decide to drop event {\tt E}, we have already 
+updated metadata due to events {\tt C} and {\tt D} which is no longer needed.
 
 \begin{figure}
   \begin{center}
@@ -159,16 +160,27 @@ the root of these metadata flows. That is, we will decide to either monitor or
 not monitor an entire metadata flow. We refer to this dropping decision policy
 as \emph{source-only dropping} and we refer to the previous policy of 
 dropping any event as \emph{unrestricted dropping}.
+
 Figures~\ref{fig:policies.all_drop} and \ref{fig:policies.source_drop} show a
 comparison of where dropping decisions are made for these two policies. Source
 dropping will
 result in no wasted work and thus better coverage. However, because of the coarser-grained decision, it
-may be more difficult to closely match overheads. We expect source dropping 
+may be more difficult to closely match overheads. We expect source-only dropping 
 to work well when there are a large number of independent metadata flows.
 In addition, using a probabilistic dropping policy works poorly with
-unrestricted dropping since each event in a chain needs to be randomly selected
-for monitoring in order for the check to be performed. Instead, probabilistic
-dropping works better when coupled with source-only dropping.
+unrestricted dropping. Since each event in a dependent chain (e.g., events {\tt
+A} through {\tt E}) needs to be monitored in order for the monitoring check to
+be useful, randomly dropping any single event will cause the final check to be
+invalid.
+
+For applications where closely matching an overhead target is important, a
+slack-based, unrestricted dropping policy is appropriate. However, if matching
+the overhead target is not as important, then a slack-based, source-only dropping
+policy could provide better coverage. 
+Finally, if the goal is to use partial monitoring to enable cooperative
+debugging and testing with very low overheads, then a probabilistic,
+source-only dropping policy can be used to provide good total coverage over
+multiple runs.
 
 % Trade-off between source-drop and unrestricted dropping
 % \begin{figure}
