@@ -3,15 +3,24 @@
 
 Parallel run-time monitoring techniques are attractive solutions for improving
 the reliability, security, and debugging capabilities of systems. In this
-paper, we have presented an architecture that reduces the overheads of
-monitoring through filtering and adjustable partial monitoring. This is done by
-using a hardware dataflow tracking engine in order to track and filter out
-monitoring for null metadata. In addition, the dataflow engine tracks invalid
-metdata flows in order to enable partial monitoring without false positives.
-Our experimental results show that filtering can greatly reduce the average
-overheads of monitoring from 7x, 18x, and 11x for UMC, BC, and DIFT down to 4x
-for UMC and BC and just 13\% for DIFT. With partial monitoring, we see that
-with a 10\% overhead budget, BC can still achieve 82\% coverage and UMC can
-still achieve 32\% coverage. Finally, we show that although source-only dropping can
-achieve better coverage than unrestricted dropping when it works, it is not
-able to match overhead targets as well as unrestricted dropping.
+paper, we have presented an architecture that enables adjustable overheads through partial monitoring. 
+The architecture uses a dataflow tracking engine to prevent false positives
+through tracking invalidation information. In addition, we show how the
+architecture can be extended to enable null metadata filtering.
+Given this architecture, we explore design choices related to the dropping policy.
+With partial monitoring, we see that with a 1.5x overhead target, BC can still
+achieve 82\% average coverage and UMC can still achieve 43\% average coverage.
+In addition, with a 1.5x overhead target, IMP shows less than 3\% error on
+average.
+
+% This is done by
+% using a hardware dataflow tracking engine in order to track and filter out
+% monitoring for null metadata. In addition, the dataflow engine tracks invalid
+% metdata flows in order to enable partial monitoring without false positives.
+% Our experimental results show that filtering can greatly reduce the average
+% overheads of monitoring from 7x, 18x, and 11x for UMC, BC, and DIFT down to 4x
+% for UMC and BC and just 13\% for DIFT. With partial monitoring, we see that
+% with a 10\% overhead budget, BC can still achieve 82\% coverage and UMC can
+% still achieve 32\% coverage. Finally, we show that although source-only dropping can
+% achieve better coverage than unrestricted dropping when it works, it is not
+% able to match overhead targets as well as unrestricted dropping.

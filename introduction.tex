@@ -16,26 +16,32 @@ detection \cite{argus-micro07}, data-race detection \cite{radish-isca12,
 cord-hpca06}, etc. 
 
 % Programmable hardware monitors
-These run-time monitors introduce performance, power, and energy overheads.
-% Implementing run-time monitoring in software using binary instrumentation or
-% other similar methods has been shown to introduce high overheads. For example,
-% dynamic information flow tracking (DIFT) implemented in software suffers a 3.6x
-% slowdown \cite{lift-micro06}. 
-Implementing monitors in dedicated hardware has been shown to have small
-performance impacts. For example, a dedicated hardware implementation of
-dynamic information flow tracking (DIFT) shows performance
-overheads of only 1.1\% \cite{dift-asplos04}. However, fixed hardware loses
-the programmability of software, and cannot be updated or changed. It 
-requires for monitors to be chosen and implemented at hardware design time.
-Recent studies \cite{lba-isca08, ruwase-spaa08, paralog-asplos10, oases-sigops09} have proposed using parallel cores in a
-multi-core system to perform monitoring. This allows monitoring to be done
-using parallel hardware while having the flexibility and programmability of
-software. However, due to the multiple cycles it may take for software to
-monitor an instruction, the overheads can easily increase execution time
-several fold.
-% Two optimizations
-Since these overheads can be prohibitive for run-time use, we propose to enable
-partial monitoring in order to reduce the overheads.
+% These run-time monitors introduce performance, power, and energy overheads.
+% Implementing monitors in dedicated hardware has been shown to have small
+% performance impacts. For example, a dedicated hardware implementation of
+% dynamic information flow tracking (DIFT) shows performance
+% overheads of only 1.1\% \cite{dift-asplos04}. However, fixed hardware loses
+% the programmability of software, and cannot be updated or changed. It 
+% requires for monitors to be chosen and implemented at hardware design time.
+% Recent studies \cite{lba-isca08, ruwase-spaa08, paralog-asplos10, oases-sigops09} have proposed using parallel cores in a
+% multi-core system to perform monitoring. This allows monitoring to be done
+% using parallel hardware while having the flexibility and programmability of
+% software. However, due to the multiple cycles it may take for software to
+% monitor an instruction, the overheads can easily increase execution time
+% several fold.
+% % Two optimizations
+% Since these overheads can be prohibitive for run-time use, we propose to enable
+% partial monitoring in order to reduce the overheads.
+
+Previous studies have explored various design points in terms of efficiency,
+flexibility, and hardware costs for implementing run-time monitors. Custom
+hardware designs that target a single or narrow-range of monitors have been
+shown to have low performance overheads. On the other hand, flexible systems
+that support a range of monitors have shown much higher overheads. In this
+paper, we explore a new trade-off dimension for run-time monitoring designs. We
+propose to enable low overhead monitors without sacrificing flexibility by
+using partial monitoring. This instead allows a trade-off between overheads and
+monitoring coverage or accuracy.
 
 Although partial monitoring comes at the cost of reduced monitoring coverage (i.e.,
 effectiveness), this can still be very useful.
@@ -96,15 +102,19 @@ The main contributions of this paper are summarized as follows:
 % requires no modifications to the monitor.
 
 % Evaluation
-In order to evaluate our approach, we applied it to 3 different monitoring
+In order to evaluate our approach, we applied it to 4 different monitoring
 techniques. These monitoring techniques vary in what events they monitor, the
 size and semantics of their metadata, and the operations performed on metadata.
-Our experiments show that filtering reduces the average overhead of these
-monitors from 7-18x down to 13-300\%.
-In addition, with partial monitoring, for the monitoring schemes which still
-see average overheads of 300\%, we show that with just 10\% overheads, we can still
-provide 32-82\% of coverage on average. By increasing the
-overhead budget, this coverage rate can be increased. 
+% Our experiments show that filtering reduces the average overhead of these
+% monitors from 7-18x down to 13-300\%.
+% In addition, with partial monitoring, for the monitoring schemes which still
+% see average overheads of 300\%, we show that with just 10\% overheads, we can still
+% provide 32-82\% of coverage on average. By increasing the
+% overhead budget, this coverage rate can be increased. 
+These monitors show baseline overheads of 4-16x without null metadata filtering
+and 1.1-4.3x after null metadata filtering.  Our results show that with 1.5x
+overhead, coverage of 43-82\% on average can still be achieved and that
+overhead and coverage can be varied to create a trade-off.
 
 % Section summary
 This paper is organized as follows. Section~\ref{sec:monitoring} presents the
