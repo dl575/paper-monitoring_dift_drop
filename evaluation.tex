@@ -72,47 +72,46 @@ the SPLASH-2 benchmark set \cite{splash-isca95}. We ran these benchmarks for
 % performing full monitoring normalized to the execution times of the benchmarks
 % without monitoring. In these results, no filtering or partial monitoring is
 % done. 
-Our initial results for performing full core-based monitoring show severalfold slowdowns.
-UMC shows normalized execution times from 5x to 16x with an average
-of 10x. BC shows normalized execution times of 8-24x with an average of
-16x while DIFT shows normalized execution times of 4x-14x with an average of
-9x. IMP shows normalized execution times from 2-6x with an average of 4x and LS
-shows slowdowns of 1.8-3.3x with an average of 2.4x. 
+% Our initial results for performing full core-based monitoring show severalfold slowdowns.
+% UMC shows normalized execution times from 5x to 16x with an average
+% of 10x. BC shows normalized execution times of 8-24x with an average of
+% 16x while DIFT shows normalized execution times of 4x-14x with an average of
+% 9x. IMP shows normalized execution times from 2-6x with an average of 4x and LS
+% shows slowdowns of 1.8-3.3x with an average of 2.4x. 
 
 % Filter monitoring overheads
 \begin{figure}
   \begin{center}
     \includegraphics[width=\columnwidth, clip=true, trim=0 0.5in 0 0]{figs/data_filtering.pdf}
     \vspace{-0.2in}
-    \caption{Monitoring overheads with filtering null metadata.}
+    \caption{Monitoring overheads with null metadata filtering.}
     \label{fig:evaluation.filtering}
     \vspace{-0.1in}
   \end{center}
 \end{figure}
 
 Figure~\ref{fig:evaluation.filtering} shows the
-normalized execution times with filtering enabled. We see significant
-reductions in overhead for all three monitoring schemes. UMC sees normalized
-execution times of 1.7-7x with an average of 4x with null metadata filtering.
+execution times of performing monitoring with null filtering enabled normalized
+to the execution time of the benchmarks without monitoring. UMC sees normalized
+execution times of 1.7-7x with an average of 4x.
 For BC, normalized execution
-times drop from 16x down to 3x on average. The range of normalized execution
-times for filtered BC is 1.1-8.3x. 
+are 3x on average and range from 1.1x to 8.3x.
 % This is not surprising since in the baseline
 % implementation all loads and stores needed to be monitored. However, with
 % filtering, only loads and stores corresponding to arrays need to be forwarded.
-Finally, DIFT sees the largest reduction in overheads with only 10\% overheads
-on average after filtering, with a
-maximum overhead of 31\% after filtering. This is due, in part, to the fact
+DIFT sees an average of 10\% overhead with a maximum overhead of 31\% with null
+metadata filtering. This is due, in part, to the fact
 that for our implementation of DIFT on SPEC
 benchmarks, we only mark data read from files as tainted. For most of these
 benchmarks, this propagates to relatively few instructions. Instead, if we
 targeted network or streaming applications, which have larger amounts of
-untrusted input data, we would expect to see less filtering. IMP does not have
-null metadata and thus is not affected by null metadata filtering.
-Overheads for LS (not shown) are 1.03-1.72x after null metadata filtering and the average
+untrusted input data, we would higher overheads. IMP shows normalized
+executions from 2-6x with an average of 4x. Overheads for LS (not pictured) are
+1.03-1.72x after null metadata filtering and the average
 overhead observed is 1.33x for the SPLASH-2 benchmarks.
-These overheads are similar to previous results for multi-core monitoring with
-minimal hardware costs such as LBA \cite{lba-asid06} (see
+These overheads are similar to the overheads seen by previous multi-core
+monitoring systems such as LBA-accelerated \cite{lba-isca08} and FADE
+\cite{fade-hpca14} (see
 Table~\ref{tab:monitoring.previous_overheads}). In
 Section~\ref{sec:evaluation.fpga}, we evaluate a higher performance, FPGA-based
 monitor that shows low tens of percent of overhead. 
@@ -164,7 +163,7 @@ monitor that shows low tens of percent of overhead.
 \end{figure*}
 
 In this section, we evaluate the effectiveness of
-using partial monitoring (in addition to filtering) to trade-off coverage for further reduced overheads.
+using partial monitoring to trade-off coverage for reduced overheads.
 For these results, we use a slack-based, unrestricted dropping policy.
 Figure~\ref{fig:evaluation.bc_sweep} shows the monitoring coverage achieved by
 array bounds check as we vary the overhead budget. 
@@ -352,6 +351,15 @@ Figure~\ref{fig:evaluation.bc_coverage} shows higher coverage for
 source-only dropping, this is largely due to the fact that is running with
 higher overheads.
 
+From these results, we see that for monitors which many short, independent
+chains, such as UMC, source-only dropping can provide better coverage than
+unrestricted dropping with the same overhead. For other monitors, such as BC,
+source-only dropping is prone to overshoot the overhead target.
+Thus, for applications where staying with an overhead target is especially
+important, such as soft real-time systems, a slack-based, unrestricted dropping
+policy is more appropriate. On the other hand, if occasional slowdowns are
+acceptable, then source-only dropping can provide better coverage on average.
+
 \subsection{Multiple-Run Coverage}
 
 % Multi-run coverage with unrestricted dropping
@@ -378,7 +386,8 @@ unrestricted and source-only dropping policies with probabilistic dropping.
 These numbers are averaged across all benchmarks. Here, we use a 10\%
 probability
 that events are not dropped. Since the goal is code coverage, coverage here is
-measured as the percentage of static instructions which are monitored. Each run
+measured as the percentage of static instructions which are monitored in at
+least one of the runs. Each run
 was simulated for 200 million instructions. 
 We see that for the unrestricted dropping policy there is almost no increase in
 coverage.  This is due to the fact that it is likely that at least one

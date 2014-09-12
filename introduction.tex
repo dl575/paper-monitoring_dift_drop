@@ -59,8 +59,10 @@ greathouse-cgo11}.
 % Adjustable overhead
 Partial monitoring with adjustable overheads is achieved by dynamically
 dropping monitoring operations when overheads exceed a specified overhead
-budget. In order to prevent dropped monitoring operations from leading to a
-false positive, we need to track these dropped flows.  We present a
+budget. Although this results in reduced monitoring coverage (i.e., false
+negatives), false positives can also occur due to out-of-date metadata information.
+In order to prevent these
+false positive, we need to track the dropped metadata flows.  We present a
 hardware-based dataflow tracking engine that keeps track of these dropped
 flows. With this architecture, we investigate different policies for deciding
 which events to drop for partial monitoring. These different policies show a
