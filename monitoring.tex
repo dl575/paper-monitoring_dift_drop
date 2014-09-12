@@ -27,7 +27,8 @@ designed only for one monitor or a narrow set of monitors. However, the custom
 hardware monitors cannot be modified or updated, and require dedicated silicon area. 
 On the other hand, flexible systems that support a wide range of monitors lead 
 to noticeable performance overhead, often too high for wide deployment in practice.
-Software-only implementations \cite{FIXME} or multi-core monitors with minimal
+Software-only implementations \cite{nagarajan-interact08, lift-micro06,
+purify-usenix92, taintcheck-ndsss05} or multi-core monitors with minimal
 hardware changes \cite{lba-asid06} are reported to have severalfold slowdowns.
 On-chip FPGA monitors \cite{flexcore-micro10} and cores with monitoring accelerators
 \cite{lba-isca08, fade-hpca14} can reduce overhead significantly, but still show
@@ -71,7 +72,7 @@ Here, we briefly discuss example applications of partial monitoring and the metr
 that are important in each case.
 
 {\bf Cooperative testing, debugging, and protection:}
-Recently studies \cite{FIXME} have shown that software testing, debugging,
+Recently studies \cite{liblit-pldi05, chilimbi-asplos04, greathouse-cgo11, testudo-micro08} have shown that software testing, debugging,
 or attack detection may be done in a cooperative fashion across
 a large number of systems. In this case, each system is only willing to pay very low
 overhead, say a few percents, and only performs a small subset of checks. 
@@ -105,7 +106,7 @@ to be detected for a system.
 The run-time monitoring system can be used to implement various profiling tools
 to collect statistics on program behaviors for performance optimizations as well
 as security protection. For example, a recent study showed that an instruction
-mix can be used to identify malware from normal programs \cite{FIXME}. 
+mix can be used to identify malware from normal programs \cite{demme-isca13, tang-raid14}. 
 In such profiling tools, the partial monitoring framework can be used to obtain
 the statics on samples rather than all program events, essentially trading off
 accuracy for lower overhead.
