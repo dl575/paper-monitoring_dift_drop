@@ -20,29 +20,28 @@ section describes our design.
   \end{center}
 \end{figure}
 
-\ED{Should we use monitoring core or just monitor?}
-
 Figure~\ref{fig:dropping.overview} shows an overview of the run-time monitoring
 model that is assumed in this paper.  The \emph{main program} is a computation
 task that performs the original function of the system and is run on the
 \emph{main core}.  On certain events during the main program, such as the
-execution of certain types of instructions, the \emph{monitoring core} performs a
-series of \emph{monitoring operations}. The monitoring core operates in parallel to the
+execution of certain types of instructions, the \emph{monitor} performs a
+series of \emph{monitoring operations}. The monitor operates in parallel to the
 main core. These events are referred to as \emph{monitoring events}. Depending
 on the type of monitoring event, different monitoring operations are
-executed. Information about monitoring events are sent to the monitoring core and buffered in a FIFO structure to decouple the
-running of the main core and the monitoring core. If the FIFO is full, then the main
+executed. Information about monitoring events is sent to the monitor and buffered in a FIFO structure to decouple the
+running of the main core and the monitor. If the FIFO is full, then the main
 core is forced to stall on a monitoring event until a FIFO entry becomes
 available. These stalls are a major source of
-overhead because the monitoring core may take several cycles to process a single event
+overhead because the monitor may take several cycles to process a single event
 from the main core. 
+Monitors typically maintain a set of metadata corresponding to the main
+program's memory. Similarly, monitors also typically maintain a set of metadata
+corresponding to the main core's register file.
 %We refer to these stalls and other overheads, such as
 %contention for shared resources, as \emph{monitoring overheads}. 
-If the monitoring core
+If the monitor
 detects an inconsistent or undesired behavior in the monitoring events, then
 an error is detected. 
-
-\ED{describe reg/mem meta-data both in the figure and in the text.}
 
 There are many possible monitoring schemes that can be implemented on this type
 of fine-grained parallel monitoring architecture such as memory protection
@@ -54,7 +53,7 @@ when software attempts to read or write to a memory location outside of an
 array's bounds. This can be done by associating metadata with array pointers that 
 indicates the array's base (start) and bound (end) addresses. On loads or stores with the
 array
-pointer, the monitoring core checks that the memory address accessed is within the base and
+pointer, the monitor checks that the memory address accessed is within the base and
 bound addresses. In addition, this base and bound metadata
 is propagated on ALU and memory instructions to track the corresponding array pointers.
 % One example is an uninitialized memory check (UMC) where monitoring is used to
@@ -111,7 +110,7 @@ it to access the corresponding array or data structure. In the second case,
 {\tt y+12} corresponds to {\tt x+20} which is not within the array's bounds and
 the monitor will raise an error. 
 
-Here, we have shown the dynamic sequence of operations of the monitoring core.
+Here, we have shown the dynamic sequence of operations of the monitor.
 The actual static code consists of a set of instructions to be run for each
 monitored instruction type. Register and memory addresses are read from
 information sent by the main core.
@@ -246,7 +245,7 @@ would have been raised even if the access on line 4 was in bounds.
 
 In order to efficiently support dropping monitoring events and to prevent false
 positives, we propose to insert a hardware module between the main and
-monitoring core (see Figure~\ref{fig:dropping.dataflow_overview}). 
+monitor (see Figure~\ref{fig:dropping.dataflow_overview}). 
 This module handles the invalidation operations shown in the middle column of
 Figure~\ref{fig:dropping.example_invalid}.
 There are two operations that are done for handling invalidation information:
