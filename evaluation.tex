@@ -14,7 +14,7 @@ mobile systems. The dataflow engine uses a 1 kB cache for flags.
 In order to explore the generality of the architecture for
 different monitors, we implemented four different monitors: uninitialized
 memory check (UMC), array bounds check (BC), dynamic information flow
-tracking (DIFT), and instruction-mix profiling (IMP).  Uninitialized memory
+tracking (DIFT), instruction-mix profiling (IMP), and LockSet-based race detection (LS).  Uninitialized memory
 check seeks to detect loading from
 memory locations that are not initialized first. Array bounds check, as
 mentioned in Section~\ref{sec:monitoring}, is a monitoring scheme that aims to
@@ -31,63 +31,58 @@ the data originated from. Instruction-mix profiling counts the number of ALU,
 load, store, and control instructions that are executed. This profiling
 information can be useful for performing optimizations. Additionally, recent
 work has shown that this information can be used to detect malicious software \cite{tang-raid14}.
+LockSet attempts to detect possible race conditions in multi-threaded programs
+by associating information about which locks have access to shared memory
+locations. If a shared memory location is accessed without the use of a lock
+then a race condition may exist.
 Note that, although our dataflow engine performs similar operations to the DIFT
 monitor, the dataflow engine operates on smaller, 2-bit flags.
 
-\ED{We need to point out that these monitors cannot be implemented with a simple
-1-bit dataflow engine (DIFT) that we use for filtering. 
-Point: address potential reviewer questions on why don't we just use a 
-programmable dataflow engine for monitoring.}
-
-We tested our system using all C benchmarks from SPECint
+We tested our system using benchmarks from SPECint
 CPU2006 \cite{spec2006}. Since our implementation of BC depends on the
 modification of {\tt malloc} to set array bounds information, we focus on the C
 SPECint benchmarks. Although we do not
 show results for the C++ benchmarks, we note that the results for UMC, DIFT, and IMP
 for these benchmarks are similar to the other results shown. For each
-benchmark, we simulated for 2 billion instructions. An initial slack of 2
-million cycles, which is less than 1\% of
-the total execution time, is given for a 10\% target overhead. This initial
-slack is scaled proportionally for other overhead targets. Unless otherwise
-specified, an unrestricted, slack-based dropping policy is used.
+benchmark, we simulated for 2 billion instructions. 
+% An initial slack of 2
+% million cycles, which is less than 1\% of
+% the total execution time, is given for a 1.1x target overhead. This initial
+% slack is scaled proportionally for other overhead targets. 
+Since LS race detection requires multi-threaded programs, we tested LS using
+the SPLASH-2 benchmark set \cite{splash-isca95}. We ran these benchmarks for
+200 million instructions.
+Unless otherwise specified, an unrestricted, slack-based dropping policy is
+used.
 
 \subsection{Baseline Monitoring Overheads}
 
-% Full monitoring overheads
-\begin{figure}
-  \begin{center}
-    \includegraphics[width=\columnwidth]{figs/data_full_mon.pdf}
-    \vspace{-0.2in}
-    \caption{Full monitoring overheads.}
-    \label{fig:evaluation.full_mon}
-    \vspace{-0.1in}
-  \end{center}
-\end{figure} 
+% % Full monitoring overheads
+% \begin{figure}
+%   \begin{center}
+%     \includegraphics[width=\columnwidth]{figs/data_full_mon.pdf}
+%     \vspace{-0.2in}
+%     \caption{Full monitoring overheads.}
+%     \label{fig:evaluation.full_mon}
+%     \vspace{-0.1in}
+%   \end{center}
+% \end{figure} 
 
-Figure~\ref{fig:evaluation.full_mon} shows the execution times of
-performing full monitoring normalized to the execution times of the benchmarks
-without monitoring. In these results, no filtering or partial monitoring is
-done. UMC shows normalized execution times from 5x to 16x with an average
+% Figure~\ref{fig:evaluation.full_mon} shows the execution times of
+% performing full monitoring normalized to the execution times of the benchmarks
+% without monitoring. In these results, no filtering or partial monitoring is
+% done. 
+Our initial results for performing full core-based monitoring show severalfold slowdowns.
+UMC shows normalized execution times from 5x to 16x with an average
 of 10x. BC shows normalized execution times of 8-24x with an average of
 16x while DIFT shows normalized execution times of 4x-14x with an average of
-9x. IMP shows normalized execution times from 2-6x with an average of 4x. 
-% These monitors show high overheads because they require several
-% instructions to process each monitored instruction from the main core. Even
-% small increases in the number of instructions needed by the monitor lead to
-% high overheads when multiplied across the main program's execution.
-
-\ED{we need to better justify the high overhead. 
-Key points: 1) the overhead is in line with LBA, which represent multi-core
-monitoring w/ low HW costs.
-2) If we are going to mention dynamic memory allocation. We need to say why
-it's really necessary -- it's not our implementation problem. It's something
-that you need to have for large meta-data. Also, I don't think UMC would need
-dynamic allocation.}
+9x. IMP shows normalized execution times from 2-6x with an average of 4x and LS
+shows slowdowns of 1.8-3.3x with an average of 2.4x. 
 
 % Filter monitoring overheads
 \begin{figure}
   \begin{center}
-    \includegraphics[width=\columnwidth]{figs/data_filtering.pdf}
+    \includegraphics[width=\columnwidth, clip=true, trim=0 0.5in 0 0]{figs/data_filtering.pdf}
     \vspace{-0.2in}
     \caption{Monitoring overheads with filtering null metadata.}
     \label{fig:evaluation.filtering}
@@ -114,6 +109,8 @@ benchmarks, this propagates to relatively few instructions. Instead, if we
 targeted network or streaming applications, which have larger amounts of
 untrusted input data, we would expect to see less filtering. IMP does not have
 null metadata and thus is not affected by null metadata filtering.
+LS (not shown) had 1.03-1.72x after null metadata filtering and average
+overhead observed was 1.33x for the SPLASH-2 benchmarks.
 These overheads are similar to previous results for multi-core monitoring with
 minimal hardware costs such as LBA \cite{lba-asid06} (see
 Table~\ref{tab:monitoring.previous_overheads}). In
@@ -125,9 +122,9 @@ monitor that shows low tens of percent of overhead.
 % BC sweep
 \begin{figure}
   \begin{center}
-    \includegraphics[width=\linewidth]{figs/data_bc_sweep.pdf}
+    \includegraphics[width=\linewidth, clip=true, trim=0 0.3in 0 0]{figs/data_bc_sweep.pdf}
     \vspace{-0.2in}
-    \caption{Coverage versus varying overhead budget for array bounds check.}
+    \caption{Coverage vs. varying overhead budget for BC.}
     \label{fig:evaluation.bc_sweep}
     \vspace{-0.2in}
   \end{center}
@@ -136,10 +133,21 @@ monitor that shows low tens of percent of overhead.
 % UMC sweep
 \begin{figure}
   \begin{center}
-    \includegraphics[width=\linewidth]{figs/data_umc_sweep.pdf}
+    \includegraphics[width=\linewidth, clip=true, trim=0 0.3in 0 0]{figs/data_umc_sweep.pdf}
     \vspace{-0.2in}
-    \caption{Coverage versus varying overhead budget for uninitialized memory check.}
+    \caption{Coverage vs. varying overhead budget for UMC.}
     \label{fig:evaluation.umc_sweep}
+    \vspace{-0.1in}
+  \end{center}
+\end{figure}
+
+% LS sweep
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=\linewidth, clip=true, trim=0 0.3in 0 0]{figs/data_ls_sweep.pdf}
+    \vspace{-0.2in}
+    \caption{Coverage vs. varying overhead budget for LS.}
+    \label{fig:evaluation.ls_sweep}
     \vspace{-0.1in}
   \end{center}
 \end{figure}
@@ -147,9 +155,9 @@ monitor that shows low tens of percent of overhead.
 % IMP sweep
 \begin{figure*}
   \begin{center}
-    \includegraphics[width=\linewidth]{figs/data_imp_sweep.pdf}
+    \includegraphics[width=\linewidth, clip=true, trim=0 0.3in 0 0]{figs/data_imp_sweep.pdf}
     \vspace{-0.2in}
-    \caption{Error versus varying overhead budget for instruction-mix profiling.}
+    \caption{Average error vs. varying overhead budget for instruction-mix profiling. Whisker bars show min and max errors.}
     \label{fig:evaluation.imp_sweep}
     \vspace{-0.1in}
   \end{center}
@@ -190,16 +198,19 @@ we see that varying overhead budgets enables partial monitoring. We see that
 with a 1.1x overhead target, UMC achieves 25\% monitoring coverage on average.
 By increasing this overhead budget to 1.5x, UMC achieves 43\% coverage on
 average. Even higher coverage can be achieved by allowing higher overheads.
+Similarly, Figure~\ref{fig:evaluation.ls_sweep} shows the coverage achieved by LS.
+With a 1.1x overhead, LS achieves 53\% coverage on average. This increases to
+71\% coverage with a 1.2x overhead. 
+\DAN{Try to explain water\_nsquared results not reaching 100\%?}
 
 The instruction-mix profiling monitor does not perform check operations. Thus,
 the concept of coverage is not applicable here. Instead, for each instruction
 type profiled, we calculate its count as a percentage of the total instructions
 monitored. We compare these percentages against the case when full monitoring
-is performed. Figure~\ref{fig:evaluation.imp_sweep} shows the max error across
+is performed. Figure~\ref{fig:evaluation.imp_sweep} shows the min, max, and average error across
 instruction types for each benchmark and for varying overheads. We see that
-with a 1.1x overhead a max error of 9\% is observed and an average of less than
-4\%. This error decreases as overhead is increased and is 0\% for all
-benchmarks once a 6x overhead target is used.
+with a 1.1x overhead a max error of 9\% is observed across benchmarks and the
+average error across instruction types and benchmarks is less than 2\%. 
 
 \subsection{FPGA-based Monitor}
 \label{sec:evaluation.fpga}
@@ -207,7 +218,7 @@ benchmarks once a 6x overhead target is used.
 % Flex UMC sweep
 \begin{figure}
   \begin{center}
-    \includegraphics[width=\linewidth]{figs/data_fpga_umc_sweep.pdf}
+    \includegraphics[width=\linewidth, clip=true, trim=0 0.3in 0 0]{figs/data_fpga_umc_sweep.pdf}
     \vspace{-0.2in}
     \caption{Coverage versus varying overhead budget for UMC running on an FPGA-based monitor.}
     \label{fig:evaluation.fpga_umc_sweep}
@@ -253,14 +264,15 @@ while still providing partial coverage.
   \begin{center}
   \vspace{-0.2in}
   \subfloat[Overhead budget error.]{
-    \includegraphics[width=\columnwidth]{figs/data_umc_exec_time.pdf}
+    \includegraphics[width=\columnwidth, clip=true, trim=0 0.3in 0 0]{figs/data_umc_exec_time.pdf}
     \label{fig:evaluation.umc_exec_time}
   }
   \vspace{-0.2in}
   \subfloat[Coverage.]{
-    \includegraphics[width=\columnwidth]{figs/data_umc_coverage.pdf}
+    \includegraphics[width=\columnwidth, clip=true, trim=0 0.3in 0 0]{figs/data_umc_coverage.pdf}
     \label{fig:evaluation.umc_coverage}
   }
+  \vspace{-0.1in}
   \caption{Comparing dropping policies for UMC.}
   \vspace{-0.2in}
   \end{center}
@@ -309,14 +321,15 @@ are being spent on wasted work as discussed in Section~\ref{sec:policies.which}.
   \begin{center}
   \vspace{-0.2in}
   \subfloat[Overhead budget error.]{
-    \includegraphics[width=\columnwidth]{figs/data_bc_exec_time.pdf}
+    \includegraphics[width=\columnwidth, clip=true, trim=0 0.3in 0 0]{figs/data_bc_exec_time.pdf}
     \label{fig:evaluation.bc_exec_time}
   }
   \vspace{-0.2in}
   \subfloat[Coverage.]{
-    \includegraphics[width=\columnwidth]{figs/data_bc_coverage.pdf}
+    \includegraphics[width=\columnwidth, clip=true, trim=0 0.3in 0 0]{figs/data_bc_coverage.pdf}
     \label{fig:evaluation.bc_coverage}
   }
+  \vspace{-0.1in}
   \caption{Comparing dropping policies for BC.}
   \vspace{-0.2in}
   \end{center}
@@ -341,7 +354,7 @@ higher overheads.
 % Multi-run coverage with unrestricted dropping
 \begin{figure}
   \begin{center}
-    \includegraphics[width=\columnwidth]{figs/data_multirun_coverage.pdf}
+    \includegraphics[width=\columnwidth, clip=true, trim=0 0.2in 0 0]{figs/data_multirun_coverage.pdf}
     \vspace{-0.2in}
     \caption{Coverage over multiple runs for BC with a 10\% probability to not drop events.}
     \label{fig:evaluation.multirun}
@@ -358,7 +371,9 @@ achieve high coverage across multiple runs. Varying the monitoring that is
 done for different runs can be achieved by using a probabilistic dropping policy.
 Figure~\ref{fig:evaluation.multirun} shows the total
 coverage achieved over multiple runs for array bounds check running for
-unrestricted and source-only dropping policies with probabilistic dropping. Here, we use a 10\% probability
+unrestricted and source-only dropping policies with probabilistic dropping.
+These numbers are averaged across all benchmarks. Here, we use a 10\%
+probability
 that events are not dropped. Since the goal is code coverage, coverage here is
 measured as the percentage of static instructions which are monitored. Each run
 was simulated for 200 million instructions. 
