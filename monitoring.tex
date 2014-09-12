@@ -18,9 +18,9 @@
 
 There have been a number of proposals for run-time monitoring systems exploring various
 design points. % in the trade-off space between efficiency and flexibility.
-Table~\ref{tab:monitoring.previous_overheads} summarizes some of representative designs
+Table~\ref{tab:monitoring.previous_overheads} summarizes some the of representative designs
 and their reported performance overhead. The previous studies clearly show that there
-exist trade-offs among efficiency, flexibility, and hardware costs. 
+exist trade-offs between efficiency, flexibility, and hardware costs. 
 For example, a run-time monitoring scheme can often be realized with fairly low
 performance overhead (less than 20\%) if implemented with custom hardware that is
 designed only for one monitor or a narrow set of monitors. However, the custom
@@ -108,7 +108,7 @@ to collect statistics on program behaviors for performance optimizations as well
 as security protection. For example, a recent study showed that an instruction
 mix can be used to identify malware from normal programs \cite{demme-isca13, tang-raid14}. 
 In such profiling tools, the partial monitoring framework can be used to obtain
-the statics on samples rather than all program events, essentially trading off
+statistical samples rather than complete counts of all program events, essentially trading off
 accuracy for lower overhead.
 
 \subsection{Design Challenges}
@@ -120,11 +120,11 @@ The following summarizes the main design goals and associated design challenges.
 \begin{enumerate}
   \item \textbf{General:} Because we mainly target flexible run-time monitoring systems,
   which often have high overhead, the framework also needs to be general enough to be
-  applicable to a wide range of monitoring scheme.
+  applicable to a wide range of monitoring schemes.
 
   \item \textbf{No false positive:} The framework needs to ensure that dropping a portion
-  of monitoring operations does not lead to a false positive. We found that a data-flow
-  that tracks invalid meta-data can serve as a general solution to this problem 
+  of monitoring operations does not lead to a false positive. We found that a dataflow engine
+  that tracks invalid metadata can serve as a general solution to this problem 
   (Section~\ref{sec:dropping}).
 
   \item \textbf{Intelligent dropping:} The framework needs to match the overhead budget
