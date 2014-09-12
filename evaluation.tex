@@ -54,8 +54,6 @@ benchmark, we simulated for 2 billion instructions.
 Since LS race detection requires multi-threaded programs, we tested LS using
 the SPLASH-2 benchmark set \cite{splash-isca95}. We ran these benchmarks for
 200 million instructions.
-Unless otherwise specified, an unrestricted, slack-based dropping policy is
-used.
 
 \subsection{Baseline Monitoring Overheads}
 
@@ -167,6 +165,7 @@ monitor that shows low tens of percent of overhead.
 
 In this section, we evaluate the effectiveness of
 using partial monitoring (in addition to filtering) to trade-off coverage for further reduced overheads.
+For these results, we use a slack-based, unrestricted dropping policy.
 Figure~\ref{fig:evaluation.bc_sweep} shows the monitoring coverage achieved by
 array bounds check as we vary the overhead budget. 
 We define \emph{monitoring coverage} as the 

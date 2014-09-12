@@ -250,7 +250,10 @@ would have been raised even if the access on line 4 was in bounds.
   \end{center}
 \end{figure}
 
-In order to efficiently support dropping monitoring events and to prevent false
+Although the functionality of dropping and invalidation could be implemented on
+the monitor, this is unlikely to be much faster than performing the full monitoring
+operations.
+Instead, in order to efficiently support dropping monitoring events and to prevent false
 positives, we propose to insert a hardware module between the main core and
 monitor (see Figure~\ref{fig:dropping.dataflow_overview}). 
 This module handles the invalidation operations shown in the middle column of
