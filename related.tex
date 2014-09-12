@@ -13,22 +13,26 @@ monitoring to check that program execution follows expected control flows
 \cite{schuette-comp87, impres-dac06,
 kayaalp-isca12}.  Our monitoring architecture is designed to
 be generally applicable to any of these instruction-grained monitoring schemes.
-In particular, our proposed architecture may be especially useful for some of
-these more complex schemes which also have higher overheads.  Similarly,
-although many of these schemes showed low overheads in custom hardware, our
-architecture can be used to reduce the overheads when applying these schemes on
-a multi-core platform.
+% In particular, our proposed architecture may be especially useful for some of
+% these more complex schemes which also have higher overheads.  Similarly,
+% although many of these schemes showed low overheads in custom hardware, our
+% architecture can be used to reduce the overheads when applying these schemes on
+% a multi-core platform.
  
 % Filtering
 FADE \cite{fade-hpca14} presents a general filtering engine in order to reduce
 the overheads of monitoring. It filters out redundant updates and null checks
-by reading metadata values. We do not handle filtering redundant updates, but
-we do filter out null checks as well as null (i.e., uninitialized)
-propagations.  We are able to do this because the dataflow engine can also
-propagate the null information.  In addition, our dataflow engine only
-requires reading and writing 2-bit flags rather than the entire metadata.  As
-we have shown, our dataflow engine also enables adjustable overheads without
-false positives which is not a capability described by FADE.
+by reading metadata values. 
+By extending our dataflow engine for partial monitoring, we are able to also
+filter out null checks as well as null metadata propagations, but we do not
+handle filtering redundant updates.
+% We are able to do this because the dataflow engine can also
+% propagate the null information.  
+In contrast to FADE, our dataflow engine only
+requires reading and writing 2-bit flags rather than the entire metadata. 
+% As
+% we have shown, our dataflow engine also enables adjustable overheads without
+% false positives which is not a capability described by FADE.
 
 % Sampling
 Statistical sampling is a method that has been applied to various debugging
