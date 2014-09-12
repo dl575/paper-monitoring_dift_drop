@@ -19,6 +19,8 @@ be generally applicable to any of these instruction-grained monitoring schemes.
 % architecture can be used to reduce the overheads when applying these schemes on
 % a multi-core platform.
  
+\Ed{I don't think we need to have a separate discussion on FADE. It's mentioned 
+in Section 2.}
 % Filtering
 FADE \cite{fade-hpca14} presents a general filtering engine in order to reduce
 the overheads of monitoring. It filters out redundant updates and null checks
@@ -41,14 +43,20 @@ et al. sampled program runs of thousands of users in order to find bugs
 \cite{liblit-pldi05}. This idea has also been applied to detecting memory
 leaks~\cite{chilimbi-asplos04}, dataflow analysis~\cite{greathouse-cgo11}, and
 other run-time monitoring techniques. The Testudo project
-\cite{testudo-micro08} specifically targets hardware-based run-time monitors.
+%\cite{testudo-micro08} specifically targets hardware-based run-time monitors.
+\cite{testudo-micro08} applies the sampling specifically to dynamic information
+flow tracking. %targets hardware-based run-time monitors.
 These sampling-based techniques all limit the debugging capabilities in order
 to provide lower performance overheads, similar to our architecture's goals.
 However, these approaches are not able to explicitly set an overhead budget, as
-our system is able to do. In addition, with the exception of Testudo, these
+our system is able to do. In addition, with the exception of Testudo that is
+designed for one specific monitor, these
 methods have not considered parallel monitoring. Our techniques for generally
 reducing the overheads of monitoring can also be used to enable these
 low-overhead, multi-user/run debugging techniques.
+\Ed{clarify how our approach is different. Is it more general - supporting
+a large class of monitors? Is it different because it is for parallel monitoring?
+If so, what's the significance of the parallel monitors?}
 
 % Limited Monitoring
 In terms of partial monitoring, the Quality Virtual Machine (QVM) is a
@@ -60,7 +68,8 @@ to the one we address in this paper. However, both projects are focused on
 software-based monitoring and thus their mechanisms modify the software
 monitoring framework in order to enable or disable monitoring. Instead, our
 architecture provides a general hardware mechanism to control overheads of
-parallel monitoring architectures. In addition, these works prevented
+parallel monitoring architectures, largely transparent to the original monitor. 
+In addition, these works prevented
 false positives by enabling and disabling monitoring using only a source-dropping
 policy. Lo et al. \cite{lo-rtas14} developed a hardware architecture to limit
 monitoring in hard real-time systems. Their architecture performs unrestricted 
@@ -68,3 +77,5 @@ dropping in order to guarantee strict deadlines.
 Our system allows either source-only dropping or unrestricted dropping to be performed.
 This allows the designer or user to choose the appropriate policy depending on
 the monitoring scheme which has not been previously explored.
+\Ed{Is the use of source vs. unrestricted dropping the only major difference for
+this work? That sounds rather weak.}
