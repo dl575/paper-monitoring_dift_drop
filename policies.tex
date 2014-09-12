@@ -1,17 +1,29 @@
 \section{Dropping Policies}
 \label{sec:policies}
 
-Our goal with enabling partial monitoring is to allow for a specified overhead target or budget to be met while maximizing the amount of monitoring performed.
-This is done by dynamically dropping a portion of the monitoring operations. In this section, we discuss in detail how this dropping decision is
-made. Specifically, we first discuss how to measure the run-time monitoring
-overheads and when monitoring events need to be dropped in
-Section~\ref{sec:policies.slack}. Next, we investigate trade-offs created by
-selecting which events are dropped (Section~\ref{sec:policies.events}). Different policies in determining which
-events can be dropped create a trade-off between how closely the overhead
-budget is met and the monitoring coverage achieved.
+In order to use partial monitoring to enable adjustable overheads, we must also
+specify a policy for when and which monitoring events are dropped. In this
+section, we discuss some of the options and trade-offs for dropping policies.
+We split this decision into two components:
+\begin{enumerate}
+  \item When do we need to drop events in order to enable reduced overheads?
+  \item Which events should be valid for dropping?
+\end{enumerate}
 
-\subsection{Measuring Monitoring Overheads}
-\label{sec:policies.slack}
+Section~\ref{sec:policies.when} discusses options for deciding when events are
+dropped while Section~\ref{sec:policies.which} discusses trade-offs for which
+events are capable of being dropped. 
+
+% Our goal with enabling partial monitoring is to allow for a specified overhead target or budget to be met while maximizing the amount of monitoring performed.
+% This is done by dynamically dropping a portion of the monitoring operations. In this section, we discuss in detail how this dropping decision is
+% made. Specifically, we first discuss how to decide when dropping should be performed 
+% Section~\ref{sec:policies.slack}. Next, we investigate trade-offs created by
+% selecting which events are dropped (Section~\ref{sec:policies.events}). Different policies in determining which
+% events can be dropped create a trade-off between how closely the overhead
+% budget is met and the monitoring coverage achieved.
+
+\subsection{Deciding When to Drop}
+\label{sec:policies.when}
 
 % Slack
 \begin{figure}
@@ -24,21 +36,21 @@ budget is met and the monitoring coverage achieved.
   \end{center}
 \end{figure}
 
-% Slack tracking module
-\begin{figure}
-  \begin{center}
-    \includegraphics[width=\columnwidth]{figs/stm.pdf}
-    \vspace{-0.2in}
-    \caption{Slack tracking and drop decision hardware.}
-    \label{fig:policies.stm}
-    \vspace{-0.1in}
-  \end{center}
-\end{figure}
+In this section, we discuss two possible ways to determine when events should be dropped.
+The first possibility is to probabilistically drop events. By setting the probability of
+dropping events appropriately, overheads can be reduced. This is works well for
+enabling partial monitoring for cooperative testing and debugging since the
+randomness allows different users and runs to monitor different portions of the
+program. However, using a probabilistic dropping policy can make it difficult
+to meet a target overhead without prior profiling.
 
-In order to decide whether a monitoring event should be dropped or not, we need
-a way to keep track of overheads. In this section, we present a specific method
+Alternatively, we can specify a target overhead and estimate, at run-time, the
+overheads of monitoring in order to decide whether dropping is needed.
+% In order to decide whether a monitoring event should be dropped or not, we need
+% a way to keep track of overheads. 
+We present a specific method
 for measuring execution time overheads. However, we note that other methods
-could be used in order to target budgets on IPC, power, energy, etc.  
+could also be used in order to target budgets on IPC, power, energy, etc.  
 % For example, one way to measure execution time overheads would be to insert
 % checkpoints in the program. By recording the execution time of these
 % checkpoints without monitoring, the overheads incurred while running with
@@ -62,22 +74,34 @@ cycles.
 In addition to this accumulated slack, a small amount of initial slack
 can be given in order for monitoring to be performed at the start of a program.
 Figure~\ref{fig:policies.slack} shows an example of how slack can change over time.
-If the slack falls below zero (i.e., the overhead budget is exceeded), then
+In this slack-based policy, if the slack falls below zero (i.e., the overhead budget is exceeded), then
 monitoring events should be dropped.
 
-Figure~\ref{fig:policies.stm} shows a hardware slack tracking module for
-keeping track of slack. The slack tracking module uses a counter that increments on every $k$-th
+% % Slack tracking module
+% \begin{figure}
+%   \begin{center}
+%     \includegraphics[width=\columnwidth]{figs/stm.pdf}
+%     \vspace{-0.2in}
+%     \caption{Slack tracking and drop decision hardware.}
+%     \label{fig:policies.stm}
+%     \vspace{-0.1in}
+%   \end{center}
+% \end{figure}
+
+% Figure~\ref{fig:policies.stm} shows a hardware slack tracking module for
+% keeping track of slack. 
+Slack can be easily measured in hardware by using a counter that increments on every $k$-th
 cycle of the main core. This $k$ can be calculated by taking the reciprocal of
 the target budget. For example, if the target budget is 20\%, then the counter
 increments on every 5th clock cycle. The value of this counter is the
-accumulated slack. Whenever the main core is stalled due to the monitor, slack
+accumulated slack. Whenever the main core is stalled due to the monitor, the measured slack
 is decremented. This can be difficult to determine precisely due to the
 difficulty in measuring certain overheads such as contention for shared memory.
 However, we have found that using only the stalls due to FIFO back pressure
 works well in practice.
 
-\subsection{Dropping Decision Trade-Offs}
-\label{sec:policies.events}
+\subsection{Deciding Which Events to Drop} 
+\label{sec:policies.which}
 
 % Varying slack's impact on coverage for UMC
 \begin{figure}
@@ -91,7 +115,9 @@ works well in practice.
   \end{center}
 \end{figure}
 
-The simplest policy for when to drop monitoring events is to drop all monitoring events as
+In addition to deciding when dropping is required, trade-offs also exist in
+deciding which dropping events can be dropped.
+The simplest policy is to drop all monitoring events as
 long as slack is less than or equal to zero.  However, this can result in
 wasted work. For example, consider the metadata dependence graph shown in
 Figure~\ref{fig:policies.dataflow_graph}. Here, an edge from node {\tt A} to node
@@ -139,6 +165,10 @@ dropping will
 result in no wasted work and thus better coverage. However, because of the coarser-grained decision, it
 may be more difficult to closely match overheads. We expect source dropping 
 to work well when there are a large number of independent metadata flows.
+In addition, using a probabilistic dropping policy works poorly with
+unrestricted dropping since each event in a chain needs to be randomly selected
+for monitoring in order for the check to be performed. Instead, probabilistic
+dropping works better when coupled with source-only dropping.
 
 % Trade-off between source-drop and unrestricted dropping
 % \begin{figure}
