@@ -198,6 +198,27 @@ instruction types for each benchmark and for varying overheads. We see that
 with a 10\% overhead a max error of 9\% is observed and an average of less than
 4\%. This error decreases as overhead is increased.
 
+% Flex UMC sweep
+\begin{figure*}
+  \begin{center}
+    \includegraphics[width=\linewidth]{figs/data_fpga_umc_sweep.pdf}
+    \vspace{-0.2in}
+    \caption{Coverage versus varying overhead budget for UMC running on an FPGA-based monitor.}
+    \label{fig:evaluation.fpga_umc_sweep}
+    \vspace{-0.1in}
+  \end{center}
+\end{figure*}
+
+In addition to evaluating our system for a core-based monitor, we also
+evaluated partial monitoring on a higher performance FPGA-based monitor. This
+setup is based on the FlexCore \cite{flexcore-micro10} setup and uses a
+fully-pipelined monitor running on an FPGA fabric at half the frequency of the
+main core. We show results only for UMC. In this case, full overheads of
+monitoring range from 10-70\%. Figure~\ref{fig:evaluation.fpga_umc_sweep} shows
+the coverage achieved as we sweep overhead from 1-70\%. We see that partial
+monitoring can allow the overheads of such a system to be pushed below 10\%
+while still providing partial coverage.
+
 \subsection{Comparing Dropping Policies}
 
 % UMC exec time
