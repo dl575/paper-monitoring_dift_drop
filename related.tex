@@ -46,13 +46,13 @@ monitoring with controllable overheads \cite{qvm-oopsla08}. Similarly, Huang et
 al. created a framework for controlling the overheads of software-based
 monitoring \cite{huang-sttt12}. 
 Lo et al. \cite{lo-rtas14} developed a hardware architecture to limit
-monitoring specifically for hard real-time systems.
+monitoring to meet deadlines for hard real-time systems.
 
 In contrast, our work is the first that we know of to present a general hardware platform that enables
 partial monitoring. The architecture is designed to be applicable to a wide range of monitoring
 techniques as well as monitor implementations (core, FPGA, etc.). By studying various potential
 uses of partial monitoring, including sampling for cooperative debugging and
-partial protection for low overheads, we have determined important dropping
+partial protection for low overheads, we also identified important trade-offs in dropping
 policy decisions to consider in order to best meet the requirements of the
 application.
 

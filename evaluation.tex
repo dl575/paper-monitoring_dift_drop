@@ -7,7 +7,8 @@
 We implemented our dataflow-guided monitoring architecture by
 modifying the ARM version of the gem5 simulator \cite{gem5} to support parallel
 run-time monitoring. We implement the monitor as a software-based monitor
-running on a parallel processor core. We model the main and monitoring cores as
+running on a parallel processor core, similar to LBA \cite{lbaa-asid06}.
+We model the main and monitoring cores as
 running at 2.5
 GHz with 4-way set-associative private L1 I/D caches and a shared 8-way 2 MB L2
 cache. This setup is similar to the Snapdragon 801 processor commonly found in
@@ -52,7 +53,7 @@ We simulated each benchmark for 2 billion instructions.
 % the total execution time, is given for a 1.1x target overhead. This initial
 % slack is scaled proportionally for other overhead targets. 
 
-Since LockSet race detection requires multi-threaded programs, we tested LS using
+Since LockSet race detection requires multi-threaded programs, we tested it using
 the applications from the SPLASH-2 benchmark set \cite{splash-isca95}. We ran these benchmarks for
 200 million instructions with 2 main cores running the benchmark application.
 Each main core was connected to a dataflow engine and a monitoring core.
@@ -110,7 +111,7 @@ untrusted input data, we would higher overheads. IMP shows normalized
 execution times of 2-6x with an average of 4x. Overheads for LS (not pictured) are
 1.03-1.72x after null metadata filtering and the average
 overhead observed is 1.33x for the SPLASH-2 benchmarks.
-Our baseline system and overheads are similar previous multi-core
+Our baseline system and overheads are similar to previous multi-core
 monitoring systems such as LBA-accelerated \cite{lba-isca08} and FADE
 \cite{fade-hpca14} (see
 Table~\ref{tab:monitoring.previous_overheads}). In
@@ -200,8 +201,10 @@ average. Even higher coverage can be achieved by allowing higher overheads.
 Similarly, Figure~\ref{fig:evaluation.ls_sweep} shows the coverage achieved by LS.
 With a 1.1x overhead, LS achieves 53\% coverage on average. This increases to
 71\% coverage with a 1.2x overhead. 
-Since the overheads of DIFT are low to begin with, setting an overhead target
-1.1x is enough for all benchmarks tested to reach 100\% coverage.
+We do not show a graph for DIFT because the overhead target of 1.1x is enough for
+all benchmark tested to reach 100\% coverage.
+%Since the overheads of DIFT are low to begin with, setting an overhead target
+%1.1x is enough for all benchmarks tested to reach 100\% coverage.
 
 The instruction-mix profiling monitor does not perform check operations. Thus,
 the concept of coverage is not applicable here. Instead, for each instruction
@@ -353,7 +356,7 @@ Figure~\ref{fig:evaluation.bc_coverage} shows higher coverage for
 source-only dropping, this is largely due to the fact that is running with
 higher overheads.
 
-From these results, we see that for monitors which many short, independent
+From these results, we see that for monitors with many short, independent
 chains, such as UMC, source-only dropping can provide better coverage than
 unrestricted dropping with the same overhead. For other monitors, such as BC,
 source-only dropping is prone to overshoot the overhead target.
@@ -394,12 +397,12 @@ least one of the runs. Each run
 was simulated for 200 million instructions. 
 We see that for the unrestricted dropping policy there is almost no increase in
 coverage.  This is due to the fact that it is likely that at least one
-monitoring event in a chain will be dropped with the unrestricted dropping
+monitoring event in a metadata dependence chain will be dropped with the unrestricted dropping
 policy. 
 Instead, source-only
 dropping is much better suited for achieving high coverage over multiple runs.
 Source-only dropping shows a 5\% increase in coverage with only seven runs.
-Over hundreds or thousands of runs, source-only dropping should be able to
+Over many runs, source-only dropping should be able to
 reach 100\% code coverage.
 
 \subsection{Area and Power Overheads}
