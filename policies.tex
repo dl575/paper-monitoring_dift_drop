@@ -138,7 +138,7 @@ In this situation, the
 monitoring operations that were done for events {\tt C} and {\tt D} were wasted
 since their results were not used for any monitoring checks.
 That is, by the time we decide to drop event {\tt E}, we have already 
-updated metadata due to events {\tt C} and {\tt D} which is no longer needed.
+updated metadata due to events {\tt C} and {\tt D} even though they are no longer needed.
 
 An alternative dropping policy which eliminates this wasted work is to only make dropping decisions at
 the root of these metadata flows. That is, we will decide to either monitor or

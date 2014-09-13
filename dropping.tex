@@ -99,7 +99,7 @@ The monitor propagates the metadata of the original pointer in {\tt r1} to the
 metadata of {\tt r2}. This is to ensure that pointer {\tt y} is not used to exceed the array's bounds.
 Line 3a shows setting register {\tt r3} to a constant value of 1.
 When this happens,
-{\tt r3}'s metadata is also reset to NULL in case it previously stored a
+{\tt r3}'s metadata is reset to NULL in case it previously stored a
 pointer. 
 Finally, the value of {\tt r3} is written to memory using both pointers {\tt x} and {\tt y}.
 In both cases, the monitor checks whether the store address is within the bounds of the register metadata. In the first case (line 3b), {\tt x+12}
@@ -229,10 +229,10 @@ positives is to associate a 1-bit flag with each metadata in order to mark these
 metadata as valid or
 invalid. Furthermore, this invalidation information is propagated in the same
 way that metadata is. Figure~\ref{fig:dropping.example_invalid}
-shows an example of associating invalid flags with metadata. In the example, no
-monitoring operations are dropped. However, suppose that the monitoring for
+shows an example of associating invalid flags with metadata. Suppose that the monitoring for
 line 1 is dropped. When a monitoring event is dropped, metadata that would have
-been updated is marked as invalid. In this case, {\tt rf\_invalid[1]} will be
+been updated is marked as invalid. In this case, instead of the normal
+operation of marking {\tt rf\_invalid[1]} as {\tt false}, it is instead
 marked as {\tt
 true}. Thus, when line 3 is reached, the monitoring event is dropped
 since {\tt rf\_invalid[1]} is marked as true. Note that in this case, line 2
@@ -391,11 +391,11 @@ monitoring schemes.
 Figure~\ref{fig:dropping.example_null} shows an example of how this null filtering operates.
 Here, the main core's code has been slightly modified from
 Figure~\ref{fig:dropping.example_full} and {\tt r2} on line 2 is no longer set as an array pointer.
-Without null metadata filtering, the instructions for lines 2 and 4 would be
+Without null metadata filtering, the instruction for line 4 would be
 forwarded to the monitor since the system does not know whether {\tt r2}
 contains a pointer address or not. However, if we use a 1-bit flag to mark {\tt r2}
 as null when it is loaded with a constant, then we can propagate this null
-information and filter out monitoring for lines 2 and 4.
+information and filter out monitoring for line 4.
 
 The operations performed by null filtering are almost identical to the
 operations needed for invalidation shown in

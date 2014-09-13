@@ -33,7 +33,7 @@ hardware changes \cite{lba-asid06} are reported to have severalfold slowdowns.
 On-chip FPGA monitors \cite{flexcore-micro10} and cores with monitoring accelerators
 \cite{lba-isca08, fade-hpca14} can reduce overhead significantly, but still show
 slowdowns of several tens of percents in some cases.
-In today's monitoring systems, the overhead is also unpredictable because they
+In today's monitoring systems, the overheads are also unpredictable because they
 depend heavily on the characteristics of applications and monitoring operations.
 In summary, users currently need to either pay noticeable overhead or the cost of custom
 hardware in order to use fine-grained run-time monitoring in deployed systems.
@@ -80,7 +80,7 @@ High coverage is achieved by having different systems check different parts of a
 The partial monitoring framework allows high-overhead monitoring to be used in a
 cooperative fashion. 
 The main metric that represents the effectiveness of monitoring in this case is
-the coverage (the percentage of checks there were performed) over multiple runs.
+the coverage (the percentage of checks that were performed) over multiple runs.
 
 {\bf Monitoring of soft real-time systems:}
 Soft real-time systems or interactive systems need to meet deadlines or response
@@ -104,7 +104,7 @@ to be detected for a system.
 
 {\bf Profiling:} 
 The run-time monitoring system can be used to implement various profiling tools
-to collect statistics on program behaviors for performance optimizations as well
+to collect statistics on program behavior for performance optimizations as well
 as security protection. For example, a recent study showed that an instruction
 mix can be used to identify malware from normal programs \cite{demme-isca13, tang-raid14}. 
 In such profiling tools, the partial monitoring framework can be used to obtain
