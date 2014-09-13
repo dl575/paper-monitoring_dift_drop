@@ -84,7 +84,7 @@ Each main core was connected to a dataflow engine and a monitoring core.
 % Filter monitoring overheads
 \begin{figure}
   \begin{center}
-    \includegraphics[width=\columnwidth, clip=true, trim=0 0.5in 0 0]{figs/data_filtering.pdf}
+    \includegraphics[width=\columnwidth, clip=true, trim=0 0.5in 0 0.1in]{figs/data_filtering.pdf}
     \vspace{-0.2in}
     \caption{Monitoring overheads with null metadata filtering.}
     \label{fig:evaluation.filtering}
@@ -122,7 +122,7 @@ monitor that shows low tens of percent of overhead.
 % BC sweep
 \begin{figure}
   \begin{center}
-    \includegraphics[width=\linewidth, clip=true, trim=0 0.3in 0 0]{figs/data_bc_sweep.pdf}
+    \includegraphics[width=\linewidth, clip=true, trim=0 0.3in 0 0.1in]{figs/data_bc_sweep.pdf}
     \vspace{-0.2in}
     \caption{Coverage vs. varying overhead budget for BC.}
     \label{fig:evaluation.bc_sweep}
@@ -133,7 +133,7 @@ monitor that shows low tens of percent of overhead.
 % UMC sweep
 \begin{figure}
   \begin{center}
-    \includegraphics[width=\linewidth, clip=true, trim=0 0.3in 0 0]{figs/data_umc_sweep.pdf}
+    \includegraphics[width=\linewidth, clip=true, trim=0 0.3in 0 0.1in]{figs/data_umc_sweep.pdf}
     \vspace{-0.2in}
     \caption{Coverage vs. varying overhead budget for UMC.}
     \label{fig:evaluation.umc_sweep}
@@ -144,7 +144,7 @@ monitor that shows low tens of percent of overhead.
 % LS sweep
 \begin{figure}
   \begin{center}
-    \includegraphics[width=\linewidth, clip=true, trim=0 0.3in 0 0]{figs/data_ls_sweep.pdf}
+    \includegraphics[width=\linewidth, clip=true, trim=0 0.3in 0 0.1in]{figs/data_ls_sweep.pdf}
     \vspace{-0.2in}
     \caption{Coverage vs. varying overhead budget for LS.}
     \label{fig:evaluation.ls_sweep}
@@ -155,7 +155,7 @@ monitor that shows low tens of percent of overhead.
 % IMP sweep
 \begin{figure*}
   \begin{center}
-    \includegraphics[width=\linewidth, clip=true, trim=0 0.3in 0 0]{figs/data_imp_sweep.pdf}
+    \includegraphics[width=\linewidth, clip=true, trim=0 0.3in 0 0.1in]{figs/data_imp_sweep.pdf}
     \vspace{-0.2in}
     \caption{Average error vs. varying overhead budget for instruction-mix profiling. Whisker bars show min and max errors.}
     \label{fig:evaluation.imp_sweep}
@@ -220,7 +220,8 @@ average error across instruction types and benchmarks is less than 2\%.
 % Flex UMC sweep
 \begin{figure}
   \begin{center}
-    \includegraphics[width=\linewidth, clip=true, trim=0 0.3in 0 0]{figs/data_fpga_umc_sweep.pdf}
+    \vspace{-0.1in}
+    \includegraphics[width=\linewidth, clip=true, trim=0 0.3in 0 0.1in]{figs/data_fpga_umc_sweep.pdf}
     \vspace{-0.2in}
     \caption{Coverage versus varying overhead budget for UMC running on an FPGA-based monitor.}
     \label{fig:evaluation.fpga_umc_sweep}
@@ -265,14 +266,14 @@ while still providing over 50\% coverage.
 
 \begin{figure}
   \begin{center}
-  \vspace{-0.2in}
+  \vspace{-0.1in}
   \subfloat[Overhead budget error.]{
-    \includegraphics[width=\columnwidth, clip=true, trim=0 0.3in 0 0]{figs/data_umc_exec_time.pdf}
+    \includegraphics[width=\columnwidth, clip=true, trim=0 0.3in 0 0.1in]{figs/data_umc_exec_time.pdf}
     \label{fig:evaluation.umc_exec_time}
   }
-  \vspace{-0.2in}
+  \vspace{-0.1in}
   \subfloat[Coverage.]{
-    \includegraphics[width=\columnwidth, clip=true, trim=0 0.3in 0 0]{figs/data_umc_coverage.pdf}
+    \includegraphics[width=\columnwidth, clip=true, trim=0 0.3in 0 0.1in]{figs/data_umc_coverage.pdf}
     \label{fig:evaluation.umc_coverage}
   }
   \vspace{-0.1in}
@@ -322,14 +323,14 @@ are being spent on wasted work as discussed in Section~\ref{sec:policies.which}.
 
 \begin{figure}
   \begin{center}
-  \vspace{-0.2in}
+  \vspace{-0.1in}
   \subfloat[Overhead budget error.]{
-    \includegraphics[width=\columnwidth, clip=true, trim=0 0.3in 0 0]{figs/data_bc_exec_time.pdf}
+    \includegraphics[width=\columnwidth, clip=true, trim=0 0.3in 0 0.1in]{figs/data_bc_exec_time.pdf}
     \label{fig:evaluation.bc_exec_time}
   }
-  \vspace{-0.2in}
+  \vspace{-0.1in}
   \subfloat[Coverage.]{
-    \includegraphics[width=\columnwidth, clip=true, trim=0 0.3in 0 0]{figs/data_bc_coverage.pdf}
+    \includegraphics[width=\columnwidth, clip=true, trim=0 0.3in 0 0.1in]{figs/data_bc_coverage.pdf}
     \label{fig:evaluation.bc_coverage}
   }
   \vspace{-0.1in}
@@ -367,7 +368,7 @@ better coverage on average.
 % Multi-run coverage with unrestricted dropping
 \begin{figure}
   \begin{center}
-    \includegraphics[width=\columnwidth, clip=true, trim=0 0.2in 0 0]{figs/data_multirun_coverage.pdf}
+    \includegraphics[width=\columnwidth, clip=true, trim=0 0.3in 0 0.1in]{figs/data_multirun_coverage.pdf}
     \vspace{-0.2in}
     \caption{Coverage over multiple runs for BC with a 10\% probability to not drop events.}
     \label{fig:evaluation.multirun}
