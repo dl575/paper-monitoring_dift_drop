@@ -34,7 +34,7 @@ the data originated from. Instruction-mix profiling counts the number of ALU,
 load, store, and control instructions that are executed. This profiling
 information can be useful for performing optimizations or to detect malicious
 software \cite{tang-raid14}.
-LockSet attempts to detect possible race conditions in multi-threaded programs
+LockSet \cite{eraser-tocs97} attempts to detect possible race conditions in multi-threaded programs
 by tracking metadata about which locks are protecting shared memory
 locations. If a shared memory location is accessed while unprotected
 then a race condition may exist. Since we implement the monitor using a
