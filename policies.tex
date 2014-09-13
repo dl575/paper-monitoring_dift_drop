@@ -6,13 +6,9 @@ specify a policy for when and which monitoring events are dropped. In this
 section, we discuss some of the options and trade-offs for dropping policies.
 We split this decision into two components:
 \begin{enumerate}
-  \item When do we need to drop events in order to enable reduced overheads?
-  \item Which events should be dropped?
+  \item When do we need to drop events in order to enable reduced overheads? (Section~\ref{sec:policies.when})
+  \item Which events should be dropped? (Section~\ref{sec:policies.which})
 \end{enumerate}
-
-Section~\ref{sec:policies.when} discusses options for deciding when events are
-dropped while Section~\ref{sec:policies.which} discusses trade-offs for which
-events can be dropped. 
 
 % Our goal with enabling partial monitoring is to allow for a specified overhead target or budget to be met while maximizing the amount of monitoring performed.
 % This is done by dynamically dropping a portion of the monitoring operations. In this section, we discuss in detail how this dropping decision is
@@ -46,22 +42,7 @@ to meet a target overhead without prior profiling.
 
 Alternatively, we can specify a target overhead and estimate, at run-time, the
 overheads of monitoring in order to decide whether dropping is needed.
-% In order to decide whether a monitoring event should be dropped or not, we need
-% a way to keep track of overheads. 
-We present a specific method
-for measuring execution time overheads. However, we note that other methods
-could also be used in order to target budgets on IPC, power, energy, etc.  
-% For example, one way to measure execution time overheads would be to insert
-% checkpoints in the program. By recording the execution time of these
-% checkpoints without monitoring, the overheads incurred while running with
-% monitoring could be determined. Although this would give an accurate
-% measurement of overheads, it would require modifying the program binary. In
-% addition, the overhead budget for monitoring would only be updated at
-% checkpoints.
-
-% Instead, we develop a model to estimate the execution time overhead budget in a
-% gradual manner and without the need to modify the main program. Specifically,
-We specify the overhead budget as a percentage of the main program's execution
+The overhead budget is specified as a percentage of the main program's execution
 cycles without monitoring. We define \emph{slack} as the number of cycles of
 monitoring overhead that can be incurred while staying within the budget
 target. Slack is essentially the difference between the actual overheads seen
@@ -91,11 +72,14 @@ monitoring events should be dropped.
 % Figure~\ref{fig:policies.stm} shows a hardware slack tracking module for
 % keeping track of slack. 
 Slack can be easily measured in hardware by using a counter that increments on every $k$-th
-cycle of the main core. This $k$ can be calculated by taking the reciprocal of
-the target budget. For example, if the target budget is 20\%, then the counter
-increments on every 5th clock cycle. The value of this counter is the
-accumulated slack. Whenever the main core is stalled due to the monitor, the measured slack
-is decremented. It is difficult to perfectly determine when the main core is impacted by monitoring due to the
+cycle of the main core (e.g., every 5th cycle for a 20\% target budget). 
+% This $k$ can be calculated by taking the reciprocal of
+% the target budget. For example, if the target budget is 20\%, then the counter
+% increments on every 5th clock cycle. 
+The value of this counter is the
+accumulated slack. Whenever the main core is stalled due to the monitor, the
+measured slack is decremented. It is difficult to precisely determine the
+entire impact of monitoring on the main core due to the
 difficulty in measuring certain overheads such as contention for shared memory.
 However, we have found that using only the stalls due to FIFO back pressure
 works well in practice.
@@ -103,32 +87,17 @@ works well in practice.
 \subsection{Deciding Which Events to Drop} 
 \label{sec:policies.which}
 
-% Varying slack's impact on coverage for UMC
-\begin{figure}
-  \begin{center}
-    \includegraphics[width=\columnwidth]{figs/dataflow_graph.pdf}
-    \vspace{-0.3in}
-    \caption{Example dependence graph for metadata. Square nodes represent
-    events where checks are performed.} 
-    \label{fig:policies.dataflow_graph}
-    \vspace{-0.1in}
-  \end{center}
-\end{figure}
-
-In addition to deciding when dropping is required, trade-offs also exist in
-deciding which events should be dropped.
-The simplest policy is to drop any monitoring events when slack is less than or equal to zero.  However, this can result in
-wasted work. For example, consider the metadata dependence graph shown in
-Figure~\ref{fig:policies.dataflow_graph}. Here, an edge from node {\tt A} to node
-{\tt B} represents that if event {\tt A} is dropped, then due to its
-invalidated metadata, it will cause event {\tt B} to be dropped. Square
-nodes indicate events where monitoring checks are performed. In the
-example, suppose that event {\tt E} is meant to perform a check operation but is dropped.
-In this situation, the
-monitoring operations that were done for events {\tt C} and {\tt D} were wasted
-since their results were not used for any monitoring checks.
-That is, by the time we decide to drop event {\tt E}, we have already 
-updated metadata due to events {\tt C} and {\tt D} which is no longer needed.
+% % Varying slack's impact on coverage for UMC
+% \begin{figure}
+%   \begin{center}
+%     \includegraphics[width=\columnwidth]{figs/dataflow_graph.pdf}
+%     \vspace{-0.3in}
+%     \caption{Example dependence graph for metadata. Square nodes represent
+%     events where checks are performed.} 
+%     \label{fig:policies.dataflow_graph}
+%     \vspace{-0.1in}
+%   \end{center}
+% \end{figure}
 
 \begin{figure}
   \begin{center}
@@ -150,10 +119,26 @@ updated metadata due to events {\tt C} and {\tt D} which is no longer needed.
 %   }
   \end{center}
   \vspace{-0.1in}
-  \caption{Comparison of dropping policies. Blue (dark) nodes indicate where
-  dropping decisions are made.}
+  \caption{Comparison of dropping policies using metadata dependence graphs.
+  Square nodes represent events where check are performed. Blue (dark) nodes
+  indicate which nodes can be dropped.}
   \label{fig:policies.policies}
 \end{figure}
+
+In addition to deciding when dropping is required, trade-offs also exist in
+deciding which events should be dropped.
+The simplest policy is to drop any monitoring events when slack is less than or equal to zero.  However, this can result in
+wasted work. For example, consider the metadata dependence graph shown in
+Figure~\ref{fig:policies.all_drop}. Here, an edge from node {\tt A} to node
+{\tt B} represents that if event {\tt A} is dropped, then due to its
+invalidated metadata, it will cause event {\tt B} to be dropped. Square
+nodes indicate events where monitoring checks are performed. In the
+example, suppose that event {\tt E} is meant to perform a check operation but is dropped.
+In this situation, the
+monitoring operations that were done for events {\tt C} and {\tt D} were wasted
+since their results were not used for any monitoring checks.
+That is, by the time we decide to drop event {\tt E}, we have already 
+updated metadata due to events {\tt C} and {\tt D} which is no longer needed.
 
 An alternative dropping policy which eliminates this wasted work is to only make dropping decisions at
 the root of these metadata flows. That is, we will decide to either monitor or
@@ -173,6 +158,8 @@ A} through {\tt E}) needs to be monitored in order for the monitoring check to
 be useful, randomly dropping any single event will cause the final check to be
 invalid.
 
+Depending on the target application of partial monitoring, different policies
+are more applicable.
 For applications where closely matching an overhead target is important, a
 slack-based, unrestricted dropping policy is appropriate. However, if matching
 the overhead target is not as important, then a slack-based, source-only dropping

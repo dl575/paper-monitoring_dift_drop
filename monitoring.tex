@@ -52,7 +52,7 @@ less expensive hardware for a given performance overhead budget.
 %multi-core without elaborate acceleration features to provide partial monitoring
 %with the performance overhead that is comparable to custom hardware.
 
-In this framework, a user specifies how much monitoring should be done in a form of
+In this framework, a user specifies how much monitoring should be done in the form of
 a target 
 overhead budget, a target coverage, a percentage of monitoring operations to be performed, etc.
 Then, the framework dynamically drops a portion of monitoring operations to match
@@ -72,11 +72,11 @@ Here, we briefly discuss example applications of partial monitoring and the metr
 that are important in each case.
 
 {\bf Cooperative testing, debugging, and protection:}
-Recently studies \cite{liblit-pldi05, chilimbi-asplos04, greathouse-cgo11, testudo-micro08} have shown that software testing, debugging,
+Recently, studies \cite{liblit-pldi05, chilimbi-asplos04, greathouse-cgo11, testudo-micro08} have shown that software testing, debugging,
 or attack detection may be done in a cooperative fashion across
 a large number of systems. In this case, each system is only willing to pay very low
-overhead, say a few percents, and only performs a small subset of checks. 
-A high coverage is achieved by having different systems check different parts of a program.
+overhead (e.g., a few percent) and only performs a small subset of checks. 
+High coverage is achieved by having different systems check different parts of a program.
 The partial monitoring framework allows high-overhead monitoring to be used in a
 cooperative fashion. 
 The main metric that represents the effectiveness of monitoring in this case is
@@ -92,14 +92,14 @@ In this case, it is important that the system can closely match the desired
 overhead target while maximizing the effectiveness of monitoring.
 
 {\bf Partial protection for low overhead:}
-Even without real-time constraints, systems may have tight budgets for performance,
+Even without real-time constraints, systems may have tight budgets for the performance,
 energy, or hardware overhead that they can tolerate for run-time monitoring. In such cases,
-full monitoring cannot be enabled unless its overhead is low enough. The adjustable
+full monitoring cannot be enabled unless its overhead is low enough. Adjustable
 monitoring allows partial protection on such systems. For example, array bounds
 may be checked for a subset of memory accesses. For DIFT, a subset of information flows
 may be tracked for partial attack detection. In this scenario, the effectiveness of 
 partial monitoring can be measured as the percentage of run-time checks that are
-performed on each program run, which reflects how likely for a bug or an attack 
+performed on each program run, which reflects how likely it is for a bug or an attack 
 to be detected for a system. 
 
 {\bf Profiling:} 

@@ -11,7 +11,7 @@ running on a parallel processor core. We model the main and monitoring cores as
 running at 2.5
 GHz with 4-way set-associative private L1 I/D caches and a shared 8-way 2 MB L2
 cache. This setup is similar to the Snapdragon 801 processor commonly found in
-mobile systems. The dataflow engine uses a 1 kB cache for flags.
+mobile systems. The dataflow engine uses a 1 kB cache for invalid and null flags.
 
 In order to explore the generality of the architecture for
 different monitors, we implemented five different monitors: uninitialized
@@ -19,7 +19,7 @@ memory check (UMC), array bounds check (BC), dynamic information flow
 tracking (DIFT), instruction-mix profiling (IMP), and LockSet-based race detection (LS).  Uninitialized memory
 check seeks to detect loading from
 memory locations that are not initialized first. Array bounds check, as
-mentioned in Section~\ref{sec:monitoring}, is a monitoring scheme that aims to
+described in Section~\ref{sec:dropping}, is a monitoring scheme that aims to
 detect buffer overflows where memory accesses go beyond the boundaries of an
 array. We modify the implementation of {\tt malloc} to set base and bound
 metadata information. Dynamic information flow tracking is a security
@@ -31,11 +31,11 @@ untrusted data with a 32-bit metadata identifier so
 that if an error is detected, it is possible to have information about where
 the data originated from. Instruction-mix profiling counts the number of ALU,
 load, store, and control instructions that are executed. This profiling
-information can be useful for performing optimizations. Additionally, recent
-work has shown that this information can be used to detect malicious software \cite{tang-raid14}.
+information can be useful for performing optimizations or to detect malicious
+software \cite{tang-raid14}.
 LockSet attempts to detect possible race conditions in multi-threaded programs
-by associating information about which locks have access to shared memory
-locations. If a shared memory location is accessed without the use of a lock
+by tracking metadata about which locks are protecting shared memory
+locations. If a shared memory location is accessed while unprotected
 then a race condition may exist. Since we implement the monitor using a
 processor core and our dataflow engine was designed to be generally applicable,
 the same hardware platform supports all of these monitoring techniques.
@@ -45,15 +45,17 @@ CPU2006 \cite{spec2006}. Since our implementation of BC depends on the
 modification of {\tt malloc} to set array bounds information, we focus on the C
 SPECint benchmarks. Although we do not
 show results for the C++ benchmarks, we note that the results for UMC, DIFT, and IMP
-for these benchmarks are similar to the other results shown. For each
-benchmark, we simulated for 2 billion instructions. 
+for these benchmarks are similar to the other results shown.
+We simulated each benchmark for 2 billion instructions. 
 % An initial slack of 2
 % million cycles, which is less than 1\% of
 % the total execution time, is given for a 1.1x target overhead. This initial
 % slack is scaled proportionally for other overhead targets. 
-Since LS race detection requires multi-threaded programs, we tested LS using
-the SPLASH-2 benchmark set \cite{splash-isca95}. We ran these benchmarks for
-200 million instructions.
+
+Since LockSet race detection requires multi-threaded programs, we tested LS using
+the applications from the SPLASH-2 benchmark set \cite{splash-isca95}. We ran these benchmarks for
+200 million instructions with 2 main cores running the benchmark application.
+Each main core was connected to a dataflow engine and a monitoring core.
 
 \subsection{Baseline Monitoring Overheads}
 
@@ -99,21 +101,20 @@ are 3x on average and range from 1.1x to 8.3x.
 % This is not surprising since in the baseline
 % implementation all loads and stores needed to be monitored. However, with
 % filtering, only loads and stores corresponding to arrays need to be forwarded.
-DIFT sees an average of 10\% overhead with a maximum overhead of 31\% with null
-metadata filtering. This is due, in part, to the fact
+DIFT sees an average of 1.1x slowdown with a maximum slowdown of 1.3x with null
+metadata filtering. This low overhead is due, in part, to the fact
 that for our implementation of DIFT on SPEC
-benchmarks, we only mark data read from files as tainted. For most of these
-benchmarks, this propagates to relatively few instructions. Instead, if we
+benchmarks, we only mark data read from files as tainted. Instead, if we
 targeted network or streaming applications, which have larger amounts of
 untrusted input data, we would higher overheads. IMP shows normalized
-executions from 2-6x with an average of 4x. Overheads for LS (not pictured) are
+execution times of 2-6x with an average of 4x. Overheads for LS (not pictured) are
 1.03-1.72x after null metadata filtering and the average
 overhead observed is 1.33x for the SPLASH-2 benchmarks.
-These overheads are similar to the overheads seen by previous multi-core
+Our baseline system and overheads are similar previous multi-core
 monitoring systems such as LBA-accelerated \cite{lba-isca08} and FADE
 \cite{fade-hpca14} (see
 Table~\ref{tab:monitoring.previous_overheads}). In
-Section~\ref{sec:evaluation.fpga}, we evaluate a higher performance, FPGA-based
+Section~\ref{sec:evaluation.fpga}, we also evaluate a higher performance, FPGA-based
 monitor that shows low tens of percent of overhead. 
 
 \subsection{Coverage with Adjustable Partial Monitoring}
@@ -169,7 +170,7 @@ Figure~\ref{fig:evaluation.bc_sweep} shows the monitoring coverage achieved by
 array bounds check as we vary the overhead budget. 
 We define \emph{monitoring coverage} as the 
 percentage of dynamic checks that are performed 
-(indirect jumps in DIFT, loads in UMC, and memory accesses in BC). 
+(indirect jumps in DIFT, loads in UMC, and memory accesses in BC and LS). 
 The metric is chosen to understand
 how likely an error/attack instance is to be detected on an individual system, 
 assuming that errors/attacks are uniformly distributed across checks. 
@@ -186,8 +187,7 @@ With only a 1.1x overhead target (10\% slowdown), array bounds check still
 achieves 84\% monitoring coverage on average. The high coverage
 achieved with such low overheads is due to two main effects.  The first is that
 monitoring can be done in parallel, providing a certain level of monitoring coverage without
-introducing overheads. The second effect is that, although we aggressively
-filter out monitoring events, there may still exist a large number of
+introducing overheads. The second effect is that there may still exist a large number of
 monitoring events that do not lead to security or reliability checks. As a
 result, dropping these events can reduce overheads without a large impact on
 monitoring coverage.
@@ -202,13 +202,14 @@ With a 1.1x overhead, LS achieves 53\% coverage on average. This increases to
 71\% coverage with a 1.2x overhead. 
 Since the overheads of DIFT are low to begin with, setting an overhead target
 1.1x is enough for all benchmarks tested to reach 100\% coverage.
-\DAN{Try to explain water\_nsquared results not reaching 100\%?}
 
 The instruction-mix profiling monitor does not perform check operations. Thus,
 the concept of coverage is not applicable here. Instead, for each instruction
 type profiled, we calculate its count as a percentage of the total instructions
-monitored. We compare these percentages against the case when full monitoring
-is performed. Figure~\ref{fig:evaluation.imp_sweep} shows the min, max, and average error across
+monitored. We take the difference of these percentages compared to the case
+when full monitoring
+is performed to calculate the error. Figure~\ref{fig:evaluation.imp_sweep}
+shows the min, max, and average error across
 instruction types for each benchmark and for varying overheads. We see that
 with a 1.1x overhead a max error of 9\% is observed across benchmarks and the
 average error across instruction types and benchmarks is less than 2\%. 
@@ -231,7 +232,7 @@ In addition to evaluating our system for a core-based monitor, we also
 evaluated partial monitoring on a higher performance FPGA-based monitor. This
 setup is based on the FlexCore \cite{flexcore-micro10} setup and uses a
 fully-pipelined monitor running on an FPGA fabric at half the frequency of the
-main core. We show results for UMC due to space constraints though other
+main core. We only show results for UMC due to space constraints though other
 monitors show similar trends. In this case, the full overheads of
 monitoring range from 1.1-1.7x. Figure~\ref{fig:evaluation.fpga_umc_sweep} shows
 the coverage achieved as we sweep the overhead target from 1.01-1.7x. We see that partial
@@ -357,8 +358,9 @@ unrestricted dropping with the same overhead. For other monitors, such as BC,
 source-only dropping is prone to overshoot the overhead target.
 Thus, for applications where staying with an overhead target is especially
 important, such as soft real-time systems, a slack-based, unrestricted dropping
-policy is more appropriate. On the other hand, if occasional slowdowns are
-acceptable, then source-only dropping can provide better coverage on average.
+policy is more appropriate. On the other hand, if maximum coverage is desired
+and occasional slowdowns are acceptable, then source-only dropping can provide
+better coverage on average.
 
 \subsection{Multiple-Run Coverage}
 
@@ -373,7 +375,7 @@ acceptable, then source-only dropping can provide better coverage on average.
   \end{center}
 \end{figure}
 
-One possible application of partial monitoring with low overheads is to enable
+One application of partial monitoring with low overheads is to enable
 cooperative debugging. 
 The idea with cooperative debugging is to use partial
 monitoring with very low overheads across a large number of users or runs. By
@@ -434,8 +436,8 @@ approach.
 
 Our results show that an additional 0.197 mm$^2$ of silicon area is needed, an
 increase of 7\% of the main core area. Table~\ref{tab:evaluation.area_power}
-shows the peak and runtime power overheads averaged across all benchmarks with
-a 1.5x monitoring overhead target. The peak power is 41-72 mW, which is
-less than 8\% of the main core's peak power usage. Similarly, the average runtime power is 20-43
-mW, corresponding to 5-11\% of the main core's runtime power.
+shows the peak and runtime power overheads averaged across all benchmarks running with
+a 1.5x monitoring overhead target. The peak power is 31-72 mW, which is
+less than 8\% of the main core's peak power usage. Similarly, the average runtime power is 13-43
+mW, corresponding to 4-11\% of the main core's runtime power.
 

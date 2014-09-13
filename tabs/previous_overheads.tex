@@ -4,10 +4,15 @@
 \hline
 {\bf Name} & {\bf Type} & {\bf Monitoring scheme and flexibility} & {\bf Slowdown (avg./worst)} \\ \hline\hline
 
-DIFT \cite{dift-asplos04} & Custom HW & DIFT only & 1.1\% / 23\% \\ \hline
-FlexiTaint \cite{flexitaint-hpca08} & Custom HW & DIFT w/ programmable policies & 1.1\%-3.7\% / 8.7\% \\ \hline
-Hardbound \cite{hardbound-asplos08} & Custom HW & Array bounds checks only & 5\%-9\% / 22\% \\ \hline
-Harmoni \cite{harmoni-dsn12} & Custom HW & Tag-based monitors & 1\%-10\% / 20\% \\ \hline\hline
+% DIFT \cite{dift-asplos04} & Custom HW & DIFT only & 1.1\% / 23\% \\ \hline
+% FlexiTaint \cite{flexitaint-hpca08} & Custom HW & DIFT w/ programmable policies & 1.1\%-3.7\% / 8.7\% \\ \hline
+% Hardbound \cite{hardbound-asplos08} & Custom HW & Array bounds checks only & 5\%-9\% / 22\% \\ \hline
+% Harmoni \cite{harmoni-dsn12} & Custom HW & Tag-based monitors & 1\%-10\% / 20\% \\ \hline\hline
+
+DIFT \cite{dift-asplos04} & Custom HW & DIFT only & 1.01x / 1.23x \\ \hline
+FlexiTaint \cite{flexitaint-hpca08} & Custom HW & DIFT w/ programmable policies & 1.01x-1.04x / 1.09x \\ \hline
+Hardbound \cite{hardbound-asplos08} & Custom HW & Array bounds checks only & 1.05x-1.09x / 1.22x \\ \hline
+Harmoni \cite{harmoni-dsn12} & Custom HW & Tag-based monitors & 1.01x-1.10x / 1.20x \\ \hline\hline
 
 FlexCore \cite{flexcore-micro10} & Dedicated FPGA & Instruction-trace monitoring & 1.05x-1.44x / 1.84x \\ \hline
 FADE \cite{fade-hpca14} & Core+Custom HW & Instruction-trace monitoring (effective when HW filters work) & 1.2x-1.8x / 3.3x \\ \hline

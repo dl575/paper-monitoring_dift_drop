@@ -68,20 +68,17 @@ flows. With this architecture, we investigate different policies for deciding
 which events to drop for partial monitoring. These different policies show a
 trade-off between closely matching the overhead budget and the monitoring
 coverage achieved.
-
-% Filtering
-Recent studies have shown that filtering out monitoring operations on clean or null
-metadata can be used to reduce the overheads of monitoring \cite{fade-hpca14}.
-For example, for an array bounds check, checking non-pointer accesses is
-unnecessary. In addition to enabling partial monitoring, we show how a simple
+In addition to enabling partial monitoring, we show how a simple
 extension to our dataflow engine enables this null metadata filtering.
+For example, for an array bounds check, checking non-pointer accesses is
+unnecessary and can be filtered out using the dataflow engine.
 
 The main contributions of this paper are summarized as follows:
 \begin{itemize}
   \item We present a hardware architecture using a dataflow tracking engine to
   efficiently enable partial monitoring while preventing false positives. This
   hardware architecture is designed to be generally applicable to a wide-range
-  of run-time monitoring techniques.
+  of run-time monitoring techniques and monitor implementations.
   \item We investigate multiple policies on when and which operations to drop 
   for partial monitoring, and show the trade-offs in the design space.
   \item We extend the dataflow engine to enable filtering null metadata to
@@ -104,7 +101,7 @@ The main contributions of this paper are summarized as follows:
 % requires no modifications to the monitor.
 
 % Evaluation
-In order to evaluate our approach, we applied it to 4 different monitoring
+In order to evaluate our approach, we applied it to five different monitoring
 techniques. These monitoring techniques vary in what events they monitor, the
 size and semantics of their metadata, and the operations performed on metadata.
 % Our experiments show that filtering reduces the average overhead of these
@@ -115,11 +112,10 @@ size and semantics of their metadata, and the operations performed on metadata.
 % overhead budget, this coverage rate can be increased. 
 These monitors show slowdowns of 1.1-4.3x with the null metadata filtering when
 implemented on a multi-core platform.
-%4-16x without null metadata filtering
-%and 1.1-4.3x after null metadata filtering.  
-Our results show that the partial monitoring can still achieve coverage of 43-82\%
-on average at the reduced slowdown of 1.5x. 
-The results also show that overhead and coverage can be varied to create a trade-off.
+Our results show that the partial monitoring can still achieve significant
+coverage with reduced overheads. For example, for monitors which showed 3-4x
+average overheads, slowdown could be reduced to 1.5x while still achieving a
+coverage of 43-82\% on average.
 
 % Section summary
 This paper is organized as follows. Section~\ref{sec:monitoring} introduces the notion
