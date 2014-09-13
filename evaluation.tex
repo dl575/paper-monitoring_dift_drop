@@ -7,7 +7,7 @@
 We implemented our dataflow-guided monitoring architecture by
 modifying the ARM version of the gem5 simulator \cite{gem5} to support parallel
 run-time monitoring. We implement the monitor as a software-based monitor
-running on a parallel processor core, similar to LBA \cite{lbaa-asid06}.
+running on a parallel processor core, similar to LBA \cite{lba-asid06}.
 We model the main and monitoring cores as
 running at 2.5
 GHz with 4-way set-associative private L1 I/D caches and a shared 8-way 2 MB L2
@@ -168,7 +168,9 @@ In this section, we evaluate the effectiveness of
 using partial monitoring to trade-off coverage for reduced overheads.
 For these results, we use a slack-based, unrestricted dropping policy.
 Figure~\ref{fig:evaluation.bc_sweep} shows the monitoring coverage achieved by
-array bounds check as we vary the overhead budget. 
+array bounds check as we vary the overhead budget. The bottom portion of each
+bar shows the coverage for a 1.1x overhead target and the additional
+coverage for increased overhead targets are stacked above this.
 We define \emph{monitoring coverage} as the 
 percentage of dynamic checks that are performed 
 (indirect jumps in DIFT, loads in UMC, and memory accesses in BC and LS). 
@@ -350,7 +352,7 @@ From Figure~\ref{fig:evaluation.bc_exec_time}, we see that for several
 benchmarks, source-only drop fails to meet the specified overhead target.
 The overshoot of the overhead target is quite high with an overhead differences
 of 420\% for {\tt bzip2}, 120\% for {\tt gcc}, and 1500\% for {\tt hmmer}.
-Since only array allocations are considered as source events for BC, it is
+Since only array allocations, which are infrequent, are considered as source events for BC, it is
 difficult for source-only dropping to match overhead targets. Although
 Figure~\ref{fig:evaluation.bc_coverage} shows higher coverage for
 source-only dropping, this is largely due to the fact that is running with

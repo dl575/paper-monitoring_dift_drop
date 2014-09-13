@@ -46,7 +46,7 @@ There are many possible monitoring schemes that can be implemented on this type
 of fine-grained parallel monitoring architecture such as memory protection
 \cite{mondrian-asplos02}, information flow tracking \cite{dift-asplos04,
 testudo-micro08}, soft error detection \cite{argus-micro07}, data-race
-detection \cite{cord-hpca06}, etc.  For example, an array bounds check (BC)
+detection \cite{cord-hpca06, eraser-tocs97}, etc.  For example, an array bounds check (BC)
 \cite{hardbound-asplos08} can be implemented in order to detect
 when software attempts to read or write to a memory location outside of an
 array's bounds. This can be done by associating metadata with array pointers that 
@@ -105,7 +105,7 @@ Finally, the value of {\tt r3} is written to memory using both pointers {\tt x} 
 In both cases, the monitor checks whether the store address is within the bounds of the register metadata. In the first case (line 3b), {\tt x+12}
 is within the original array's bounds. No error is raised and the metadata of
 {\tt r3} is propagated to the metadata of the store address. If {\tt r3} were a
-pointer, than this would allow a future instruction to load the pointer and use
+pointer, then this would allow a future instruction to load the pointer and use
 it to access the corresponding array or data structure. In the second case,
 {\tt y+12} (line 4) corresponds to {\tt x+20} which is not within the array's bounds and
 the monitor will raise an error. 
