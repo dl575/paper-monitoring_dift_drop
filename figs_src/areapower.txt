@@ -1,3 +1,47 @@
+HPCA 2015, 2014-09-12:
+Core
+  Area:  2.71015
+  Peak:  0.965386394444
+  Runtime:  0.384651522222
+umc
+  Metadata Invalidation Module
+    Area: 0.197121 (7.273424%)
+    Peak: 0.047318 (4.901492%)
+    Runtime: 0.029733 (7.729840%)
+insttype
+  Metadata Invalidation Module
+    Area: 0.197121 (7.273424%)
+    Peak: 0.041441 (4.292734%)
+    Runtime: 0.019508 (5.071560%)
+multidift
+  Metadata Invalidation Module
+    Area: 0.197121 (7.273424%)
+    Peak: 0.071839 (7.441506%)
+    Runtime: 0.040938 (10.642776%)
+
+LS, cpu4:
+Core
+  Area:  2.71015
+  Peak:  0.965385225
+  Runtime:  0.3187589625
+ls
+  Metadata Invalidation Module
+    Area: 0.197121 (7.273424%)
+    Peak: 0.030880 (3.198711%)
+    Runtime: 0.012523 (3.928641%)
+LS, cpu5:
+Core
+  Area:  2.71015
+  Peak:  0.9653857875
+  Runtime:  0.318759035
+ls
+  Metadata Invalidation Module
+    Area: 0.197121 (7.273424%)
+    Peak: 0.028838 (2.987220%)
+    Runtime: 0.010774 (3.379927%)
+
+MICRO 2014:
+
 Baseline:
   Area 2.71 mm^2 std(0.0)
   Peak Power 965.4 mW std(0.0)
