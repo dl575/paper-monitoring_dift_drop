@@ -1,0 +1,66 @@
+Review-A
+
+Overhead compared to previous literature (see review for references)
+
+Consistency between checking coprocessor and processor.
+
+1. How is your monitoring architecture (minus the partial monitoring support) different than one 
+proposed in "Decoupling Dynamic Information Flow Tracking with a Dedicated Coprocessor"
+by Kozyrakis et al.?
+
+2. Do you guarantee to detect violations at instruction boundaries?
+
+3. What is your exact definition of monitoring overhead?
+
+4. Have you assessed the physical memory metadata requirements for monitors you designed?
+
+5. Have you considered a design where the monitor uses a RAW microprocessor like fabric 
+as opposed to a FIFO for communication?
+
+Compare to Raksha.
+
+What about false negatives?
+
+Previous SW results that show low overheads.
+
+Review-B
+
+False negatives
+
+Design space choice: Is it possible to use another core for monitoring tasks.
+
+Review-C
+
+For run time monitoring can you provide any precise guarantees regarding dropped requests (w/ the slack policy)?
+
+Is hardware support really necessary? Partial monitoring with software
+instrumentation (Sec 5.6 or [15])?
+
+[7] has similarities to our approach.
+
+Review-D
+
+How does this compare to FADE?
+
+How much better does this do than ad-hoc filtering in terms of error? (I believe Flexitaint also did some amount of drop-on-overhead policy)
+
+Review-E
+
+Advances over FADE
+
+Measure coverage in terms of errors that were detected (i.e. false negative rate)
+
+Review-F
+
+Could you compare energy consumed by full and partial monitors? 
+
+Track invalid tags through different threads in multi-processor system? Coherence for dataflow monitor?
+
+False negatives
+Paper assumes that error/attacks are uniformly distributed across checks. Why is this a valid assumption?  It is possible that portions of execution that incur high monitoring overhead (say the ones with frequent monitoring events) would always not get checked. So you might never find bugs in such portions even if you monitor several executions. 
+
+How are the sources identified for the source-only dropping scheme? How and when do you decide drop the source?
+
+Describe the hardware used to estimate slack. 
+
+Software tools have done sampling (see review for references).
