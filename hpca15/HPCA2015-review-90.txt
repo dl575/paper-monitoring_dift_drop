@@ -1,0 +1,414 @@
+===========================================================================
+                           HPCA 2015 Review #90A
+                    Updated 25 Oct 2014 6:27:11am CEST
+---------------------------------------------------------------------------
+   Paper #90: Run-Time Monitoring with Adjustable Overheads Using
+              Dataflow-Guided Filtering
+---------------------------------------------------------------------------
+
+                      Overall merit: 2. Weak reject
+                 Reviewer expertise: 3. Knowledgeable
+                            Novelty: 1. Published before or openly
+                                        commercialized
+           Experimental methodology: 2. Poor
+
+                         ===== Paper summary =====
+
+The contribution of this paper is a hardware runtime monitoring system that allows a tradeoff between 
+code coverage of the monitor and performance of the system. Since soundness is a highly desirable 
+property of any analysis system, the authors propose a dataflow engine to ensure no false positives 
+are triggered due to dropped analysis chains. They evaluate its performance and power benefits by 
+implementing 5 monitors and evaluating on spec and splash.
+
+                           ===== Strengths =====
+
+The paper's strength is to present the idea of a dataflow-augmented coprocessor to support runtime 
+monitoring that preserves soundness. This allows trading coverage for performance for the runtime 
+monitor.
+
+                          ===== Weaknesses =====
+
+1. Inadequate evaluation. Questionable baseline overheads for some of the monitors that 
+don't align with numbers reported in existing literature.
+
+2. Lack of details regarding consistency between checking coprocessor and processor, 
+exact behavior of system when checks fail, architectural implications such as physical memory 
+requirements for memory metadata.
+
+3. Incomplete evaluation of related work in SW based and HW based techniques.
+
+               ===== Questions for authors’ response =====
+
+1. How is your monitoring architecture (minus the partial monitoring support) different than one 
+proposed in "Decoupling Dynamic Information Flow Tracking with a Dedicated Coprocessor"
+by Kozyrakis et al.?
+
+2. Do you guarantee to detect violations at instruction boundaries?
+
+3. What is your exact definition of monitoring overhead?
+
+4. Have you assessed the physical memory metadata requirements for monitors you designed?
+
+5. Have you considered a design where the monitor uses a RAW microprocessor like fabric 
+as opposed to a FIFO for communication?
+
+                   ===== Recommended paper changes =====
+
+The work must include results evaluating the efficacy of the system as a function of the monitoring 
+budget.
+
+Full specification of the architecture, including identifying requirements on memory and a specific 
+sequential specification of the monitored code and its checks.
+
+Explanation of baseline overheads and why some of them are more substantial than existing work.
+
+More thorough evaluation existing SW techniques including those that do not have prohibitive 
+overheads.
+
+Must include discussion of Raksha [2007 ISCA, Kozyrakis et al.] and how it compares to their work.
+
+                      ===== Comments to authors =====
+
+This paper can dramatically improve if the idea is more thoroughly and precisely presented and more 
+effectively evaluated.
+
+Your idea for partial monitoring is interesting but the paper leaves much to be desired. Some of the 
+most interesting questions are left out. For example, what is the accuracy of your system as the 
+budget is decreased? You directly address the false positive component with the dataflow engine but 
+what about false negatives?
+
+You should also more thoroughly evaluate and present your architecture. An architecture where checks 
+are delegated to a coprocessor must specify the consistency between the monitor and the processor 
+being monitored. Are checks simply asynchronous events, which could complete long after an 
+instruction is retired? Or is there a more tight sequential specification of checked instructions and 
+their corresponding checks? What are the sources of run time overhead due to monitoring? Why did you 
+decide on your FIFO based architecture as opposed to one with more fine-grained sharing fabric like 
+the RAW microprocessor?
+
+The reality is that SW techniques are effective, and flexible HW have been proposed in prior 
+literature. Your claimed contribution is the presentation of a "Partial (Non-Complete) yet Sound" 
+runtime monitoring system along with a full evaluation of the design of key components along with an 
+evaluation of its efficacy and benefits. Instead, the paper contains an incomplete presentation of 
+the idea and lacks an evaluation of its efficacy.
+
+Your characterization of overheads of SW based techniques as being "severalfold" is incorrect. Here 
+are some of the best results that use SW only techniques.
+
+1. Berger, Emery D., and Benjamin G. Zorn. "DieHard: probabilistic memory safety for unsafe 
+languages." ACM SIGPLAN Notices. Vol. 41. No. 6. ACM, 2006.
+2. Chang, Walter, Brandon Streiff, and Calvin Lin. "Efficient and extensible security enforcement 
+using dynamic data flow analysis." Proceedings of the 15th ACM conference on Computer and 
+communications security. ACM, 2008.
+3. Enck, William, et al. "TaintDroid: an information flow tracking system for real-time privacy 
+monitoring on smartphones." Communications of the ACM 57.3 (2014): 99-106.
+
+I also recommend you evaluate the following two papers. The second paper presents a HW implementation 
+that allows SW defined policies in low overhead user-mode exceptions. The first presents a decoupled 
+monitoring architecture very similar to what you are proposing.
+
+1. Kannan, Hari, Michael Dalton, and Christos Kozyrakis. "Decoupling dynamic information flow 
+tracking with a dedicated coprocessor." Dependable Systems & Networks, 2009. DSN'09. IEEE/IFIP 
+
+International Conference on. IEEE, 2009.
+2. Dalton, Michael, Hari Kannan, and Christos Kozyrakis. "Raksha: a flexible information flow 
+architecture for software security." ACM SIGARCH Computer Architecture News. Vol. 35. No. 2. ACM, 
+2007.
+
+===========================================================================
+                           HPCA 2015 Review #90B
+                    Updated 26 Oct 2014 2:40:47am CEST
+---------------------------------------------------------------------------
+   Paper #90: Run-Time Monitoring with Adjustable Overheads Using
+              Dataflow-Guided Filtering
+---------------------------------------------------------------------------
+
+                      Overall merit: 3. Weak accept
+                 Reviewer expertise: 3. Knowledgeable
+                            Novelty: 3. New contribution
+           Experimental methodology: 5. Excellent
+
+                         ===== Paper summary =====
+
+This paper proposes to enable a "partial monitoring" mechanism. First the authors motivate their scheme using five different monitoring techniques e.g., arrays bound checking for buffer overflow security attacks. Next they propose an architecture for monitoring metadata and a data-flow engine for adjustable/adaptive filtering. Finally performance and coverage results are shown to demonstrate the applicability of the proposed architecture.
+
+                           ===== Strengths =====
+
++ Monitoring mechanisms are becoming more important as we enter an era where processors need to reduce the waste and deal with new design tradeoffs such as security etc.
++ A generalized architecture for monitoring mechanism 
++ A thorough analysis of five important monitoring techniques
+
+                          ===== Weaknesses =====
+
+- Lack of analysis for false negatives
+- Lack of discussion on design choices for the proposed architecture
+
+               ===== Questions for authors’ response =====
+
+Please comment on the false negatives and design space choice questions from comments to authors.
+
+                      ===== Comments to authors =====
+
+I really like this paper. It tackles the important problem of efficient mechanisms for monitoring processor state for new and important tradeoffs such as efficiency vs. security. The authors propose a well thought out architecture for the monitoring architecture that can be tailored for various monitoring mechanisms. This aspect of the architecture is demonstrated using five different monitoring schemes (that by itself adds valuable insight for readers).
+
+One of the main contributions of the paper is "partial" or adaptive monitoring. Here the authors do a good job with the metrics they outlined. However, I am a bit disappointed to not see any discussion on false negatives. For example with buffer overflow attacks, being selective may miss the attack altogether. I would like to see a discussion on false negatives and why that problem is left unsolved by this proposal.
+
+The monitoring overhead is 7% for area and 4-11% for power. Is a standalone structure the only option for the proposed design? With many cores, is it possible to reuse a core to perform the monitoring tasks? The paper should discuss this aspect of their design space and at least qualitatively discuss how their proposed scheme can be implemented as a software mechanism using existing cores.
+
+===========================================================================
+                           HPCA 2015 Review #90C
+                      Updated 26 Oct 2014 4:51pm CET
+---------------------------------------------------------------------------
+   Paper #90: Run-Time Monitoring with Adjustable Overheads Using
+              Dataflow-Guided Filtering
+---------------------------------------------------------------------------
+
+                      Overall merit: 2. Weak reject
+                 Reviewer expertise: 3. Knowledgeable
+                            Novelty: 2. Incremental improvement
+           Experimental methodology: 3. Average
+
+                         ===== Paper summary =====
+
+This paper implements an adjustable monitoring scheme using dynamic information flow tracking. The goal is to reduce performance/energy overheads at the expense of false positives and false negatives.
+
+                           ===== Strengths =====
+
+The paper proposes an advance over the state-of-the-art viz. hardware support for an idea that has been previously done in software.
+
+                          ===== Weaknesses =====
+
+It is not clear if HW support is really necessary.
+The contribution is incremental.
+
+               ===== Questions for authors’ response =====
+
+For run time monitoring can you provide any precise guarantees regarding dropped requests (w/ the slack policy)?
+
+                      ===== Comments to authors =====
+
+I like the general direction of this work. Like you point out configurable statistical sampling is currently used quite effectively for performance monitoring, and I can see how the proposed approach can be used for deeper run time monitoring. 
+
+I have two main concerns:
+
+1) Is hardware support really necessary? Why can't you do partial monitoring w/ software instrumentation (e.g., what you describe in 5.6 or [15])? Even if the overhead/coverage ratio for software is generally higher than hardware, it is easy to "scale out" with software. Is there really practical value in getting the necessary coverage in 7 runs or 70 runs given that the runs all happen concurrently?
+
+2) The idea appears to be incremental compared to prior solutions (all of which you've cited). Specifically the paper [7] has several similarities to your proposed approach. The main difference appears to be your emphasis on configurability which other proposals mention/discuss but do not evaluate throughly. So the intellectual advance here is deeper evaluation which is valuable, but it is unclear if it is sufficient for a top tier conference.
+
+===========================================================================
+                           HPCA 2015 Review #90D
+                    Updated 27 Oct 2014 12:54:42am CET
+---------------------------------------------------------------------------
+   Paper #90: Run-Time Monitoring with Adjustable Overheads Using
+              Dataflow-Guided Filtering
+---------------------------------------------------------------------------
+
+                      Overall merit: 4. Accept
+                 Reviewer expertise: 2. Some familiarity
+                            Novelty: 3. New contribution
+           Experimental methodology: 5. Excellent
+
+                         ===== Paper summary =====
+
+The authors present a scheme allowing for a new tradeoff between coverage and overhead in run-time monitoring.  The main idea is to use dynamic dataflow analysis to safely mark and remove null analysis from the trace in real time.  They explore several different policies and assumptions and provide nice examples of how it might work in practice.
+
+                           ===== Strengths =====
+
+A nice formalization of an idea that has floated through different papers (dynamic dropping based on overhead) but explored both thoroughly and quantitatively.    Very well motivated and explained with concrete examples.  A useful set of things to be able to trade between in practice and managing false positives and negatives is the name of the game.
+
+                          ===== Weaknesses =====
+
+The relationship to, and contribution over, some related work could be better explained.
+
+               ===== Questions for authors’ response =====
+
+
+Can you explain the contribution of this work over FADE (which seems also to be a way to do programmable filtering)?
+
+How much better does this do that ad-hoc filtering in terms of error? (I believe Flexitaint also did some amount of drop-on-overhead policy)
+
+                   ===== Recommended paper changes =====
+
+
+Overall the paper is very clear and with the exception of the two big questions I have requested response to.   I think it would be helpful to be a little more clear about what you feel the contributions of this work really are over prior work.  The bullets you have listed at the end of the introduction are more things you "did" in this paper not a list of "main contributions" as stated.  I might be mistaken but, for example, is you claim that "We extend the dataflow engine to enable filtering null metadata to reduce overheads" implicitly implying that no one has done this before?  I thought later in your discussion there was some indication that some prior work had explored this.
+
+                      ===== Comments to authors =====
+
+
+Other than questions and comments I have above (the answer to which will certain impact my score) I don't really have much to comment on.  Overall I thought it was an interesting and well done paper.
+
+===========================================================================
+                           HPCA 2015 Review #90E
+                     Updated 27 Oct 2014 6:57:24pm CET
+---------------------------------------------------------------------------
+   Paper #90: Run-Time Monitoring with Adjustable Overheads Using
+              Dataflow-Guided Filtering
+---------------------------------------------------------------------------
+
+                      Overall merit: 4. Accept
+                 Reviewer expertise: 3. Knowledgeable
+                            Novelty: 3. New contribution
+           Experimental methodology: 4. Good
+
+                         ===== Paper summary =====
+
+The paper presents two techniques for approximate program analysis -- 
+dropping metadata tracking and checking operations when overheads
+exceed a specific threshold, and dropping root nodes of metadata
+flows. The authors implement a diverse set of program analyses and
+show how detection coverage can be traded off for slowdown.
+Results indicate that most analyses have tunable behavior, which
+validates the proposed trade-off.
+
+                           ===== Strengths =====
+
+The approach addresses performance problems in a diverse set of
+hardware assisted program analyses.
+
+                          ===== Weaknesses =====
+
+Specific advances over FADE are not clearly dilineated.
+
+Evaluation with memory errors/data race benchmarks could be added to
+provide some intuition of how 'coverage' affects end-to-end performance
+of the tool.
+
+               ===== Questions for authors’ response =====
+
+* Is null filtering proposed in FADE or a contribution here? (referring to 
+Fig 9)
+
+* The rationale for dropping 'coverage' is not clear to me -- should we be
+measuring coverage in terms of malicious/errors that were detected, false
+positives that were generated as a result of lossy metadata?
+
+                      ===== Comments to authors =====
+
+Overall, I liked the strategy of dropping metadata tracking and
+checking operations in return for better performance.
+
+Some additional points to consider:
+
+* What performance v. detection goals are "reasonable"? I can imagine that
+the coverage rate required for malware detection using counters, e.g., is a lot
+lower than that for precise DIFT targeted at detecting exploits or bounds check
+errors that are exceedingly rare. Malware might be detectable even with the
+error bars shown in Fig. 13.
+
+   -  By choosing to evaluate security functionality, that is understandably
+      skipped in this revision, you may be able to squeeze even better program
+      analysis performance (detect malware, exploit, bounds overflow etc) by tuning
+      the dropping rate and algorithm to the specific analysis. (Here, the proposed
+      dropping algorithms seem to be analysis independent). 
+
+
+* It would be interesting to see how many runs does it take to discover the same
+error while employing lossy metadata tracking. Work by Shan Lu et al on probabilistically
+detecting data races might be a good template to reuse for this analysis.
+
+
+* The paper can benefit from re-using specific prior work to further lower the
+overheads.  E.g., in 'quantifying the potential of program analysis
+peripherals' the authors propose generating basic/super-block level monitoring
+operations, instead of per-instruction monitoring.
+
+
+* Minor: Matching shades of blue between the legend and stacked bars
+is pretty tricky -- esp. since I am trying to trade off performance for
+coverage using these graphs -- and I would recommend using alternate colors or
+patterns.
+
+===========================================================================
+                           HPCA 2015 Review #90F
+                     Updated 28 Oct 2014 5:45:57am CET
+---------------------------------------------------------------------------
+   Paper #90: Run-Time Monitoring with Adjustable Overheads Using
+              Dataflow-Guided Filtering
+---------------------------------------------------------------------------
+
+                      Overall merit: 3. Weak accept
+                 Reviewer expertise: 4. Expert
+                            Novelty: 2. Incremental improvement
+           Experimental methodology: 3. Average
+
+                         ===== Paper summary =====
+
+This paper discusses an extension to log-based hardware monitors (LBA [4]) that allows room for partial monitoring. Instead of checking the correctness of an entire execution, partial monitoring  drops monitoring events when monitoring performance overhead exceeds a target budget set by the user. Dropping events that update meta-data could lead to false positives. To solve this, hardware invalidates any meta-data that is not correctly updated and uses a hardware dataflow engine to invalidate any dependent meta-data or checks.
+
+                           ===== Strengths =====
+
+Motivates the need for partial monitoring in hardware to meet performance targets.
+
+Well written.
+
+                          ===== Weaknesses =====
+
+Ignores past sampling based software tools. Sampling methods used in those tools is superior to what is proposed. 
+
+Partial monitor adds significant amount of extra work. Therefore, it is important to compare energy consumed by full and partial monitors.
+
+Coverage is used in evaluation. It is more important to evaluate accuracy in finding errors.
+
+               ===== Questions for authors’ response =====
+
+Could you compare energy consumed by full and partial monitors? 
+
+How do you track dataflow of invalid tags through different threads in a multi-processor system? Wouldn't you need additional coherence for the state maintained in the dataflow monitor?
+
+To demonstrate the success of any partial monitoring scheme, it is necessary to show that you can find errors accurately enough. Coverage is much less important. It is ok to get 1% coverage as long as you are able to find errors with 99% probability. Do you agree?
+
+How are the sources identified?
+
+                   ===== Recommended paper changes =====
+
+Relate to sampling based software tools. Demonstrate energy saved by partial monitors. Evaluate how well  the proposed scheme can detect errors.
+
+                      ===== Comments to authors =====
+
+Most past dynamic analysis tools have been viewed as all or nothing checks, which may have limited their adoption in practice. This paper rightly argues the need for providing a mechanism that allows users to specify a performance target and then tries to maximize coverage under that constraint.
+
+That said, many software tools (noted at the end) have employed various types of sampling to achieve exactly the same goal: tradeoff coverage for performance.  The authors have ignored this important body of work, which could have potentially helped them devise better solutions for deciding what and when to skip. 
+
+Some of these  sampling based software tools report remarkably low overhead (< 10%), in spite of assuming no hardware support. Therefore, I find it important to compare the efficiency and accuracy of your hardware based partial monitors to equivalent software solutions proposed in the past.
+
+Since you are devising a hardware solution, you are rightly seeking to design a genarlized monitoring solution. As a result, you are not quite able to customize your sampler for a specific runtime analysis. I am  not convinced that it makes sense for diverse runtime analysis such as bounds checking and  race detector to use the same sampling method. You should consider providing hardware primitives that can be programmed to implement various sampling policies.
+
+------------------------------------------------------------
+
+Energy cost:
+
+When I read about the dataflow monitors, my initial reaction was that it is likely to be more expensive (in terms of total work done) than not sampling. Partial monitor adds quite a few operations: invalidate meta-data, data-flow analysis to propagate invalid type, perform  additional check for every monitoring event to decide whether or not to drop it, estimate slack, etc.
+
+Energy comparisons could have convinced me otherwise. But the results section (Sec 5.7) does not show that energy consumed by partial monitors is lower than full monitors. Instead, results just show that area and power overhead is reasonable compared to no monitors. 
+
+------------------------------------------------------------
+
+While it makes sense to apply sampling for bug detection, I am not sure if it makes sense for checks like bounds checking. If you have gone to the extent of investing in custom hardware, would you really be willing to settle for anything less than 100% memory safety?
+
+------------------------------------------------------------
+
+Details: 
+
+How are the sources identified for the source-only dropping scheme? How and when do you decide drop the source?
+
+Describe the hardware used to estimate slack. 
+
+Paper assumes that error/attacks are uniformly distributed across checks. Why is this a valid assumption?  It is possible that portions of execution that incur high monitoring overhead (say the ones with frequent monitoring events) would always not get checked. So you might never find bugs in such portions even if you monitor several executions. Figure 17 seems to validate this hypothesis. 
+
+Sec 2.2 states that a user will specify the monitoring limit in the form of target overhead budget, a target coverage, a percentage of monitoring operations to be performed etc. However, later the paper only talks about performance target. 
+
+------------------------------------------------------------
+
+Few missing related work:
+
+Matthias Hauswirth, Trishul M. Chilimbi: Low-overhead memory leak detection using adaptive statistical profiling. ASPLOS 2004
+
+Matthew Arnold and Barbara G. Ryder. A framework for reducing the cost of instrumented code.  PLDI ’01.
+
+M. Arnold et al. QVM: An efficient runtime for detecting defects in deployed systems. OOPSLA ’08
+
+Daniel Marino et al. LiteRace: effective sampling for lightweight data-race detection. PLDI 2009
+
+Michael D. Bond et al.: PACER: proportional detection of data races. PLDI 2010
+
+Joseph L. Greathouse et al. Testudo: Heavyweight security analysis via statistical sampling. MICRO 2008
+
