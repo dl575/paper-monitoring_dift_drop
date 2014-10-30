@@ -4,11 +4,11 @@ Common Questions
 Our main contribution in this work is an architecture which enables partial
 monitoring (i.e., trade-off between coverage and overheads). We are not the
 first to introduce null metadata filtering as a method for reducing monitoring
-overheads. For example, FADE [11] introduces hardware to do this. However, we
-show that our hardware support for partial monitoring is able to support null
-metadata filtering with minor modifications. Thus, it is not necessary to
-implement the full FADE hardware in order to add null metadata filtering to our
-architecture for partial monitoring.
+overheads (e.g., FADE). However, we show that our hardware support for
+partial monitoring is able to support null metadata filtering with minor
+modifications. Thus, it is not necessary to implement the full FADE hardware in
+order to add null metadata filtering to our architecture for partial
+monitoring.
 
 -Review-A,B,E,F: Evaluation of false negatives/error detection rate.
 While we could not evaluate real errors/attacks due to difficulty in setting up
@@ -21,8 +21,8 @@ or if there exists correlations between bug locations and slack.
 
 Review-A
 
--Comparison to Raksha and [Kannan DSN 2009].
-Raksha and the architecture proposed in [Kannan DSN 2009]
+-Comparison to Raksha and [Kannan DSN2009].
+Raksha and the architecture proposed in [Kannan DSN2009]
 provide hardware architectures for information flow tracking. These
 architectures have very low overheads because they are designed for a specific
 monitoring technique.  Although Raskha provides some programmability in the
@@ -31,92 +31,93 @@ monitors supported by our architecture (e.g., race detection).
 
 -Do you guarantee to detect violations at instruction boundaries?
 We do not guarantee when violations are detected. However, previous work by
-[Deng et al. ICCD 2011] has described how precise exceptions can be supported
+[Deng ICCD2011] has described how precise exceptions can be supported
 on a monitoring architecture similar to ours.
 
--What is your exact definition of monitoring overhead?
-Monitoring overhead is the increase in execution time of the system running
+-Definition of monitoring overhead?
+Monitoring overhead is the increase in execution time of a program running
 monitoring compared to without monitoring.
 
--Have you assessed the physical memory metadata requirements for monitors you designed?
+-Have you assessed the physical memory metadata requirements?
 The worst-case memory usage can be determined based on the size of metadata per
 memory location. We have not evaluated the actual memory usage, but previous
 work on the implemented monitoring techniques have looked at this.
 
--Have you considered a design where the monitor uses a RAW microprocessor like fabric 
-as opposed to a FIFO for communication?
-A FIFO provides a simple solution for providing buffered communication between
-the main core and the monitor.
+-Have you considered using a RAW-like fabric as opposed to a FIFO for
+communication?
+A FIFO provided a simple solution for buffered communication between the main
+core and the monitor.
 
 Review-B
 
--Design space choice: Is it possible to use another core for monitoring tasks.
-The monitoring task is performed by another core (with the exception of the
-FPGA-based monitor that was evaluated). However, in order to minimize the
-performance impact of dropping a monitoring event, this was implemented using
-custom hardware. In the past, we have explore performing these dropping
-operations in software. However, this was almost as expensive as performing the
-full monitoring operations and so was not effective at creating a trade-off
+-Use another core for monitoring tasks.
+The monitoring task is performed by another core. However, dropping operations
+were implemented using custom hardware (i.e., dataflow engine) in order to
+minimize their performance impact. We have explored performing these dropping
+operations in software. However, this can be almost as expensive as performing
+the full monitoring operations and so was not effective at creating a trade-off
 between coverage and performance.
 
 Review-C
 
--For run time monitoring can you provide any precise guarantees regarding
- dropped requests (w/ the slack policy)?
+-Can you provide any precise guarantees regarding dropped requests?
 Dropping is decided based on run-time overheads (i.e., slack). This is
 difficult to predict a priori and so we are not able to give precise guarantees
 on what is dropped or the coverage achieved.
 
--Is hardware support really necessary? Partial monitoring with software
-instrumentation (Sec 5.6 or [15])? Higher overhead/coverage ratio, but with
+-Is hardware support really necessary? Higher overhead/coverage ratio, but with
 scaling out to many users, does it matter?
-A software solution is cheaper to implement. However, if the overhead/coverage
-ratio is too high, then the number of users needed to detect an error could be
-prohibitively high. Table 1 shows that the gap in overhead between software and
-hardware solutions for full monitoring can be an order of magnitude.
+Previous work that performs partial monitoring in software [15, 1] applied it
+to more coarse-grained monitoring techniques instead of the fine-grained
+instruction-level monitoring we target.  Table 1 shows that the gap in
+overhead between software and hardware solutions for fine-grained monitoring
+can be an order of magnitude.  Although a software solution is easier to
+deploy, if the overhead/coverage ratio is too high, then the number of users
+needed to detect an error or the minimum overhead to achieve any coverage could
+be prohibitively high.
 
--[7] has similarities to our approach.
+-[7] has similarities to your approach.
 Our baseline architecture is similar to the one proposed by [7] and other
-related work. Our work shows how partial monitoring can be supported on these
-architectures using a dataflow engine. 
+related work. However, our work is the first to show how partial monitoring can
+be supported on these architectures using a dataflow engine. 
 
 Review-D
 
 -How much better does this do than ad-hoc filtering in terms of error?
 Previous work uses filtering to reduce the overheads of monitoring. However,
 they are not able to say anything about the overheads seen, especially with new
-applications. The overheads can vary wildly (see Figure 9). Our architecture
-allows a specified overhead to be targeted.
+applications. These overheads can vary wildly (see Figure 9). Our architecture
+allows a specified overhead to be targeted. FlexiTaint [Venkataramani HPCA2008]
+does not have a drop-on-overhead policy.
+
 
 Review-E
-See common questions.
+
+-Should we be measuring coverage in terms of errors detected, false positives
+that were generated?
+In terms of errors detected, see the response in Common Questions. Our
+architecture does not generate any false positives.
 
 Review-F
 
--Could you compare energy consumed by full and partial monitors? 
+-Energy consumed by full and partial monitors.
 We have not evaluated the difference in energy consumed by full and partial
-monitors. It is not clear which uses more energy and it largely depends on the
-number of events dropped and thus the overhead target. If everything is
-dropped, then less energy is used since the dataflow engine operates on
-single-bit flags and is more energy-efficient than the monitor. However, if no
-events are dropped or filtered out, then the dataflow engine adds energy usage
-above the baseline full monitoring because it adds additional operations to be
-performed.
+monitors. Dropping an event is less energy than performing full monitoring, but
+the dataflow engine also adds energy overhead when not dropping. Thus, it is
+not clear which uses more energy and it largely depends on the overhead
+target and the number of events dropped. 
 
 -Tracking invalid tags through different threads in multi-processor system?
  Coherence for dataflow monitor?
 Invalid tags for different threads would be tracked by the dataflow engine
-through shared memory, similar to shared data for multi-threaded programs. A
-multi-processor implementation of the architecture would require coherence for
-the caches of the dataflow engine and monitor, similar to the coherence needed
-for the cores.
+through shared memory. A multi-processor implementation of the architecture
+would require coherence for the caches of the dataflow engine and monitor,
+similar to the coherence needed for the core caches.
 
--How are the sources identified for the source-only dropping scheme? How and
-when do you decide drop the source?
-Sources can be identified by instruction type or by the programmer/compiler.
+-How are the sources identified? How do you decide to drop the source?
+Sources are identified by instruction type.
 For example, for uninitialized memory check, all store instructions are
-configured to be marked as sources. Alternatively, instructions can be marked
-as source events by the programmer or compiler. For example, this is done for
-array bounds check when pointers are initialized to mark these points as
+configured to be marked as sources. In addition, custom instructions used for
+setting metadata (e.g., setting array bounds metadata) are always marked as
 sources. Dropping sources can be done based on slack or using a probabilistic
 approach.
