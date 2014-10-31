@@ -12,12 +12,12 @@ monitoring.
 
 -Review-A,B,E,F: Evaluation of false negatives/error detection rate.
 While we could not evaluate real errors/attacks due to difficulty in setting up
-a large number of bugs for multiple monitoring schemes,
-we believe that the percentage of checks
-provides a good initial estimate of detection probability when errors/attacks
-are uniformly distributed across checks. It will be interesting as future work
-to evaluate the system with real-world bugs to see if this distribution holds
-or if there exists correlations between bug locations and slack.
+a large number of bugs for multiple monitoring schemes, we believe that the
+percentage of checks provides a good initial estimate of detection probability
+when errors/attacks are uniformly distributed across checks. It will be
+interesting as future work to evaluate the system with real-world bugs to see
+if this distribution holds or if there exists correlations between bug
+locations and slack.
 
 Review-A
 
@@ -32,16 +32,17 @@ architecture.
 -Guarantee to detect violations at instruction boundaries?
 We do not enforce a check to be done before the monitored instruction finishes.
 However, previous work [Deng ICCD2011] described how precise exceptions can be 
-supported on such decoupled architecture.
+supported on such decoupled architectures.
 
 
 Review-B
 
 -Using another core for monitoring?
-We explored performing monitoring on another core and FPGA fabric. Dropping operations were
-implemented using custom hardware in order to minimize their performance
-impact. We explored performing the dropping operations in software, but
-found that that design leads to high overheads even when all events are dropped.
+We explored performing monitoring on another core and FPGA fabric. Dropping
+operations were implemented using custom hardware in order to minimize their
+performance impact. We explored performing the dropping operations in software,
+but found that that design leads to high overheads even when all events are
+dropped.
 
 Review-C
 
@@ -63,7 +64,7 @@ be supported on these architectures using a dataflow engine.
 
 Review-D
 
--How much better compared to ad-hoc filtering?
+-How does this compare to ad-hoc filtering?
 Previous work uses filtering to reduce the overheads of monitoring. However,
 the overheads seen can vary wildly (see Figure 9). Our architecture allows a
 target overhead to be specified. FlexiTaint [Venkataramani HPCA2008] does not
@@ -84,26 +85,24 @@ the power consumption of the dropping hardware is often less than 10% of
 the main core power consumption. Therefore, our architecture certainly saves
 energy when monitoring operations are dropped. However, when almost no monitoring
 operation is dropped, we found that the dropping hardware incurs a small
-energy overhead.
-We will add more explicit energy comparisons.
+energy overhead. We will add more explicit energy comparisons.
 
 -Tracking invalid tags through different threads? Coherence for dataflow
  monitor?
 Invalid tags for different threads would be tracked by the dataflow engine
 through shared memory. A multi-processor implementation of the architecture
-would require coherence for the meta-data, similar to what have been studied
+would require coherence for the metadata, similar to what has been studied
 for LBA and Raksha.
 
 -How are sources identified? How do you decide to drop the source?
-Sources are identified by instruction type or explicit SW instructions. 
-For example, for uninitialized
-memory check, all store instructions are configured to be marked as sources. In
-addition, custom instructions used for setting metadata (e.g., setting array
-bounds metadata) are marked as sources. Dropping sources can be done
-based on slack or using a probabilistic approach.
+Sources are identified by instruction type or explicit SW instructions. For
+example, for uninitialized memory check, all store instructions are configured
+to be marked as sources. In addition, custom instructions used for setting
+metadata (e.g., setting array bounds metadata) are marked as sources. Dropping
+sources can be done based on slack or using a probabilistic approach.
 
--Sample-based software tools.
-Sampling-based methods typically can reduce overheads but overheads can vary
+-Sampling-based software tools.
+Sampling-based methods can reduce overheads but overheads can vary
 across applications. Results typically show that average overheads are low but
 can include outliers. This is not surprising as the overheads without sampling
 can vary (see Figure 9). Our architecture allows an overhead target to be
