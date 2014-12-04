@@ -4,7 +4,7 @@
 %
 %
 
-\documentclass[pageno]{jpaper}
+\documentclass[conference]{IEEEtran}
 
 %***********************************************************************************
 %
@@ -14,6 +14,7 @@
 \usepackage[normalem]{ulem}
 
 \usepackage{graphicx}
+\usepackage{subfig}
 %\usepackage{subfigure}
 %\usepackage{psfrag}
 %\usepackage{fullpage}
@@ -59,8 +60,8 @@
 
 % Uncomment one of the following
 
-\newcommand{\ifanonymized}[2]{#1} % Anonymized
-%\newcommand{\ifanonymized}[2]{#2} % Not Anonymized
+%\newcommand{\ifanonymized}[2]{#1} % Anonymized
+\newcommand{\ifanonymized}[2]{#2} % Not Anonymized
                                    
 %***********************************************************************************
 %
@@ -80,11 +81,12 @@
 \input{evaluation.tex}
 \input{related.tex}
 \input{conclusion.tex}
+\input{ack.tex}
 
 %\clearpage
 
-\bstctlcite{bstctl:etal, bstctl:nodash, bstctl:simpurl}
-\bibliographystyle{IEEEtranS}
+%\bstctlcite{bstctl:etal, bstctl:nodash, bstctl:simpurl}
+\bibliographystyle{IEEEtran}
 \bibliography{paper}
 
 \end{document}
