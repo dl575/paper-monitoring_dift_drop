@@ -43,9 +43,9 @@ to meet a target overhead without prior profiling.
 Alternatively, we can specify a target overhead and estimate, at run-time, the
 overheads of monitoring in order to decide whether dropping is needed.
 The overhead budget is specified as a percentage of the main program's execution
-cycles without monitoring. We define \emph{slack} as the number of cycles of
+cycles without monitoring. In order to estimate overheads at run-time, we define \emph{slack} as the number of cycles of
 monitoring overhead that can be incurred while staying within the budget
-target. Slack is essentially the difference between the actual overheads seen
+target. Slack is essentially the difference between the actual overhead seen
 and the budget specified. Slack is generated as the main program runs and consumed as monitoring overheads occur.  For
 example, if no monitoring overheads occur during 1000 cycles of the main
 program's execution and the designer sets a 20\% overhead target, then the
@@ -140,8 +140,10 @@ That is, by the time we decide to drop event {\tt E}, we have already
 updated metadata due to events {\tt C} and {\tt D} even though they are no longer needed.
 
 An alternative dropping policy which eliminates this wasted work is to only make dropping decisions at
-the root of these metadata flows. That is, we will decide to either monitor or
-not monitor an entire metadata flow. We refer to this dropping decision policy
+the root or source of these metadata flows. That is, we will decide to either monitor or
+not monitor an entire metadata flow. An example of these source nodes is the
+monitoring done to initialize base and bounds information on {\tt malloc} for
+an array bounds check. We refer to this dropping decision policy
 as \emph{source-only dropping} and we refer to the previous policy of 
 dropping any event as \emph{unrestricted dropping}.
 
@@ -154,7 +156,7 @@ to work well when there are a large number of independent metadata flows.
 In addition, using a probabilistic dropping policy works poorly with
 unrestricted dropping. Since each event in a dependent chain (e.g., events {\tt
 A} through {\tt E}) needs to be monitored in order for the monitoring check to
-be useful, randomly dropping any single event will cause the final check to be
+be useful, randomly dropping any event will cause the final check to be
 invalid.
 
 Depending on the target application of partial monitoring, different policies

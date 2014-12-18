@@ -10,14 +10,19 @@ run-time monitoring. We implement the monitor as a software-based monitor
 running on a parallel processor core, similar to LBA \cite{lba-asid06}.
 We model the main and monitoring cores as
 running at 2.5
-GHz with 4-way set-associative private L1 I/D caches and a shared 8-way 2 MB L2
+GHz with 4-way set-associative 32 kB private L1 I/D caches and a shared 8-way 2 MB L2
 cache. This setup is similar to the Snapdragon 801 processor commonly found in
 mobile systems. The dataflow engine uses a 1 kB cache for invalid and null flags.
 
 In order to explore the generality of the architecture for
 different monitors, we implemented five different monitors: uninitialized
 memory check (UMC), array bounds check (BC), dynamic information flow
-tracking (DIFT), instruction-mix profiling (IMP), and LockSet-based race detection (LS).  Uninitialized memory
+tracking (DIFT), instruction-mix profiling (IMP), and LockSet-based race
+detection (LS).  
+Since we implement the monitor using a
+processor core and our dataflow engine was designed to be generally applicable,
+the same hardware platform supports all of these monitoring techniques.
+Uninitialized memory
 check seeks to detect loading from
 memory locations that are not initialized first. Array bounds check, as
 described in Section~\ref{sec:dropping}, is a monitoring scheme that aims to
@@ -37,9 +42,7 @@ software \cite{tang-raid14}.
 LockSet \cite{eraser-tocs97} attempts to detect possible race conditions in multi-threaded programs
 by tracking metadata about which locks are protecting shared memory
 locations. If a shared memory location is accessed while unprotected
-then a race condition may exist. Since we implement the monitor using a
-processor core and our dataflow engine was designed to be generally applicable,
-the same hardware platform supports all of these monitoring techniques.
+then a race condition may exist.
 
 We tested our system using benchmarks from SPECint
 CPU2006 \cite{spec2006}. Since our implementation of BC depends on the
@@ -55,7 +58,7 @@ We simulated each benchmark for 2 billion instructions.
 
 Since LockSet race detection requires multi-threaded programs, we tested it using
 the applications from the SPLASH-2 benchmark set \cite{splash-isca95}. We ran these benchmarks for
-200 million instructions eachi using 2 main cores to run the benchmark application.
+200 million instructions each using 2 main cores to run the benchmark application.
 Each main core was connected to a dataflow engine and a monitoring core.
 
 \subsection{Baseline Monitoring Overheads}
@@ -85,7 +88,8 @@ Each main core was connected to a dataflow engine and a monitoring core.
 % Filter monitoring overheads
 \begin{figure}
   \begin{center}
-    \includegraphics[width=\columnwidth, clip=true, trim=0 0.5in 0 0.1in]{figs/data_filtering.pdf}
+    %\includegraphics[width=\columnwidth, clip=true, trim=0 0.5in 0 0.1in]{figs/data_filtering.pdf}
+    \includegraphics[width=\columnwidth]{figs/data_filtering.pdf}
     \vspace{-0.2in}
     \caption{Monitoring overheads with null metadata filtering.}
     \label{fig:evaluation.filtering}
@@ -103,7 +107,7 @@ are 3x on average and range from 1.1x to 8.3x.
 % implementation all loads and stores needed to be monitored. However, with
 % filtering, only loads and stores corresponding to arrays need to be forwarded.
 DIFT sees an average of 1.1x slowdown with a maximum slowdown of 1.3x with null
-metadata filtering. This low overhead is due, in part, to the fact
+metadata filtering. This low overhead is due to the fact
 that for our implementation of DIFT on SPEC
 benchmarks, we only mark data read from files as tainted. Instead, if we
 targeted network or streaming applications, which have larger amounts of
@@ -124,7 +128,7 @@ monitor that shows low tens of percent of overhead.
 % BC sweep
 \begin{figure}
   \begin{center}
-    \includegraphics[width=\linewidth, clip=true, trim=0 0.3in 0 0.1in]{figs/data_bc_sweep.pdf}
+    \includegraphics[width=\linewidth]{figs/data_hb_sweep.pdf}
     \vspace{-0.2in}
     \caption{Coverage vs. varying overhead budget for BC.}
     \label{fig:evaluation.bc_sweep}
@@ -135,7 +139,7 @@ monitor that shows low tens of percent of overhead.
 % UMC sweep
 \begin{figure}
   \begin{center}
-    \includegraphics[width=\linewidth, clip=true, trim=0 0.3in 0 0.1in]{figs/data_umc_sweep.pdf}
+    \includegraphics[width=\linewidth]{figs/data_umc_sweep.pdf}
     \vspace{-0.2in}
     \caption{Coverage vs. varying overhead budget for UMC.}
     \label{fig:evaluation.umc_sweep}
@@ -146,7 +150,7 @@ monitor that shows low tens of percent of overhead.
 % LS sweep
 \begin{figure}
   \begin{center}
-    \includegraphics[width=\linewidth, clip=true, trim=0 0.3in 0 0.1in]{figs/data_ls_sweep.pdf}
+    \includegraphics[width=\linewidth]{figs/data_ls_sweep.pdf}
     \vspace{-0.2in}
     \caption{Coverage vs. varying overhead budget for LS.}
     \label{fig:evaluation.ls_sweep}
@@ -157,7 +161,7 @@ monitor that shows low tens of percent of overhead.
 % IMP sweep
 \begin{figure*}
   \begin{center}
-    \includegraphics[width=\linewidth, clip=true, trim=0 0.3in 0 0.1in]{figs/data_imp_sweep.pdf}
+    \includegraphics[width=\linewidth, clip=true]{figs/data_imp_sweep.pdf}
     \vspace{-0.2in}
     \caption{Average error vs. varying overhead budget for instruction-mix profiling. Whisker bars show min and max errors.}
     \label{fig:evaluation.imp_sweep}
@@ -175,7 +179,9 @@ percentage of dynamic checks that are performed
 (indirect jumps in DIFT, loads in UMC, and memory accesses in BC and LS). 
 The metric is chosen to understand
 how likely an error/attack instance is to be detected on an individual system, 
-assuming that errors/attacks are uniformly distributed across checks. 
+assuming that errors/attacks are uniformly distributed across checks. While
+this is not necessarily true for actual errors/attacks, we believe this metric
+provides a good initial estimate of the detection capabilities of the system.
 %While we could not evaluate real errors/attacks due to difficulty in setting up
 %a large number of bugs and exploits, we believe that the percentage of checks
 %provides a good estimate of detection probability when errors/attacks are 
@@ -205,8 +211,8 @@ average. Even higher coverage can be achieved by allowing higher overheads.
 Similarly, Figure~\ref{fig:evaluation.ls_sweep} shows the coverage achieved by LS.
 With a 1.1x overhead, LS achieves 53\% coverage on average. This increases to
 71\% coverage with a 1.2x overhead. 
-We do not show a graph for DIFT because the overhead target of 1.1x is enough for
-all benchmark tested to reach 100\% coverage.
+For DIFT (not pictured), an overhead target of 1.1x is enough for
+all benchmarks tested to reach 100\% coverage.
 %Since the overheads of DIFT are low to begin with, setting an overhead target
 %1.1x is enough for all benchmarks tested to reach 100\% coverage.
 
@@ -296,7 +302,7 @@ overhead budget and the run-time monitoring overheads for UMC. A positive value
 means that the overhead target was overshot while a negative value indicates
 that the overhead budget was met. We see similar results for unrestricted
 dropping and source-only dropping due to the fact that UMC consists of a large
-number of short, independent monitoring chains.
+number of short, independent monitoring dependence chains.
 Figure~\ref{fig:evaluation.umc_coverage} shows the coverage of UMC for
 unrestricted dropping and source-only dropping. We see that, in several cases, source-only dropping
 achieves higher coverage than unrestricted dropping. On average, unrestricted
