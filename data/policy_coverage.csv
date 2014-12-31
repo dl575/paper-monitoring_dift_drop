@@ -1,0 +1,11 @@
+umc
+,perlbench,bzip2,gcc,mcf,gobmk,hmmer,sjeng,libquantum,h264ref
+unrestricted,  0.4820,0.2512,0.5173,0.4026,0.4813,0.6196,0.5325,1.0000,0.4487
+source-only,  0.4812,0.2327,0.5114,0.4013,0.4814,0.6193,0.5325,1.0000,0.4550
+
+hb
+,perlbench,bzip2,gcc,mcf,gobmk,hmmer,sjeng,libquantum,h264ref
+unrestricted,  0.8965,0.4810,0.8036,0.9762,0.8232,0.8518,1.0000,0.9208,0.7865
+source-only,  0.8816,1.0000,0.8103,0.9882,0.9997,0.9992,1.0000,1.0000,0.8758
+
+

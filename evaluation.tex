@@ -234,7 +234,7 @@ average error across instruction types and benchmarks is less than 2\%.
 \begin{figure}
   \begin{center}
     \vspace{-0.1in}
-    \includegraphics[width=\linewidth, clip=true, trim=0 0.3in 0 0.1in]{figs/data_fpga_umc_sweep.pdf}
+    \includegraphics[width=\linewidth]{figs/data_fpga_umc_sweep.pdf}
     \vspace{-0.2in}
     \caption{Coverage versus varying overhead budget for UMC running on an FPGA-based monitor.}
     \label{fig:evaluation.fpga_umc_sweep}
@@ -281,12 +281,12 @@ while still providing over 50\% coverage.
   \begin{center}
   \vspace{-0.1in}
   \subfloat[Overhead budget error.]{
-    \includegraphics[width=\columnwidth, clip=true, trim=0 0.3in 0 0.1in]{figs/data_umc_exec_time.pdf}
+    \includegraphics[width=\columnwidth]{figs/data_umc_overhead.pdf}
     \label{fig:evaluation.umc_exec_time}
   }
   \\
   \subfloat[Coverage.]{
-    \includegraphics[width=\columnwidth, clip=true, trim=0 0.3in 0 0.1in]{figs/data_umc_coverage.pdf}
+    \includegraphics[width=\columnwidth]{figs/data_umc_coverage.pdf}
     \label{fig:evaluation.umc_coverage}
   }
   \caption{Comparing dropping policies for UMC.}
@@ -337,12 +337,12 @@ are being spent on wasted work as discussed in Section~\ref{sec:policies.which}.
   \begin{center}
   \vspace{-0.1in}
   \subfloat[Overhead budget error.]{
-    \includegraphics[width=\columnwidth, clip=true, trim=0 0.3in 0 0.1in]{figs/data_bc_exec_time.pdf}
+    \includegraphics[width=\columnwidth]{figs/data_hb_overhead.pdf}
     \label{fig:evaluation.bc_exec_time}
   }
   \\
   \subfloat[Coverage.]{
-    \includegraphics[width=\columnwidth, clip=true, trim=0 0.3in 0 0.1in]{figs/data_bc_coverage.pdf}
+    \includegraphics[width=\columnwidth]{figs/data_hb_coverage.pdf}
     \label{fig:evaluation.bc_coverage}
   }
   \caption{Comparing dropping policies for BC.}
@@ -452,4 +452,21 @@ shows the peak and runtime power overheads averaged across all benchmarks runnin
 a 1.5x monitoring overhead target. The peak power is 31-72 mW, which is
 less than 8\% of the main core's peak power usage. Similarly, the average runtime power is 13-43
 mW, corresponding to 4-11\% of the main core's runtime power.
+
+% Runtime power of monitoring core
+\begin{table}[tb]
+  \begin{center}
+    \vspace{-0.0in}
+    \begin{footnotesize}
+    \input{tabs/monitor_power}
+    \end{footnotesize}
+    \caption{Average runtime power of the monitoring core.}
+    \vspace{-0.2in}
+    \label{tab:evaluation.monitor_power}
+  \end{center}
+\end{table}
+
+Table~\ref{tab:evaluation.monitor_power} shows the runtime power usage of the
+monitoring core averaged across all benchmarks. These results are shown for an
+overhead target of 1.5x as well as when full monitoring is performed.
 
