@@ -23,6 +23,9 @@ def parse():
   f = open("policy_coverage.csv", 'r')
   for line in f:
     ls = line.strip().split(',')
+    # Ignore empty lines and comments (starts with #)
+    if not line.strip() or line[0] == '#':
+      continue
     # Find monitor names
     if len(ls) == 1:
       if ls[0] != '':
@@ -42,6 +45,9 @@ def parse():
         d.append(geomean(d))
         data[monitor]['data'].append(d)
   f.close()
+  for mon in data.keys():
+    print mon
+    print data[mon]
 
   # Reformat data
   for monitor in data.keys():

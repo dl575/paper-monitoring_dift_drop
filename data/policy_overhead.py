@@ -15,6 +15,8 @@ def geomean(l):
     prod *= ll
     n += 1
   return prod**(1.0/n)
+def average(l):
+  return sum([float(x) for x in l])/len(l)
 
 
 def parse():
@@ -22,6 +24,9 @@ def parse():
   data = {}
   f = open("policy_overhead.csv", 'r')
   for line in f:
+    # Skip empty lines and comments
+    if not line.strip() or line[0] == '#':
+      continue
     ls = line.strip().split(',')
     # Find monitor names
     if len(ls) == 1:
@@ -33,16 +38,16 @@ def parse():
     else:
       # Benchmarks
       if ls[0] == '':
-        #data[monitor]['benchmarks'] = ls[1:] + ["geomean"]
-        data[monitor]['benchmarks'] = ls[1:]
+        data[monitor]['benchmarks'] = ls[1:] + ["average"]
       # Data line
       else:
         policy = ls[0]
         data[monitor]['policies'].append(policy)
         d = [float(x)*100 for x in ls[1:]]
-        #d.append(geomean(d))
+        d.append(average(d))
         data[monitor]['data'].append(d)
   f.close()
+  print data
 
   # Reformat data
   for monitor in data.keys():
@@ -97,4 +102,5 @@ if __name__ == "__main__":
   data = parse()
   for mon in data.keys():
     if mon != "insttype":
-      plot(data[mon], "../figs/data_%s_overhead.pdf" % (mon))
+      #plot(data[mon], "../figs/data_%s_overhead.pdf" % (mon))
+      plot(data[mon], "temp.pdf" % (mon))

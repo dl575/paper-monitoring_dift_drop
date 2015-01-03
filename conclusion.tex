@@ -9,9 +9,11 @@ through tracking invalidation information. In addition, we show how the
 architecture can be extended to enable null metadata filtering.
 Given this architecture, we explore the design choices related to the dropping policy.
 With partial monitoring, we see that with a 1.5x overhead target, BC can still
-achieve 82\% average coverage and UMC and LS can still achieve 43\%  and 94\%
-average coverage respectively.
-At this overhead target, IMP shows less than 3\% error on average.
+achieve 85\% average coverage and UMC can still achieve 14\% 
+average coverage.
+At this overhead target, IMP shows less than 2\% error on average.
+LS can be pushed down to 1.1x overhead and still achieve 61\% average coverage.
+
 
 % This is done by
 % using a hardware dataflow tracking engine in order to track and filter out

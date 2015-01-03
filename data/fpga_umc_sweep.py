@@ -22,6 +22,9 @@ def parse():
   data = {}
   f = open("fpga_umc_sweep.csv", 'r')
   for line in f:
+    # Treat line as comment, skip
+    if line[0] == '#':
+      continue
     ls = line.strip().split(',')
     # Find monitor names
     if len(ls) == 1:
@@ -41,6 +44,7 @@ def parse():
           data[monitor]['overheads'].append("%.2fx" % (overhead + 1))
           d = [float(x)*100 for x in ls[1:]]
           d.append(geomean(d))
+          print geomean(d)
           data[monitor]['data'].append(d)
   f.close()
 

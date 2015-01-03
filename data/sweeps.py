@@ -22,6 +22,9 @@ def parse():
   data = {}
   f = open("sweeps.csv", 'r')
   for line in f:
+    # Skip empty lines and comments
+    if not line.strip() or line[0] == '#':
+      continue
     ls = line.strip().split(',')
     # Find monitor names
     if len(ls) == 1:
@@ -46,6 +49,9 @@ def parse():
           d.append(geomean(d))
           data[monitor]['data'].append(d)
   f.close()
+  for mon in data.keys():
+    print mon
+    print data[mon]
 
   # Reformat data
   for monitor in data.keys():
