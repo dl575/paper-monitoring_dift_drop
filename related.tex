@@ -60,7 +60,7 @@ properties that differentiates our work:
 \end{enumerate}
 Our work is the first that we know of to present a hardware platform for partial
 monitoring that is general, allows an overhead target to be specified, and
-explicitly prevents false positives. In contrast, almost all previous work on
+explicitly prevents false positives. In contrast, previous work on
 partial monitoring achieves only some, but not all, of these properties.
 Table~\ref{tab:monitoring.previous_sampling} summarizes these differences. 
 
@@ -88,8 +88,8 @@ prevents false positives. Their architecture is designed to meet real-time
 deadlines rather than overhead targets. In addition, in order to give strong
 guarantees, the coverage achieved is lower than our system. Finally, QVM
 \cite{qvm-oopsla08} proposes a modification to the Java Virtual Machine (JVM) to
-support monitoring with adjustable overheads. QVM does prevents false positives
-but does so be enabling or disabling monitoring on a per-object basis. This is
+support monitoring with adjustable overheads. QVM does prevent false positives
+but does so by enabling or disabling monitoring on a per-object basis. This is
 similar to the idea of performing source-only dropping which our results show
 can lead to overshooting the overhead target depending on the monitoring
 technique. In addition, QVM is limited monitoring for code run on a JVM while

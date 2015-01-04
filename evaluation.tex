@@ -12,7 +12,7 @@ We model the main and monitoring cores as
 running at 2.5
 GHz with 4-way set-associative 32 kB private L1 I/D caches and a shared 8-way 2 MB L2
 cache. This setup is similar to the Snapdragon 801 processor commonly found in
-mobile systems. The dataflow engine uses a 1 kB cache for invalid and null flags.
+mobile systems. The dataflow engine uses a 1 kB cache for invalidation and null flags.
 
 In order to explore the generality of the architecture for
 different monitors, we implemented five different monitors: uninitialized
@@ -174,7 +174,7 @@ In this section, we evaluate the effectiveness of
 using partial monitoring to trade-off coverage for reduced overheads.
 For these results, we use a slack-based, unrestricted dropping policy.
 Figure~\ref{fig:evaluation.bc_sweep} shows the monitoring coverage achieved by
-array bounds check as we vary the overhead budget. 
+array bounds checking as we vary the overhead budget. 
 We define \emph{monitoring coverage} as the 
 percentage of dynamic checks that are performed 
 (indirect jumps in DIFT, loads in UMC, and memory accesses in BC and LS). 
@@ -326,7 +326,7 @@ higher overheads.
 
 From these results, we see that depending on the monitor and the program
 behavior, source-only dropping can provide better coverage than unrestricted
-dropping with the same overhead. Overall, unrestricted dropping is better at
+dropping with the same overhead. Unrestricted dropping is better at
 meeting an overhead target.
 Thus, for applications where staying within an overhead target is especially
 important, such as soft real-time systems, a slack-based, unrestricted dropping
@@ -390,7 +390,7 @@ reach 100\% code coverage.
 \end{table}
 
 Adding the dataflow engine in order to enable filtering and partial monitoring adds
-overheads in terms of area and power. We use McPat \cite{mcpat-micro09} to get
+overheads in terms of area and power consumption. We use McPat \cite{mcpat-micro09} to get
 a first-order estimate of these area and power overheads in a 40 nm technology
 node. McPat estimates the main core area as 2.71 mm$^2$ and the peak power usage as
 965 mW averaged across all benchmarks. The average runtime power usage was 385 

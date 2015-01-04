@@ -5,8 +5,7 @@
 Run-time monitoring techniques have been shown to be useful for improving the
 reliability, security, and debugging capabilities of computer systems. For
 example, Hardbound is a hardware-assisted technique to detect out-of-bound
-memory accesses, which can cause undesired behavior or create a security
-vulnerability if uncaught \cite{hardbound-asplos08}.  Intel has
+memory accesses \cite{hardbound-asplos08}.  Intel has
 recently announced plans to support buffer overflow protection similar to
 Hardbound in future architectures \cite{intel-mpx}. Similarly, run-time
 monitoring can enable many other new security, reliability, and debugging
@@ -62,12 +61,12 @@ dropping monitoring operations when overheads exceed a specified overhead
 budget. Although this results in reduced monitoring coverage (i.e., false
 negatives), false positives can also occur due to out-of-date metadata information.
 In order to prevent these
-false positive, we need to track the dropped metadata flows.  We present a
+false positives, we need to track the dropped metadata flows.  We present a
 hardware-based dataflow tracking engine that keeps track of these dropped
 flows. With this architecture, we investigate different policies for deciding
 which events to drop for partial monitoring. These different policies show a
-trade-off between closely matching the overhead budget and the monitoring
-coverage achieved.
+trade-off between closely matching the overhead budget and increasing the monitoring
+coverage.
 In addition to enabling partial monitoring, we show how a simple
 extension to our dataflow engine can enable null metadata filtering.
 For example, for an array bounds check, checking non-pointer accesses is
@@ -114,7 +113,7 @@ These monitors show average slowdowns of 1.1-5.8x with the null metadata filteri
 implemented on a multi-core platform.
 Our results show that the partial monitoring can still achieve significant
 coverage with reduced overheads. For example, for the monitors which showed over 2x
-average overheads, slowdown could be cut to 1.5x while still achieving a
+average overheads, slowdown could be cut down to 1.5x while still achieving a
 coverage of 14-85\% on average.
 
 % Section summary

@@ -228,16 +228,16 @@ positives is to associate a 1-bit flag with each metadata in order to mark these
 metadata as valid or
 invalid. Furthermore, this invalidation information is propagated in the same
 way that metadata is. Figure~\ref{fig:dropping.example_invalid}
-shows an example of associating invalid flags with metadata. Suppose that the monitoring for
+shows an example of associating invalidation flags with metadata. Suppose that the monitoring for
 line 1 is dropped in order to meet the overhead target. When a monitoring event is dropped, metadata that would have
 been updated is marked as invalid. In this case, instead of the normal
 operation of marking {\tt rf\_invalid[1]} as {\tt false}, it is instead
 marked as {\tt
 true}. Thus, when line 3 is reached, the monitoring event is dropped
 since {\tt rf\_invalid[1]} is marked as true. Note that in this case, line 2
-also propagates this invalid flag to {\tt rf\_invalid[2]} and causes the check
+also propagates this invalidation flag to {\tt rf\_invalid[2]} and causes the check
 performed on line 4 to also be dropped. This is necessary because an error
-would have been raised even if the access on line 4 was in bounds.
+would have been raised even if the access on line 4 was within bounds.
 
 \subsection{Dataflow Engine for Preventing False Positives}
 \label{sec:dropping.arch}
@@ -265,8 +265,8 @@ Figure~\ref{fig:dropping.example_invalid}.
 There are two operations that are done for handling invalidation information:
 
 \begin{enumerate}
-  \item Propagate invalid flags, following the dataflow of metadata.
-  \item Filter out monitoring operations based on invalid flags.
+  \item Propagate invalidation flags, following the dataflow of metadata.
+  \item Filter out monitoring operations based on invalidation flags.
 \end{enumerate}
 
 % Detailed architecture of dataflow engine
@@ -281,14 +281,14 @@ There are two operations that are done for handling invalidation information:
 \end{figure*}
 
 Thus, the hardware acts effectively as a dataflow tracking engine in order to
-track a 1-bit invalid flag per metadata. Figure~\ref{fig:dropping.dataflow} shows a detailed block
+track a 1-bit invalidation flag per metadata. Figure~\ref{fig:dropping.dataflow} shows a detailed block
 diagram of this hardware module. The dataflow engine uses two address
-calculation units to read in up two invalid flags. These source invalid flags
+calculation units to read in up to two invalidation flags. These source invalidation flags
 are used to decide whether a monitoring event should filtered. A third address
 calculation unit is used to optionally specify a target to propagate the
-invalidation information. The module includes a register file to store invalid
+invalidation information. The module includes a register file to store invalidation
 flags corresponding to register file metadata. In addition, it uses a small
-memory-backed cache to handle invalid flags corresponding to memory metadata.
+memory-backed cache to handle invalidation flags corresponding to memory metadata.
 
 Since different monitoring operations are performed based on instruction type,
 the dataflow engine is also configured based on instruction type. The source
@@ -379,7 +379,7 @@ propagation is required.
 
 One way to reduce the number of monitoring events that must be handled by the
 monitor is to filter out monitoring events that correspond to operating on null
-metadata. Null metadata corresponds to events that
+metadata. Null metadata correspond to events that
 are not relevant to the monitor. For example, Hardbound
 \cite{hardbound-asplos08} filters out operations on non-pointer (i.e., no base
 and bounds metadata) instructions since it is not relevant to array bounds
@@ -399,8 +399,8 @@ information and filter out monitoring for line 4.
 
 The operations performed by null filtering are almost identical to the
 operations needed for invalidation shown in
-Figure~\ref{fig:dropping.example_invalid}. Instead of taking a logical OR of the
-source invalid flags to determine whether monitoring can be skipped, null
+Figure~\ref{fig:dropping.example_invalid} except for a small change in the propagation policy. Instead of taking a logical OR of the
+source invalidation flags to determine whether monitoring can be skipped, null
 metadata filtering takes a logical AND of the source null flags.
 Thus, we can easily enable this null metadata filtering on our architecture by
 extending the dataflow flags to be two bits wide. One bit is used to

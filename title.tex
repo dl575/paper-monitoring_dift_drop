@@ -1,8 +1,4 @@
-\title{
-%Dataflow-Guided Filtering for Efficient and Adjustable Run-Time Monitoring
-%Efficient and Adjustable Run-Time Monitoring Using Dataflow-Guided Filtering
-Run-Time Monitoring with Adjustable Overheads \\Using Dataflow-Guided Filtering
-}
+\title{Run-Time Monitoring with Adjustable Overhead \\Using Dataflow-Guided Filtering}
 
 \ifanonymized{\author{Anonymized}}
 {\author{\IEEEauthorblockN{Daniel Lo, Tao Chen, Mohamed Ismail, and G. Edward Suh}
@@ -10,6 +6,8 @@ Run-Time Monitoring with Adjustable Overheads \\Using Dataflow-Guided Filtering
 Ithaca, NY 14850, USA\\
 \{dl575, tc466, mii5, gs272\}@cornell.edu}}
 }
+% Reduce space between title and authors
+\IEEEspecialpapernotice{\vspace{-0.4in}}
 
 \maketitle
 
@@ -25,10 +23,10 @@ overheads, especially for flexible systems that support a range of monitors.
 %all-or-nothing cost; monitoring cannot be used if the overheads are considered
 %too large.  
 In this paper, we introduce a hardware dataflow tracking engine that enables
-adjustable overheads through partial monitoring. This allows a trade-off to be
+adjustable overhead through partial monitoring. This allows a trade-off to be
 made between monitoring coverage and overhead. This dataflow engine
 can also be extended to filter out monitoring operations associated with null
-metadata in order to reduce overheads.
+metadata in order to reduce overhead.
 % In this paper, we introduce a hardware dataflow tracking engine that can be
 % used to filter out unnecessary monitoring and enable adjustable partial monitoring.
 % The dataflow engine can identify events with null metadata so that they can
@@ -39,9 +37,9 @@ metadata in order to reduce overheads.
 Given this architecture, we investigate how the dropping decisions should be
 made for partial monitoring and show that there exist interesting policy
 decisions depending on the target application of partial monitoring.
-Our experimental results show that overheads can be reduced significantly 
+Our experimental results show that overhead can be reduced significantly 
 by trading off coverage. For example, for monitoring techniques with average
-overheads of 2-6x, the proposed architecture is able to reduce slowdowns to
+overheads of 2-6x, the proposed architecture is able to reduce overhead to
 1.5x while still achieving 14-85\% average coverage. 
 
 \end{abstract}
