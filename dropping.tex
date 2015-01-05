@@ -113,10 +113,10 @@ the monitor will raise an error.
 Note that this monitoring is performed automatically and transparently with
 almost no modification needed to the main program. The only modification to
 the main program that is needed is to initially set metadata, such as setting
-the base and bounds addresses on a {\tt malloc} call for array bounds check.
+the base and bounds addresses on a {\tt malloc} call for array bounds checking.
 The propagation and checks of the metadata occur automatically as
 instructions are forwarded to the monitor.
-Here, we have shown the dynamic sequence of operations executed by the monitor but
+Here, we have shown the dynamic sequence of operations executed by the monitor, but
 the actual static code consists of a set of instructions to be run for each
 possible instruction type (load, store, etc.). Only instruction types relevant
 for the particular monitoring scheme are forwarded.
