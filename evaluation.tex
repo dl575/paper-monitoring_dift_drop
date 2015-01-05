@@ -221,6 +221,17 @@ For DIFT (not pictured), an overhead target of 1.1x is enough for
 all benchmarks tested to reach 100\% coverage.
 %Since the overheads of DIFT are low to begin with, setting an overhead target
 %1.1x is enough for all benchmarks tested to reach 100\% coverage.
+Note that the overheads shown are the target overhead. In some cases, a high
+overhead target is needed in order to achieve 100\% coverage. For example, for
+{\tt mcf} with UMC monitoring, a 12x overhead target is needed to achieve 100\%
+coverage while the overheads of performing monitoring in full were 2.6x (see
+Figure~\ref{fig:evaluation.filtering}. This is due to the fact that we
+accumulate slack gradually and so bursty monitoring events may require a higher
+overhead target in order for all monitoring to be performed. However, the
+actual overheads seen are in-line with the overhead of performing monitoring
+without dropping (e.g., 2.6x for {\tt mcf} with UMC monitoring at a 12x
+overhead target).
+
 
 The instruction-mix profiling monitor does not perform check operations. Thus,
 the concept of coverage is not applicable here. Instead, for each instruction
