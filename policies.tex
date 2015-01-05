@@ -19,13 +19,19 @@ need to drop events in order to enable reduced overhead?
 % events can be dropped create a trade-off between how closely the overhead
 % budget is met and the monitoring coverage achieved.
 
-\subsection{Deciding When to Drop} \label{sec:policies.when}
+\subsection{Deciding When to Drop} 
+\label{sec:policies.when}
 
 % Slack
-\begin{figure} \begin{center}
-\includegraphics[width=\columnwidth]{figs/slack.pdf} \vspace{-0.2in}
-\caption{Slack and its effect on monitoring over time.}
-\label{fig:policies.slack} \vspace{-0.1in} \end{center} \end{figure}
+\begin{figure} 
+  \begin{center}
+    \includegraphics[width=\columnwidth]{figs/slack.pdf} 
+    \vspace{-0.1in}
+    \caption{Slack and its effect on monitoring over time.}
+    \label{fig:policies.slack} 
+    \vspace{-0.3in} 
+  \end{center} 
+\end{figure}
 
 In this section, we discuss two possible ways to determine when events should
 be dropped.  The first possibility is to probabilistically drop events. By
@@ -74,7 +80,8 @@ the difficulty in measuring certain overheads such as contention for shared
 memory.  However, we have found that using only the stalls due to FIFO back
 pressure works well in practice.
 
-\subsection{Deciding Which Events to Drop} \label{sec:policies.which}
+\subsection{Deciding Which Events to Drop} 
+\label{sec:policies.which}
 
 % % Varying slack's impact on coverage for UMC \begin{figure} \begin{center}
 % \includegraphics[width=\columnwidth]{figs/dataflow_graph.pdf} \vspace{-0.3in}
@@ -88,12 +95,12 @@ pressure works well in practice.
       \includegraphics[width=\columnwidth]{figs/unrestricted_drop.pdf}
       \label{fig:policies.all_drop} 
     }
-    \vspace{-0.1in} \\ 
+    \\
     \subfloat[Source-Only Dropping] { 
       \includegraphics[width=\columnwidth]{figs/source_drop.pdf}
       \label{fig:policies.source_drop} 
     } 
-    \vspace{-0.1in} \\ 
+    \\
     \subfloat[Sub-Flow Dropping] { 
       \includegraphics[width=\columnwidth]{figs/subflow_drop.pdf}
       \label{fig:policies.subflow_drop} 
@@ -103,6 +110,7 @@ pressure works well in practice.
   Square nodes represent events where check are performed. Blue (dark) nodes
   indicate which nodes can be dropped.} 
   \label{fig:policies.policies} 
+  \vspace{-0.2in}
 \end{figure}
 
 In addition to deciding when dropping is required, trade-offs also exist in

@@ -12,11 +12,12 @@ section describes our design.
 % Run-time monitoring overview
 \begin{figure}
   \begin{center}
+    \vspace{0.1in}
     \includegraphics[width=\columnwidth]{figs/monitoring_architecture.pdf}
     \vspace{-0.2in}
     \caption{Overview of run-time monitoring architecture.}
     \label{fig:dropping.overview} 
-    \vspace{-0.1in}
+    \vspace{-0.3in}
   \end{center}
 \end{figure}
 
@@ -82,7 +83,7 @@ is propagated on ALU and memory instructions to track the corresponding array po
     \includegraphics[]{figs/example_full.pdf}
     \caption{Example of array bounds check monitor.}
     \label{fig:dropping.example_full}
-    \vspace{-0.1in}
+    \vspace{-0.2in}
   \end{center}
 \end{figure*} 
 
@@ -212,7 +213,7 @@ to reduce overhead, we need to prevent false positives.
     \includegraphics[]{figs/example_invalid.pdf}
     \caption{Example of using invalidation information to prevent false positives.}
     \label{fig:dropping.example_invalid}
-    \vspace{-0.1in}
+    \vspace{-0.2in}
   \end{center}
 \end{figure*}
 
@@ -245,12 +246,11 @@ would have been raised even if the access on line 4 was within bounds.
 % Dataflow engine high-level
 \begin{figure}
   \begin{center}
-    \vspace{-0.1in}
     \includegraphics[width=\columnwidth]{figs/dataflow_overview.pdf}
     \vspace{-0.2in}
     \caption{Hardware support for dropping.}
     \label{fig:dropping.dataflow_overview}
-    \vspace{-0.2in}
+    \vspace{-0.3in}
   \end{center}
 \end{figure}
 
@@ -273,10 +273,10 @@ There are two operations that are done for handling invalidation information:
 \begin{figure*}
   \begin{center}
     \includegraphics[]{figs/dataflow_architecture.pdf}
-    \vspace{-0.1in}
+    \vspace{-0.0in}
     \caption{Hardware architecture of the dataflow engine.}
     \label{fig:dropping.dataflow} 
-    \vspace{-0.1in}
+    \vspace{-0.3in}
   \end{center}
 \end{figure*}
 
@@ -370,10 +370,10 @@ propagation is required.
 \begin{figure}
   \begin{center}
     \includegraphics[width=\columnwidth]{figs/example_null_filtering.pdf}
-    \vspace{-0.2in}
+    \vspace{-0.1in}
     \caption{Example of using information about null metadata to filter monitoring events.}
     \label{fig:dropping.example_null} 
-    \vspace{-0.1in}
+    \vspace{-0.2in}
   \end{center}
 \end{figure}
 
