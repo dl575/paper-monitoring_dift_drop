@@ -285,12 +285,27 @@ while still providing 45\% coverage.
     \label{fig:evaluation.umc_coverage}
   }
   \caption{Comparing dropping policies for UMC.}
+  \label{fig:evaluation.umc_policies}
   \vspace{-0.2in}
   \end{center}
-  \label{fig:evaluation.umc_policies}
 \end{figure}
 
-In this section we evaluate the trade-offs between unrestricted dropping and source-only dropping.
+%In this section we evaluate the trade-offs between unrestricted dropping and source-only dropping.
+In this section we evaluate the trade-offs between different dropping policies.
+For sub-flow dropping, we identified sub-flow nodes through profiling. Because
+of the need to profile the applications to determine sub-flow nodes, these
+experiments were simulated for 1 billion instructions without fast-forwarding.
+These results (not shown) indicated that sub-flow dropping produced similar
+results in terms of coverage and overhead target matching to unrestricted
+dropping for the benchmarks and monitors that we tested. Monitors and
+benchmarks with difference monitoring dependence graphs may see a more
+pronounced trade-off between using unrestricted dropping and sub-flow dropping.
+
+Since, sub-flow dropping showed little difference from unrestricted dropping,
+we focus on comparing unrestricted dropping and source-only dropping. The
+results shown in Figures~\ref{fig:evaluation.umc_policies} and
+\ref{fig:evaluation.bc_policies} were run for 2 billion instructions after
+fast-forwarding for 1 billion instructions.
 The results are shown for an overhead target of 2.0x for UMC and 1.5x for BC.
 Figure~\ref{fig:evaluation.umc_exec_time} shows the difference between the
 overhead budget and the run-time monitoring overhead for UMC. A positive value
@@ -318,9 +333,9 @@ is being spent on wasted work as discussed in Section~\ref{sec:policies.which}.
     \label{fig:evaluation.bc_coverage}
   }
   \caption{Comparing dropping policies for BC.}
+  \label{fig:evaluation.bc_policies}
   \vspace{-0.2in}
   \end{center}
-  \label{fig:evaluation.bc_policies}
 \end{figure}
 
 Next, we evaluate these trade-offs between source-only dropping and unrestricted dropping for BC.
@@ -367,21 +382,25 @@ achieve high coverage across multiple runs. Varying the monitoring that is
 done for different runs can be achieved by using a probabilistic dropping policy.
 Figure~\ref{fig:evaluation.multirun} shows the total
 coverage achieved over multiple runs for array bounds check using
-unrestricted and source-only dropping policies with probabilistic dropping.
+unrestricted, sub-flow, and source-only dropping policies with probabilistic dropping.
 These numbers are averaged across all benchmarks. Here, we use a 10\%
 probability
-that events are not dropped. Since the goal is code coverage, coverage here is
-measured as the percentage of static instructions which are monitored in at
-least one of the runs. Each run
+that events are not dropped.  Each run
 was simulated for 500 million instructions. 
+Since the goal is code coverage, coverage here is
+measured as the percentage of static instructions which are monitored in at
+least one of the runs.
 We see that for the unrestricted dropping policy there is almost no increase in
 coverage.  This is due to the fact that it is likely that at least one
 monitoring event in a metadata dependence chain will be dropped with the unrestricted dropping
 policy. 
-Instead, source-only
-dropping is much better suited for achieving high coverage over multiple runs.
-Source-only dropping shows a 6\% increase in coverage with only eight runs.
-With more runs, source-only dropping should be able to
+Instead, sub-flow dropping and source-only
+dropping are much better suited for achieving high coverage over multiple runs.
+Source-only dropping shows a 6\% increase in coverage with only eight runs
+while sub-flow dropping shows a 1\% increase in coverage over eight runs.
+While sub-flow dropping shows a slower increase in coverage than source-only
+dropping, sub-flow dropping is better able to meet overhead targets.
+With enough runs, both sub-flow dropping and source-only dropping should be able to
 reach 100\% code coverage.
 
 \subsection{Area and Power Overheads}

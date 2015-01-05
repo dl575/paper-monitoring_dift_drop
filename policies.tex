@@ -82,19 +82,31 @@ pressure works well in practice.
 % where checks are performed.} \label{fig:policies.dataflow_graph}
 % \vspace{-0.1in} \end{center} \end{figure}
 
-\begin{figure} \begin{center} \subfloat[Unrestricted Dropping]{
-\includegraphics[width=\columnwidth]{figs/unrestricted_drop.pdf}
-\label{fig:policies.all_drop} } \vspace{-0.1in} \\ \subfloat[Source-Only
-Dropping]{ \includegraphics[width=\columnwidth]{figs/source_drop.pdf}
-\label{fig:policies.source_drop} } \vspace{-0.1in} \\ \subfloat[Sub-Flow
-Dropping]{ \includegraphics[width=\columnwidth]{figs/subflow_drop.pdf}
-\label{fig:policies.subflow_drop} } \end{center} \caption{Comparison of
-dropping policies using metadata dependence graphs.  Square nodes represent
-events where check are performed. Blue (dark) nodes indicate which nodes can be
-dropped.} \label{fig:policies.policies} \end{figure}
+\begin{figure} 
+  \begin{center} 
+    \subfloat[Unrestricted Dropping] {
+      \includegraphics[width=\columnwidth]{figs/unrestricted_drop.pdf}
+      \label{fig:policies.all_drop} 
+    }
+    \vspace{-0.1in} \\ 
+    \subfloat[Source-Only Dropping] { 
+      \includegraphics[width=\columnwidth]{figs/source_drop.pdf}
+      \label{fig:policies.source_drop} 
+    } 
+    \vspace{-0.1in} \\ 
+    \subfloat[Sub-Flow Dropping] { 
+      \includegraphics[width=\columnwidth]{figs/subflow_drop.pdf}
+      \label{fig:policies.subflow_drop} 
+    } 
+  \end{center} 
+  \caption{Comparison of dropping policies using metadata dependence graphs.
+  Square nodes represent events where check are performed. Blue (dark) nodes
+  indicate which nodes can be dropped.} 
+  \label{fig:policies.policies} 
+\end{figure}
 
 In addition to deciding when dropping is required, trade-offs also exist in
-deciding which events should be dropped.  The simplest policy is to drop any
+deciding which events should be dropped.  The simplest policy is to drop 
 monitoring events when slack is less than or equal to zero.  However, this can
 result in wasted work. For example, consider the metadata dependence graph
 shown in Figure~\ref{fig:policies.all_drop}. Here, an edge from node {\tt A} to
@@ -109,29 +121,17 @@ updated metadata for events {\tt C} and {\tt D} even though they are no longer
 needed.
 
 An alternative dropping policy which eliminates this wasted work is to only
-make dropping decisions at the root or source of these metadata flows. That is,
+make dropping decisions at the root or source of these metadata flows (see Figure~\ref{fig:policies.source_drop}). That is,
 we will decide to either monitor or not monitor an entire metadata flow. An
 example of these source nodes is the monitoring done to initialize base and
 bounds information on {\tt malloc} for an array bounds check. These source
 nodes are typically easy to identify by the dropping hardware because they
-correspond to special instructions that are used to set up metadata
+correspond to the special instructions that are used to set up metadata
 information. Thus, it is not necessary to generate and analyze the monitoring
 dependence graph to identify source nodes. We refer to this dropping decision
 policy as \emph{source-only
 dropping} and we refer to the previous policy of dropping any event as
 \emph{unrestricted dropping}.
-
-Figures~\ref{fig:policies.all_drop} and \ref{fig:policies.source_drop} show a
-comparison of where dropping decisions are made for these two policies. Source
-dropping will
-result in no wasted work and thus better coverage at a given overhead. However, because of the coarser-grained decision, it
-may be more difficult to closely match overhead targets. We expect source-only dropping 
-to work well when there are a large number of independent metadata flows.
-In addition, using a probabilistic dropping policy works poorly with
-unrestricted dropping. Since every event in a dependent chain (e.g., events {\tt
-A} through {\tt E}) needs to be monitored in order for the monitoring check to
-be useful, randomly dropping any event is likely to cause the final check to be
-invalid by dropping at least one event in the chain.
 
 More complex dropping policies can be implemented given more detailed
 information about the monitoring dependence graph. Here, we describe one such
@@ -141,27 +141,44 @@ source-only dropping (see Figure~\ref{fig:policies.subflow_drop}). Sub-flow
 dropping allows source nodes to be dropped and nodes after branch points in the
 monitoring dependence graph to be dropped. From
 Figure~\ref{fig:policies.subflow_drop}, this corresponds to nodes {\tt A}, {\tt
-C}, and {\tt F}. The basic intuition is that dropping certain portions of the
-monitoring dependence graph still result in no wasted work. For example,
+C}, and {\tt F}. The basic idea of sub-flow dropping is to drop portions of the
+monitoring dependence graph at the smallest granularity such that no work is
+wasted.
+For example,
 dropping node {\tt C} causes nodes {\tt D} and {\tt E} to be skipped. However,
 performing monitoring on the remaining nodes allows the check at node {\tt G}
 to be performed with no wasted work. Similarly, dropping {\tt F} allows node
 {\tt E} to be checked with no wasted work.
 
+%Figures~\ref{fig:policies.all_drop} and \ref{fig:policies.source_drop} show a
+%comparison of where dropping decisions are made for these two policies. 
+Source-only dropping will
+result in no wasted work and thus better coverage at a given overhead than unrestricted dropping. However, because of the coarser-grained decision, it
+may be more difficult to closely match overhead targets. 
+Sub-flow dropping enables a design point in between unrestricted dropping and
+source-only dropping in terms of matching overhead and coverage achieved.
+Sub-flow dropping can still result in wasted work in there are merge points in
+the monitoring dependence graph, but should result in less wasted work than
+unrestricted dropping. Thus, its coverage falls in between that of source-only dropping and unrestricted dropping. Similarly, sub-flow dropping's ability to closely match overhead targets falls between that of source-only dropping and unrestricted dropping.
+We expect source-only dropping 
+to work well when there are a large number of independent metadata flows.
+In addition, using a probabilistic dropping policy works poorly with
+unrestricted dropping. Since every event in a dependent chain (e.g., events {\tt
+A} through {\tt E}) needs to be monitored in order for the monitoring check to
+be useful, randomly dropping any event is likely to cause the final check to be
+invalid by dropping at least one event in the chain.
+
 Depending on the target application of partial monitoring, different policies
 are more applicable.
 For applications where closely matching an overhead target is important, a
 slack-based, unrestricted dropping policy is appropriate. However, if matching
-the overhead target is not as important, then a slack-based, source-only dropping
+the overhead target is not as important, then a slack-based, sub-flow or source-only dropping
 policy could provide better coverage. 
 Finally, if the goal is to use partial monitoring to enable cooperative
 debugging and testing with very low overhead, then a probabilistic,
 source-only dropping policy can be used to provide good total coverage over
 multiple runs.
-Sub-flow dropping enables a design point in between unrestricted dropping and
-source-only dropping. Sub-flow dropping matches overhead better than
-source-only dropping and provides better coverage than unrestricted dropping.
-For a probabilistic policy, sub-flow dropping allows better overhead matching
+For a probabilistic policy, sub-flow dropping allows better overhead matching than source-only dropping
 while still allowing good total coverage over multiple runs, though at a slower
 rate than source-only dropping.
 
