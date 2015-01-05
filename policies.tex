@@ -1,10 +1,10 @@
 \section{Dropping Policies} \label{sec:policies}
 
-In order to use partial monitoring to enable adjustable overheads, we must also
+In order to use partial monitoring to enable adjustable overhead, we must also
 specify a policy for when and which monitoring events are dropped. In this
 section, we discuss some of the options and trade-offs for dropping policies.
 We split this decision into two components: \begin{enumerate} \item When do we
-need to drop events in order to enable reduced overheads?
+need to drop events in order to enable reduced overhead?
 (Section~\ref{sec:policies.when}) \item Which events should be dropped?
 (Section~\ref{sec:policies.which}) \end{enumerate}
 
@@ -29,7 +29,7 @@ need to drop events in order to enable reduced overheads?
 
 In this section, we discuss two possible ways to determine when events should
 be dropped.  The first possibility is to probabilistically drop events. By
-setting the probability of dropping events appropriately, overheads can be
+setting the probability of dropping events appropriately, overhead can be
 reduced. This works well for enabling partial monitoring for cooperative
 testing and debugging since the randomness allows different users and runs to
 monitor different portions of the program. However, using a probabilistic
@@ -37,9 +37,9 @@ dropping policy can make it difficult to meet a target overhead without prior
 profiling.
 
 Alternatively, we can specify a target overhead and estimate, at run-time, the
-overheads of monitoring in order to decide whether dropping is needed.  The
+overhead of monitoring in order to decide whether dropping is needed.  The
 overhead budget is specified as a percentage of the main program's execution
-cycles without monitoring. In order to estimate overheads at run-time, we
+cycles without monitoring. In order to estimate the overhead at run-time, we
 define \emph{slack} as the number of cycles of monitoring overhead that can be
 incurred while staying within the budget target. Slack is essentially the
 difference between the actual overhead seen and the budget specified. Slack is
@@ -155,11 +155,11 @@ slack-based, unrestricted dropping policy is appropriate. However, if matching
 the overhead target is not as important, then a slack-based, source-only dropping
 policy could provide better coverage. 
 Finally, if the goal is to use partial monitoring to enable cooperative
-debugging and testing with very low overheads, then a probabilistic,
+debugging and testing with very low overhead, then a probabilistic,
 source-only dropping policy can be used to provide good total coverage over
 multiple runs.
 Sub-flow dropping enables a design point in between unrestricted dropping and
-source-only dropping. Sub-flow dropping matches overheads better than
+source-only dropping. Sub-flow dropping matches overhead better than
 source-only dropping and provides better coverage than unrestricted dropping.
 For a probabilistic policy, sub-flow dropping allows better overhead matching
 while still allowing good total coverage over multiple runs, though at a slower

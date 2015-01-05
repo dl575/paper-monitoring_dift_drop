@@ -39,14 +39,14 @@ shown to have low performance overheads. On the other hand, flexible systems
 that support a range of monitors have shown much higher overheads. In this
 paper, we explore a new trade-off dimension for run-time monitor designs. We
 propose to enable low overhead monitors without sacrificing flexibility by
-using partial monitoring. In essence, this enables a trade-off between overheads and
+using partial monitoring. In essence, this enables a trade-off between overhead and
 monitoring coverage or accuracy.
 
 Although partial monitoring comes at the cost of reduced monitoring coverage (i.e.,
 effectiveness), this can still be useful in many scenarios.
 For example, partial
 monitoring can enable a level of protection even for systems where the full
-monitoring overheads are too high. This is especially true for energy- or
+monitoring overhead is too high. This is especially true for energy- or
 power-constrained systems or soft real-time systems where the monitoring
 overhead should not exceed energy/power limits or real-time deadlines.
 Additionally, partial monitoring can be used for debugging purposes
@@ -56,8 +56,8 @@ collect debugging information~\cite{liblit-pldi05, chilimbi-asplos04,
 greathouse-cgo11}. 
 
 % Adjustable overhead
-Partial monitoring with adjustable overheads is achieved by dynamically
-dropping monitoring operations when overheads exceed a specified overhead
+Partial monitoring with adjustable overhead is achieved by dynamically
+dropping monitoring operations when the overhead exceeds a specified overhead
 budget. Although this results in reduced monitoring coverage (i.e., false
 negatives), false positives can also occur due to out-of-date metadata information.
 In order to prevent these
@@ -81,7 +81,7 @@ The main contributions of this paper are summarized as follows:
   \item We investigate multiple policies on when and which operations to drop 
   for partial monitoring, and show the trade-offs in the design space.
   \item We extend the dataflow engine to enable filtering null metadata to
-  reduce overheads.
+  reduce overhead.
 \end{itemize}
 
 % %Invalidation in order to prevent false positives.
@@ -112,8 +112,8 @@ size and semantics of their metadata, and the operations performed on metadata.
 These monitors show average slowdowns of 1.1-5.8x with the null metadata filtering when
 implemented on a multi-core platform.
 Our results show that the partial monitoring can still achieve significant
-coverage with reduced overheads. For example, for the monitors which showed over 2x
-average overheads, slowdown could be cut down to 1.5x while still achieving a
+coverage with reduced overhead. For example, for the monitors which showed over 2x
+average overhead, slowdown could be cut down to 1.5x while still achieving a
 coverage of 14-85\% on average.
 
 % Section summary

@@ -44,15 +44,15 @@
 \end{table}
 
 There exists a number of previous projects that have looked into performing
-partial monitoring in order to reduce the performance overheads. These
+partial monitoring in order to reduce the performance overhead. These
 platforms differ from ours in a number of ways including how monitoring is
 implemented and the monitoring techniques targeted. However, we note three main
 properties that differentiates our work:
 \begin{enumerate}
   \item \textbf{Generality:} Our architecture applies to a variety of monitoring techniques.
   \item \textbf{Adjustable Overhead:} Our architecture allows an overhead to be
-  targeted. Other work performs sampling to reduce overheads but does not try
-  to bound overheads, which we have shown can vary greatly.
+  targeted. Other work performs sampling to reduce overhead but does not try
+  to bound overhead, which we have shown can vary greatly.
   \item \textbf{Prevent False Positives:} We prevent a mechanism to prevent
   false positives. Previous work either has false positives or targets monitoring
   techniques which degrade gracefully with sampling rather than exhibit false
@@ -65,7 +65,7 @@ partial monitoring achieves only some, but not all, of these properties.
 Table~\ref{tab:monitoring.previous_sampling} summarizes these differences. 
 
 For example, there exists previous work for using statistical sampling to
-reduce the performance overheads of various debugging techniques. These include
+reduce the performance overhead of various debugging techniques. These include
 sampling for bug isolation \cite{liblit-pldi05}, memory leak detection
 \cite{chilimbi-asplos04}, race detection \cite{literace-pldi09, pacer-pldi10},
 and information flow tracking \cite{testudo-micro08, greathouse-cgo11}. These
@@ -79,7 +79,7 @@ There also exists several projects that have looked into more general partial
 monitoring platforms. Arnold and Ryder \cite{arnold-pldi01} presented a general
 platform for sampling of instrumented code, but do not allow an overhead target
 to be specified and do not prevent false positives. Huang et al.
-\cite{huang-sttt12} proposed a general framework for controlling the overheads
+\cite{huang-sttt12} proposed a general framework for controlling the overhead
 of software-based monitoring. However, they also do not explicitly address
 false positives and only target monitors which degrade gracefully when
 performed partially. Lo et al. \cite{lo-rtas14} designed a hardware
@@ -88,7 +88,7 @@ prevents false positives. Their architecture is designed to meet real-time
 deadlines rather than overhead targets. In addition, in order to give strong
 guarantees, the coverage achieved is lower than our system. Finally, QVM
 \cite{qvm-oopsla08} proposes a modification to the Java Virtual Machine (JVM) to
-support monitoring with adjustable overheads. QVM does prevent false positives
+support monitoring with adjustable overhead. QVM does prevent false positives
 but does so by enabling or disabling monitoring on a per-object basis. This is
 similar to the idea of performing source-only dropping which our results show
 can lead to overshooting the overhead target depending on the monitoring

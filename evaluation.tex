@@ -62,7 +62,7 @@ Each benchmark was run using 2 main cores to run the benchmark application.
 {\tt fmm} and {\tt raytrace} were run without fast-forwarding because they ran to completion in under 2 billion instructions.
 Each main core was connected to a dataflow engine and a monitoring core.
 
-\subsection{Baseline Monitoring Overheads}
+\subsection{Baseline Monitoring Overhead}
 
 % % Full monitoring overheads
 % \begin{figure}
@@ -92,7 +92,7 @@ Each main core was connected to a dataflow engine and a monitoring core.
     %\includegraphics[width=\columnwidth, clip=true, trim=0 0.5in 0 0.1in]{figs/data_filtering.pdf}
     \includegraphics[width=\columnwidth]{figs/data_filtering.pdf}
     \vspace{-0.2in}
-    \caption{Monitoring overheads with null metadata filtering.}
+    \caption{Monitoring overhead with null metadata filtering.}
     \label{fig:evaluation.filtering}
     \vspace{-0.1in}
   \end{center}
@@ -112,7 +112,7 @@ metadata filtering. This low overhead is due to the fact
 that for our implementation of DIFT on SPEC
 benchmarks, we only mark data read from files as tainted. Instead, if we
 targeted network or streaming applications, which have larger amounts of
-untrusted input data, we would observe higher overheads. IMP shows normalized
+untrusted input data, we would observe higher overhead. IMP shows normalized
 execution times of 1.6-9.5x with an average of 5.8x. Overheads for LS (not pictured)
 applied to the SPLASH-2 benchmarks are
 1.04-1.29x after null metadata filtering and the average
@@ -171,7 +171,7 @@ monitor that shows low tens of percent of overhead.
 \end{figure*}
 
 In this section, we evaluate the effectiveness of
-using partial monitoring to trade-off coverage for reduced overheads.
+using partial monitoring to trade-off coverage for reduced overhead.
 For these results, we use a slack-based, unrestricted dropping policy.
 Figure~\ref{fig:evaluation.bc_sweep} shows the monitoring coverage achieved by
 array bounds checking as we vary the overhead budget. 
@@ -199,11 +199,11 @@ coverage for increased overhead targets are stacked above this.
 We see that by varying the overhead budget, the coverage achieved also varies.
 With only a 1.1x overhead target (10\% slowdown), array bounds check still
 achieves over 80\% monitoring coverage on average. The high coverage
-achieved with such low overheads is due to two main effects.  The first is that
+achieved with such low overhead is due to two main effects.  The first is that
 monitoring can be done in parallel, providing a certain level of monitoring coverage without
-introducing overheads. The second effect is that there may still exist a large number of
+introducing overhead. The second effect is that there may still exist a large number of
 monitoring events that do not lead to security or reliability checks. As a
-result, dropping these events can reduce overheads without a large impact on
+result, dropping these events can reduce overhead without a large impact on
 monitoring coverage.
 
 Figure~\ref{fig:evaluation.umc_sweep} shows the analogous graph for UMC. Again
@@ -213,7 +213,7 @@ With a 2x overhead target, UMC achieves 22\% monitoring coverage on average and 
 %with a 1.1x overhead target, UMC achieves 25\% monitoring coverage on average.
 %By increasing this overhead budget to 1.5x, UMC achieves 43\% coverage on
 %average. 
-Even higher coverage can be achieved by allowing higher overheads.
+Even higher coverage can be achieved by allowing higher overhead.
 Similarly, Figure~\ref{fig:evaluation.ls_sweep} shows the coverage achieved by LS.
 With only a 1.01x overhead, LS achieves 30\% coverage on average. This increases to
 71\% coverage with a 1.1x overhead. 
@@ -240,7 +240,7 @@ monitored. We take the difference of these percentages compared to the case
 when full monitoring
 is performed to calculate the error. Figure~\ref{fig:evaluation.imp_sweep}
 shows the min, max, and average error across
-instruction types for each benchmark and for varying overheads. We see that
+instruction types for each benchmark and for varying overhead. We see that
 with a 1.1x overhead, a max error of 9\% is observed across the benchmarks and the
 average error across instruction types and benchmarks is 3\%. 
 
@@ -267,7 +267,7 @@ main core. We only show results for UMC due to space constraints though other
 monitors show similar trends. In this case, the full overheads of
 monitoring range from 1.1-1.9x. Figure~\ref{fig:evaluation.fpga_umc_sweep} shows
 the coverage achieved as we sweep the overhead target from 1.01-2.0x. We see that partial
-monitoring can allow the overheads of such a system to be pushed below 10\%
+monitoring can allow the overhead of such a system to be pushed below 10\%
 while still providing 45\% coverage.
 
 \subsection{Comparing Dropping Policies}
@@ -293,7 +293,7 @@ while still providing 45\% coverage.
 In this section we evaluate the trade-offs between unrestricted dropping and source-only dropping.
 The results are shown for an overhead target of 2.0x for UMC and 1.5x for BC.
 Figure~\ref{fig:evaluation.umc_exec_time} shows the difference between the
-overhead budget and the run-time monitoring overheads for UMC. A positive value
+overhead budget and the run-time monitoring overhead for UMC. A positive value
 means that the overhead target was overshot while a negative value indicates
 that the overhead budget was met. For most benchmarks, we see similar results for unrestricted
 dropping and source-only dropping due to the fact that UMC consists of a large
@@ -302,8 +302,8 @@ causes overshoot of the overhead target for {\tt hmmer} and {\tt h264ref}.
 Figure~\ref{fig:evaluation.umc_coverage} shows the coverage of UMC for
 unrestricted dropping and source-only dropping. We see that, in several cases, source-only dropping
 achieves higher coverage than unrestricted dropping while still closely matching the overhead target. For example, {\tt perlbench} shows a 10\% increase in coverage and {\tt libquantum} shows an 18\% increase in coverage by using source-only dropping. This is due
-to the fact that some of the overheads of monitoring for unrestricted dropping
-are being spent on wasted work as discussed in Section~\ref{sec:policies.which}.
+to the fact that some of the overhead of monitoring for unrestricted dropping
+is being spent on wasted work as discussed in Section~\ref{sec:policies.which}.
 
 \begin{figure}
   \begin{center}
@@ -332,8 +332,8 @@ The overshoot of the overhead target is quite high with overhead differences ove
 Since only infrequently occurring array allocations are considered as source events for BC, it can be 
 difficult for source-only dropping to match overhead targets. Although
 Figure~\ref{fig:evaluation.bc_coverage} shows higher coverage for
-source-only dropping, this is largely due to the fact that is running with
-higher overheads.
+source-only dropping, this is largely due to the fact that it is running with
+higher overhead.
 
 From these results, we see that depending on the monitor and the program
 behavior, source-only dropping can provide better coverage than unrestricted
@@ -358,10 +358,10 @@ better coverage on average.
   \end{center}
 \end{figure}
 
-One application of partial monitoring with low overheads is to enable
+One application of partial monitoring with low overhead is to enable
 cooperative debugging. 
 The idea with cooperative debugging is to use partial
-monitoring with very low overheads across a large number of users or runs. By
+monitoring with very low overhead across a large number of users or runs. By
 varying the pattern of partial monitoring done on each run, the goal is to
 achieve high coverage across multiple runs. Varying the monitoring that is
 done for different runs can be achieved by using a probabilistic dropping policy.

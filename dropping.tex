@@ -2,7 +2,7 @@
 \label{sec:dropping}
 
 In this section, we present our hardware architecture that enables partial
-monitoring for adjustable overheads. Section~\ref{sec:dropping.baseline} first
+monitoring for adjustable overhead. Section~\ref{sec:dropping.baseline} first
 describes our baseline model for run-time monitoring while the rest of the
 section describes our design.
 
@@ -164,7 +164,7 @@ for the particular monitoring scheme are forwarded.
 \subsection{Effects of Dropping Monitoring}
 \label{sec:dropping.false_neg_pos}
 
-Our goal is to drop some monitoring operations in order to reduce the overheads
+Our goal is to drop some monitoring operations in order to reduce the overhead
 of run-time monitoring. This dropping can affect the functionality of the
 monitoring schemes. There are three possible outcomes for dropping a
 monitoring operation. The first is that there is no difference in operation
@@ -178,10 +178,10 @@ line 4 is skipped, then
 a false negative occurs. Originally, the monitor would catch this access as an
 out-of-bounds access and raise an error. However, if the monitoring operation
 for this is dropped, then the error is not detected. This reflects the trade-off that
-we make in order to reduce overheads. Instead of either 100\% coverage
-with all the associated overheads or no coverage and no overheads, we 
+we make in order to reduce overhead. Instead of either 100\% coverage
+with all the associated overhead or no coverage and no overhead, we 
 enable middle points of partial coverage with some fraction of the full
-overheads.
+overhead.
 
 The final possible outcome of dropping a monitoring operation is a false positive. 
 For example, suppose the monitoring for
@@ -189,7 +189,7 @@ line 1 is dropped, causing the bound information for pointer {\tt x} to never
 be set. The result is that when the access using {\tt x} is checked on line 3b,
 an error will be raised. This creates a false positive where an error is
 incorrectly raised. Although false negatives are part of the trade-off we make
-to reduce overheads, we need to prevent false positives.
+to reduce overhead, we need to prevent false positives.
 
 \subsection{Invalidation for Preventing False Positives}
 \label{sec:dropping.prevent_false_pos}
