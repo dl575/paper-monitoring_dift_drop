@@ -102,7 +102,7 @@ Figure~\ref{fig:evaluation.filtering} shows the
 execution times of performing monitoring with null filtering enabled normalized
 to the execution time of the benchmarks without monitoring. UMC sees normalized
 execution times of 2.6-9.8x with an average of 5.7x.
-For BC, normalized execution
+For BC, normalized execution times
 are 2.7x on average and range from 1.02x to 13.6x.
 % This is not surprising since in the baseline
 % implementation all loads and stores needed to be monitored. However, with
@@ -189,20 +189,20 @@ provides a good initial estimate of the detection capabilities of the system.
 %a large number of bugs and exploits, we believe that the percentage of checks
 %provides a good estimate of detection probability when errors/attacks are 
 %uniformly distributed across checks.
-Note that this metric is different from the
-percentage of monitoring events that are not dropped, which includes
-non-check instructions.
+%Note that this metric is different from the
+%percentage of monitoring events that are not dropped, which includes
+%non-check instructions.
 In the figure, the bottom portion of each
 bar shows the coverage for a 1.1x overhead target and the additional
 coverage for increased overhead targets are stacked above this.
 
 We see that by varying the overhead budget, the coverage achieved also varies.
-With only a 1.1x overhead target (10\% slowdown), array bounds check still
+With only a 1.1x overhead target, array bounds check still
 achieves over 80\% monitoring coverage on average. The high coverage
 achieved with such low overhead is due to two main effects.  The first is that
 monitoring can be done in parallel, providing a certain level of monitoring coverage without
 introducing overhead. The second effect is that there may still exist a large number of
-monitoring events that do not lead to security or reliability checks. As a
+monitoring events that do not lead to a bounds checks. As a
 result, dropping these events can reduce overhead without a large impact on
 monitoring coverage.
 
@@ -213,10 +213,10 @@ With a 2x overhead target, UMC achieves 22\% monitoring coverage on average and 
 %with a 1.1x overhead target, UMC achieves 25\% monitoring coverage on average.
 %By increasing this overhead budget to 1.5x, UMC achieves 43\% coverage on
 %average. 
-Even higher coverage can be achieved by allowing higher overhead.
+Even higher coverage can be achieved by allowing higher overhead budgets.
 Similarly, Figure~\ref{fig:evaluation.ls_sweep} shows the coverage achieved by LS.
 With only a 1.01x overhead, LS achieves 30\% coverage on average. This increases to
-71\% coverage with a 1.1x overhead. 
+71\% coverage with a 1.1x overhead budget. 
 For DIFT (not pictured), an overhead target of 1.05x is enough for
 all benchmarks tested to reach 100\% coverage.
 %Since the overheads of DIFT are low to begin with, setting an overhead target
@@ -225,13 +225,12 @@ Note that the overheads shown are the target overhead. In some cases, a high
 overhead target is needed in order to achieve 100\% coverage. For example, for
 {\tt mcf} with UMC monitoring, a 12x overhead target is needed to achieve 100\%
 coverage while the overheads of performing monitoring in full were 2.6x (see
-Figure~\ref{fig:evaluation.filtering}. This is due to the fact that we
+Figure~\ref{fig:evaluation.filtering}). This is due to the fact that we
 accumulate slack gradually and so bursty monitoring events may require a higher
 overhead target in order for all monitoring to be performed. However, the
 actual overheads seen are in-line with the overhead of performing monitoring
-without dropping (e.g., 2.6x for {\tt mcf} with UMC monitoring at a 12x
-overhead target).
-
+without dropping (e.g., {\tt mcf} with UMC monitoring at a 12x
+overhead target shows a 2.6x overhead).
 
 The instruction-mix profiling monitor does not perform check operations. Thus,
 the concept of coverage is not applicable here. Instead, for each instruction
@@ -263,11 +262,11 @@ In addition to evaluating our system for a core-based monitor, we also
 evaluated partial monitoring on a higher performance FPGA-based monitor. This
 setup is based on the FlexCore \cite{flexcore-micro10} setup and uses a
 fully-pipelined monitor running on an FPGA fabric at half the frequency of the
-main core. We only show results for UMC due to space constraints though other
+main core. We only show results for UMC due to space constraints, though other
 monitors show similar trends. In this case, the full overheads of
-monitoring range from 1.1-1.9x. Figure~\ref{fig:evaluation.fpga_umc_sweep} shows
+monitoring range from 1.1-1.9x with an average overhead of 1.4x. Figure~\ref{fig:evaluation.fpga_umc_sweep} shows
 the coverage achieved as we sweep the overhead target from 1.01-2.0x. We see that partial
-monitoring can allow the overhead of such a system to be pushed below 10\%
+monitoring can allow the overhead of such a system to be pushed to 1.1x
 while still providing 45\% coverage.
 
 \subsection{Comparing Dropping Policies}
@@ -291,14 +290,14 @@ while still providing 45\% coverage.
 \end{figure}
 
 %In this section we evaluate the trade-offs between unrestricted dropping and source-only dropping.
-In this section we evaluate the trade-offs between different dropping policies.
+In this section, we evaluate the trade-offs between different dropping policies.
 For sub-flow dropping, we identified sub-flow nodes through profiling. Because
 of the need to profile the applications to determine sub-flow nodes, these
 experiments were simulated for 1 billion instructions without fast-forwarding.
 These results (not shown) indicated that sub-flow dropping produced similar
 results in terms of coverage and overhead target matching to unrestricted
 dropping for the benchmarks and monitors that we tested. Monitors and
-benchmarks with difference monitoring dependence graphs may see a more
+benchmarks with different monitoring dependence graphs may see a more
 pronounced trade-off between using unrestricted dropping and sub-flow dropping.
 
 Since, sub-flow dropping showed little difference from unrestricted dropping,
@@ -352,7 +351,7 @@ higher overhead.
 
 From these results, we see that depending on the monitor and the program
 behavior, source-only dropping can provide better coverage than unrestricted
-dropping with the same overhead. Unrestricted dropping is better at
+dropping with the same overhead. However, unrestricted dropping is better at
 meeting an overhead target.
 Thus, for applications where staying within an overhead target is especially
 important, such as soft real-time systems, a slack-based, unrestricted dropping

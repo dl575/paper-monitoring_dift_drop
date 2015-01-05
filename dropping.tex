@@ -1,4 +1,4 @@
-\section{Architecture for Adjustable Monitoring}
+\section{Architecture for Partial Monitoring}
 \label{sec:dropping}
 
 In this section, we present our hardware architecture that enables partial
@@ -105,7 +105,7 @@ In both cases, the monitor checks whether the store address is within the bounds
 is within the original array's bounds. No error is raised and the metadata of
 {\tt r3} is propagated to the metadata of the store address. If {\tt r3} were a
 pointer, then this would allow a future instruction to load the pointer and use
-it to access the corresponding array or data structure. In the second case,
+it to access its corresponding array or data structure. In the second case,
 {\tt y+12} (line 4) corresponds to {\tt x+20} which is not within the array's bounds and
 the monitor will raise an error. 
 
@@ -114,7 +114,7 @@ almost no modification needed to the main program. The only modification to
 the main program that is needed is to initially set metadata, such as setting
 the base and bounds addresses on a {\tt malloc} call for array bounds check.
 The propagation and checks of the metadata occur automatically as
-instructions are forwarded.
+instructions are forwarded to the monitor.
 Here, we have shown the dynamic sequence of operations executed by the monitor but
 the actual static code consists of a set of instructions to be run for each
 possible instruction type (load, store, etc.). Only instruction types relevant
@@ -166,7 +166,7 @@ for the particular monitoring scheme are forwarded.
 
 Our goal is to drop some monitoring operations in order to reduce the overhead
 of run-time monitoring. This dropping can affect the functionality of the
-monitoring schemes. There are three possible outcomes for dropping a
+monitoring scheme. There are three possible outcomes for dropping a
 monitoring operation. The first is that there is no difference in operation
 from the original execution. For example, if we drop line 3b from our array
 bounds check example (Figure~\ref{fig:dropping.example_full}), then the
@@ -224,7 +224,7 @@ skipping monitoring operations that update metadata can lead to false positives
 and false negatives.
 Essentially, when an update operation is skipped, we can no longer trust the
 corresponding metadata. Thus, our general approach for preventing false
-positives is to associate a 1-bit flag with each metadata in order to mark these
+positives is to associate a 1-bit invalidation flag with each metadata in order to mark these
 metadata as valid or
 invalid. Furthermore, this invalidation information is propagated in the same
 way that metadata is. Figure~\ref{fig:dropping.example_invalid}
@@ -283,9 +283,9 @@ There are two operations that are done for handling invalidation information:
 Thus, the hardware acts effectively as a dataflow tracking engine in order to
 track a 1-bit invalidation flag per metadata. Figure~\ref{fig:dropping.dataflow} shows a detailed block
 diagram of this hardware module. The dataflow engine uses two address
-calculation units to read in up to two invalidation flags. These source invalidation flags
+generation units to read in up to two invalidation flags. These source invalidation flags
 are used to decide whether a monitoring event should filtered. A third address
-calculation unit is used to optionally specify a target to propagate the
+generation unit is used to optionally specify a target to propagate the
 invalidation information. The module includes a register file to store invalidation
 flags corresponding to register file metadata. In addition, it uses a small
 memory-backed cache to handle invalidation flags corresponding to memory metadata.
@@ -293,7 +293,7 @@ memory-backed cache to handle invalidation flags corresponding to memory metadat
 Since different monitoring operations are performed based on instruction type,
 the dataflow engine is also configured based on instruction type. The source
 and operation of the address generation units are set based on instruction
-type. Note that the address calculation units also take information from the
+type. Note that the address generation units also take information from the
 monitored event as inputs. Thus, in the same way that the monitor selects
 metadata based on register indices or memory address of the specific monitoring
 event, the dataflow engine also reads the appropriate flags. In addition, the

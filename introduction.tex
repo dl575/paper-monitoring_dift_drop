@@ -35,8 +35,8 @@ cord-hpca06}, etc.
 Previous studies have explored various design points in terms of efficiency,
 flexibility, and hardware costs for implementing run-time monitors. Custom
 hardware designs that target a single or narrow-range of monitors have been
-shown to have low performance overheads. On the other hand, flexible systems
-that support a range of monitors have shown much higher overheads. In this
+shown to have low performance overhead. On the other hand, flexible systems
+that support a range of monitors have shown much higher overhead. In this
 paper, we explore a new trade-off dimension for run-time monitor designs. We
 propose to enable low overhead monitors without sacrificing flexibility by
 using partial monitoring. In essence, this enables a trade-off between overhead and
@@ -111,14 +111,14 @@ size and semantics of their metadata, and the operations performed on metadata.
 % overhead budget, this coverage rate can be increased. 
 These monitors show average slowdowns of 1.1-5.8x with the null metadata filtering when
 implemented on a multi-core platform.
-Our results show that the partial monitoring can still achieve significant
+Our results show that partial monitoring can still achieve significant
 coverage with reduced overhead. For example, for the monitors which showed over 2x
 average overhead, slowdown could be cut down to 1.5x while still achieving a
 coverage of 14-85\% on average.
 
 % Section summary
 This paper is organized as follows. Section~\ref{sec:monitoring} introduces the notion
-of adjustable run-time monitoring with partial monitoring.
+of adjustable overhead through partial monitoring.
 Section~\ref{sec:dropping} discusses the hardware architecture that enables 
 partial monitoring using our dataflow tracking engine.
 Section~\ref{sec:policies}

@@ -53,7 +53,7 @@ properties that differentiates our work:
   \item \textbf{Adjustable Overhead:} Our architecture allows an overhead to be
   targeted. Other work performs sampling to reduce overhead but does not try
   to bound overhead, which we have shown can vary greatly.
-  \item \textbf{Prevent False Positives:} We prevent a mechanism to prevent
+  \item \textbf{Prevent False Positives:} We present a mechanism to prevent
   false positives. Previous work either has false positives or targets monitoring
   techniques which degrade gracefully with sampling rather than exhibit false
   positives.
@@ -85,15 +85,17 @@ false positives and only target monitors which degrade gracefully when
 performed partially. Lo et al. \cite{lo-rtas14} designed a hardware
 architecture for performing monitoring on hard real-time systems that also
 prevents false positives. Their architecture is designed to meet real-time
-deadlines rather than overhead targets. In addition, in order to give strong
+deadlines rather than enable adjustable overheads. In addition, in order to give strong
 guarantees, the coverage achieved is lower than our system. Finally, QVM
 \cite{qvm-oopsla08} proposes a modification to the Java Virtual Machine (JVM) to
-support monitoring with adjustable overhead. QVM does prevent false positives
-but does so by enabling or disabling monitoring on a per-object basis. This is
-similar to the idea of performing source-only dropping which our results show
-can lead to overshooting the overhead target depending on the monitoring
-technique. In addition, QVM is limited monitoring for code run on a JVM while
-our framework works for any binary.
+support monitoring with adjustable overhead. 
+QVM is limited to monitoring for code run on a JVM which limits its
+generalizability while our framework works for any binary. QVM prevents false
+positives by enabling or disabling monitoring on a per-object basis. This
+limits the monitoring schemes that can be implemented. Also, this method of
+preventing false positives is similar to the idea of performing source-only
+dropping which our results show can lead to overshooting the overhead target
+depending on the monitoring technique. 
 
 % In contrast, our work is the first that we know of to present a general hardware platform that enables
 % partial monitoring. The architecture is designed to be applicable to a wide range of monitoring
