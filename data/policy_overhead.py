@@ -102,5 +102,4 @@ if __name__ == "__main__":
   data = parse()
   for mon in data.keys():
     if mon != "insttype":
-      #plot(data[mon], "../figs/data_%s_overhead.pdf" % (mon))
-      plot(data[mon], "temp.pdf" % (mon))
+      plot(data[mon], "../figs/data_%s_overhead.pdf" % (mon))
