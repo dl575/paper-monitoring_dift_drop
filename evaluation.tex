@@ -202,7 +202,7 @@ achieves over 80\% monitoring coverage on average. The high coverage
 achieved with such low overhead is due to two main effects.  The first is that
 monitoring can be done in parallel, providing a certain level of monitoring coverage without
 introducing overhead. The second effect is that there may still exist a large number of
-monitoring events that do not lead to a bounds checks. As a
+monitoring events that do not lead to bounds checks. As a
 result, dropping these events can reduce overhead without a large impact on
 monitoring coverage.
 
@@ -291,23 +291,8 @@ while still providing 45\% coverage.
 
 %In this section we evaluate the trade-offs between unrestricted dropping and source-only dropping.
 In this section, we evaluate the trade-offs between different dropping policies.
-For sub-flow dropping, we identified sub-flow nodes through profiling. Because
-of the need to profile the applications to determine sub-flow nodes, these
-experiments were simulated for 1 billion instructions without fast-forwarding.
-These results (not shown) indicated that sub-flow dropping produced similar
-results in terms of coverage and overhead target matching to unrestricted
-dropping for the benchmarks and monitors that we tested. Monitors and
-benchmarks with different monitoring dependence graphs may see a more
-pronounced trade-off between using unrestricted dropping and sub-flow dropping.
-
-Since, sub-flow dropping showed little difference from unrestricted dropping,
-we focus on comparing unrestricted dropping and source-only dropping. The
-results shown in Figures~\ref{fig:evaluation.umc_policies} and
-\ref{fig:evaluation.bc_policies} were run for 2 billion instructions after
-fast-forwarding for 1 billion instructions.
-The results are shown for an overhead target of 2.0x for UMC and 1.5x for BC.
 Figure~\ref{fig:evaluation.umc_exec_time} shows the difference between the
-overhead budget and the run-time monitoring overhead for UMC. A positive value
+overhead budget and the run-time monitoring overhead for UMC when the overhead target is set to 2.0x. A positive value
 means that the overhead target was overshot while a negative value indicates
 that the overhead budget was met. For most benchmarks, we see similar results for unrestricted
 dropping and source-only dropping due to the fact that UMC consists of a large
@@ -340,6 +325,7 @@ is being spent on wasted work as discussed in Section~\ref{sec:policies.which}.
 Next, we evaluate these trade-offs between source-only dropping and unrestricted dropping for BC.
 Figure~\ref{fig:evaluation.bc_exec_time} shows the overhead differences for BC
 and Figure~\ref{fig:evaluation.bc_coverage} shows the coverage for BC.
+Here, the overhead target is 1.5x.
 From Figure~\ref{fig:evaluation.bc_exec_time}, we see that for several
 benchmarks, source-only dropping fails to meet the specified overhead target.
 The overshoot of the overhead target is quite high with overhead differences over 100\% for {\tt bzip2}, {\tt hmmer}, and {\tt h264ref}.
@@ -358,6 +344,14 @@ important, such as soft real-time systems, a slack-based, unrestricted dropping
 policy is more appropriate. On the other hand, if maximum coverage is desired
 and occasional slowdowns are acceptable, then source-only dropping can provide
 better coverage on average.
+
+The results for the sub-flow dropping policy are not included in these graphs
+because our profiling infrastructure to identify sub-flow nodes currently does
+not support fast-forwarding. Instead, we compared the sub-flow dropping with
+other policies by running simulations for 1 billion instructions without
+fast-forwarding. The results (not shown) showed that sub-flow dropping produced
+similar coverage and overhead target matching to unrestricted dropping for the
+benchmarks and monitors that we tested.
 
 \subsection{Multiple-Run Coverage}
 
@@ -386,7 +380,7 @@ These numbers are averaged across all benchmarks. Here, we use a 10\%
 probability
 that events are not dropped.  Each run
 was simulated for 500 million instructions. 
-Since the goal is code coverage, coverage here is
+Since the effectiveness of cooperative debugging is often measured by code coverage, coverage here is
 measured as the percentage of static instructions which are monitored in at
 least one of the runs.
 We see that for the unrestricted dropping policy there is almost no increase in
